@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[My Octopress Blog]]></title>
+  <link href="http://zs1621.github.io/d3study/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/d3study/"/>
+  <updated>2013-07-12T13:05:30+08:00</updated>
+  <id>http://zs1621.github.io/d3study/</id>
+  <author>
+    <name><![CDATA[zs]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[test2]]></title>
+    <link href="http://zs1621.github.io/d3study/blog/2013/07/12/test2/"/>
+    <updated>2013-07-12T00:27:00+08:00</updated>
+    <id>http://zs1621.github.io/d3study/blog/2013/07/12/test2</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[test]]></title>
+    <link href="http://zs1621.github.io/d3study/blog/2013/07/11/test/"/>
+    <updated>2013-07-11T23:28:00+08:00</updated>
+    <id>http://zs1621.github.io/d3study/blog/2013/07/11/test</id>
+    <content type="html"><![CDATA[<h2>test this new article</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> print "hello world!"</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+</feed>
