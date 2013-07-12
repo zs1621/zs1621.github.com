@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: test | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2013-07-12T14:35:27+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[test]]></title>
+    <link href="http://zs1621.github.io/blog/2013/07/12/test/"/>
+    <updated>2013-07-12T13:53:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/07/12/test</id>
+    <content type="html"><![CDATA[<p><img class="left <a" src="href="http://placekitten.com/320/250">http://placekitten.com/320/250</a>" title="Place Kitten #2" ></p>
+]]></content>
+  </entry>
+  
+</feed>
