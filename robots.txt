@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://zs1621.github.io/d3study/sitemap.xml 
+Sitemap: http://zs1621.github.io/sitemap.xml 

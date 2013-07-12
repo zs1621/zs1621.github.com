@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[三余无梦]]></title>
-  <link href="http://zs1621.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: test | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/test/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
   <updated>2013-07-12T14:16:00+08:00</updated>
   <id>http://zs1621.github.io/</id>
@@ -18,7 +18,7 @@
     <link href="http://zs1621.github.io/blog/2013/07/12/test/"/>
     <updated>2013-07-12T13:53:00+08:00</updated>
     <id>http://zs1621.github.io/blog/2013/07/12/test</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://placekitten.com/320/250" title="Place Kitten #2" ></p>
+    <content type="html"><![CDATA[<p><img class="left <a" src="href="http://placekitten.com/320/250">http://placekitten.com/320/250</a>" title="Place Kitten #2" ></p>
 ]]></content>
   </entry>
   
