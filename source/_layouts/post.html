@@ -41,3 +41,10 @@ single: true
   {% endif %}
 </aside>
 {% endunless %}
+
+{% if site.duoshuo_show_comment_count==true %}
+  <section id=”comment”>
+    <h1>发表评论</h1>
+{% include post/duoshuo.html %}
+  </section>
+{% endif %}
