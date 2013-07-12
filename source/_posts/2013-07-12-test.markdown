@@ -1,9 +1,0 @@
----
-layout: post
-title: "test"
-date: 2013-07-12 13:53
-comments: true
-categories: "test"
----
-
-{% img left http://placekitten.com/320/250 Place Kitten #2 %}
