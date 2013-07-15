@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-07-12T15:03:01+08:00</updated>
+  <updated>2013-07-15T16:50:10+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,14 +12,5 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[test]]></title>
-    <link href="http://zs1621.github.io/blog/2013/07/12/test/"/>
-    <updated>2013-07-12T13:53:00+08:00</updated>
-    <id>http://zs1621.github.io/blog/2013/07/12/test</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://placekitten.com/320/250" title="Place Kitten #2" ></p>
-]]></content>
-  </entry>
   
 </feed>
