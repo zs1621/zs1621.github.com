@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-02T22:19:13+08:00</updated>
+  <updated>2013-09-03T00:01:24+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -18,7 +18,7 @@
     <link href="http://zs1621.github.io/blog/2013/09/02/connect-code-reading/"/>
     <updated>2013-09-02T22:12:00+08:00</updated>
     <id>http://zs1621.github.io/blog/2013/09/02/connect-code-reading</id>
-    <content type="html"><![CDATA[<p>[lib &ndash;> patch.js] (<a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">https://github.com/zs1621/connect/blob/master/lib/patch.js</a>)</p>
+    <content type="html"><![CDATA[<p><a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">lib &ndash;> patch.js</a></p>
 
 <p><strong>headerSent</strong></p>
 
@@ -31,6 +31,41 @@
 
 
 <p>这里的this._header是header内容发出后才有的， 内容为header的所有内容， 所以headerSent 只有在res.end()后才有值</p>
+
+<p><a href="https://github.com/zs1621/connect/blob/master/lib/middleware/compress.js">lib->middle->compress.js</a></p>
+
+<p><strong>options</strong></p>
+
+<p>compress中间件用了nodejs 内部模块 <code>zlib</code></p>
+
+<p>这里的options 参考 <a href="http://nodejs.org/api/zlib.html#zlib_options">options</a></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res.on('header', function(){
+</span><span class='line'>
+</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>监听到 <code>header</code> 开始</p>
+
+<ul>
+<li>如果没有compress 直接return;</li>
+<li><code>var encoding = res.getHeader('Content-Encoding') || 'identity'</code></li>
+<li>如果 <code>encoding</code> 不等于 <code>identity</code> 说明已经编码了 直接 return</li>
+<li>如果需要压缩的文件 符合过滤条件 也即在给的文件列表中 就继续下一步, 否则 return</li>
+<li>如果请求头文件 没有 accept-encoding 值 ， return (why)</li>
+<li>如果请求方法 为 <code>HEAD</code> , <code>return</code></li>
+<li>默认压缩方法为 <code>gzip</code></li>
+<li>确定压缩方法 即给 <code>method</code> 赋值</li>
+<li>此时<code>method</code> 还是空的话  return</li>
+<li>压缩流文件 <code>stream = exports.methods[method](options)</code> 即 <code>zlib.createGzip</code> 或 <code>zlib.createDeflate</code> 得到 流 <code>stream</code></li>
+<li>开始赋值 <code>Content-Encoding</code> , 并去除 <code>Content-Length</code> 明显压缩后 文件大小会变
+此时 <code>stream</code> 监听 到 发出去的数据 就 开始 res.write<code>stream.write(new Buffer(chunk, encoding))</code> 这里的 stream 监听 是 <code>node version 0.10</code>后的<code>stream api</code> 具体 参考 <a href="https://github.com/joyent/node/blob/master/doc/api/stream.markdown">stream</a></li>
+<li>直到 流文件 <code>"流出"</code></li>
+</ul>
+
 ]]></content>
   </entry>
   
