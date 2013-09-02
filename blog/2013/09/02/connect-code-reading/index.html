@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>about - 三余无梦</title>
+  <title>connect code reading - 三余无梦</title>
   <meta name="author" content="admin">
 
   
-  <meta name="description" content=" About Jul 12th, 2013 尘土迷失的小码农 爱编码，爱漫画， 爱美女， 爱。。。 Jul 12th, 2013 Recent Posts Connect Code Reading ">
+  <meta name="description" content="[lib &ndash;> patch.js] (https://github.com/zs1621/connect/blob/master/lib/patch.js) headerSent 1
+2
+3
+res.__defineGetter__('headerSent', function(){ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zs1621.github.io/about">
+  <link rel="canonical" href="http://zs1621.github.io/blog/2013/09/02/connect-code-reading">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
@@ -65,34 +68,15 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">About</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-12T14:51:00+08:00" pubdate data-updated="true">Jul 12<span>th</span>, 2013</time></p>
-  </header>
-  
-  <h2>尘土迷失的小码农</h2>
-
-<p>爱编码，爱漫画， 爱美女， 爱。。。</p>
-
-  
-    <footer>
+    
+      <h1 class="entry-title">Connect Code Reading</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -104,19 +88,66 @@
   
 
 
-<time datetime="2013-07-12T14:51:00+08:00" pubdate data-updated="true">Jul 12<span>th</span>, 2013</time>
+<time datetime="2013-09-02T22:12:00+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2013</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>[lib &ndash;> patch.js] (<a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">https://github.com/zs1621/connect/blob/master/lib/patch.js</a>)</p>
+
+<p><strong>headerSent</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res.__defineGetter__('headerSent', function(){
+</span><span class='line'>    return this._header;
+</span><span class='line'>  });</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的this._header是header内容发出后才有的， 内容为header的所有内容， 所以headerSent 只有在res.end()后才有值</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-02T22:12:00+08:00" pubdate data-updated="true">Sep 2<span>nd</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+      
+    </p>
+  </footer>
 </article>
 
 </div>
@@ -140,6 +171,8 @@
 
   
 </aside>
+
+
 
 
     </div>

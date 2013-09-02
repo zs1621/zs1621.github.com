@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-07-15T18:38:41+08:00</updated>
+  <updated>2013-09-02T22:19:13+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,5 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[connect code reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/02/connect-code-reading/"/>
+    <updated>2013-09-02T22:12:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/02/connect-code-reading</id>
+    <content type="html"><![CDATA[<p>[lib &ndash;> patch.js] (<a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">https://github.com/zs1621/connect/blob/master/lib/patch.js</a>)</p>
+
+<p><strong>headerSent</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res.__defineGetter__('headerSent', function(){
+</span><span class='line'>    return this._header;
+</span><span class='line'>  });</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的this._header是header内容发出后才有的， 内容为header的所有内容， 所以headerSent 只有在res.end()后才有值</p>
+]]></content>
+  </entry>
   
 </feed>
