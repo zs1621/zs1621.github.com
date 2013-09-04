@@ -9,10 +9,15 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="服务器建立 httpserver **应用** ```
-application = web.Application([ (r"/", MainPageHandler), ])
-http_server = httpserver.HTTPServer(application)
-http_server. &hellip;">
+  <meta name="description" content="服务器建立 HTTPServer 应用 1
+2
+3
+4
+5
+6
+application = web.Application([
+(r"/", MainPageHandler), ])
+http_server = httpserver.HTTPServer(application) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,42 +102,66 @@ http_server. &hellip;">
 
 <div class="entry-content"><h2>服务器建立</h2>
 
-<p><a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">httpserver</a></p>
+<p><a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">HTTPServer</a></p>
 
-<pre><code>**应用**
+<p><strong>应用</strong></p>
 
-```
-application = web.Application([
-    (r"/", MainPageHandler),    
-    ])
-http_server = httpserver.HTTPServer(application)
-http_server.listen(8080)
-ioloop.IOLoop.instance().start()
-```
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>application = web.Application([
+</span><span class='line'>(r"/", MainPageHandler),  
+</span><span class='line'>])
+</span><span class='line'>http_server = httpserver.HTTPServer(application)
+</span><span class='line'>http_server.listen(8080)
+</span><span class='line'>ioloop.IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
 
-对照应用例子理解源码
 
-```
-def __init__(self, request_callback, no_keep_alive=False, io_loop=None, xheaders=False, ssl_options=None, protocol=None, **kwargs):
-        self.request_callback = request_callback
-        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options) #这一步才是重点， 首先HTTPServer 继承自 TCPServer
-```
+<p>对照应用例子理解源码</p>
 
-**参数**
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def __init__(self, request_callback, no_keep_alive=False, io_loop=None,
+</span><span class='line'>                 xheaders=False, ssl_options=None, protocol=None, **kwargs):
+</span><span class='line'>        self.request_callback = request_callback
+</span><span class='line'>        self.no_keep_alive = no_keep_alive
+</span><span class='line'>        self.xheaders = xheaders
+</span><span class='line'>        self.protocol = protocol
+</span><span class='line'>        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options,
+</span><span class='line'>                           **kwargs) #HTTPServer 继承自 TCPServer, 初始化TCPServer</span></code></pre></td></tr></table></div></figure>
 
-- request_callback: 必须产生一个http回复, 例子中 application 即是回复
-- xheaders: True(支持通过`x-real-ip`或`x-forwarded-for`获取ip) False(当torando之前有反向代理或者负载均衡self.request.remote_ip只能获得127.0.0.1)
-- ssl_options: ssl传输数据
 
-  使用例子 
-  ```
-  HTTPServer(applicaton, ssl_options={
-       "certfile": os.path.join(data_dir, "mydomain.crt"),
-       "keyfile": os.path.join(data_dir, "mydomain.key"),
-        }) 
-  ```
-下面应该说下 `TCPServer` 主体内容在 `TCPServer`, 
-</code></pre>
+<p><strong>参数</strong></p>
+
+<ul>
+<li>request_callback: 必须产生一个http回复, 例子中 application 即是回复</li>
+<li>xheaders: True(支持通过<code>x-real-ip</code>或<code>x-forwarded-for</code>获取ip) False(当torando之前有反向代理或者负载均衡self.request.remote_ip只能获得127.0.0.1)</li>
+<li>ssl_options: ssl传输数据</li>
+</ul>
+
+
+<p>ssl_options 使用例子</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HTTPServer(applicaton, ssl_options={
+</span><span class='line'>   "certfile": os.path.join(data_dir, "mydomain.crt"),
+</span><span class='line'>   "keyfile": os.path.join(data_dir, "mydomain.key"),
+</span><span class='line'>  }) </span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面应该说下 <code>TCPServer</code> 主体内容在 <code>TCPServer</code>,</p>
 
 <p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
 </div>
