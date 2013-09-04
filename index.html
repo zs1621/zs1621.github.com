@@ -9,10 +9,10 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="lib &ndash;> patch.js headerSent 1
-2
-3
-res.__defineGetter__('headerSent', function(){ return this._header; }); 这里的this._header是header内容发出后才有的， &hellip;">
+  <meta name="description" content="服务器建立 httpserver **应用** ```
+application = web.Application([ (r"/", MainPageHandler), ])
+http_server = httpserver.HTTPServer(application)
+http_server. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,81 @@ res.__defineGetter__('headerSent', function(){ return this._header; }); 这里�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T13:26:00+08:00" pubdate data-updated="true">Sep 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>服务器建立</h2>
+
+<p><a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">httpserver</a></p>
+
+<pre><code>**应用**
+
+```
+application = web.Application([
+    (r"/", MainPageHandler),    
+    ])
+http_server = httpserver.HTTPServer(application)
+http_server.listen(8080)
+ioloop.IOLoop.instance().start()
+```
+
+对照应用例子理解源码
+
+```
+def __init__(self, request_callback, no_keep_alive=False, io_loop=None, xheaders=False, ssl_options=None, protocol=None, **kwargs):
+        self.request_callback = request_callback
+        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options) #这一步才是重点， 首先HTTPServer 继承自 TCPServer
+```
+
+**参数**
+
+- request_callback: 必须产生一个http回复, 例子中 application 即是回复
+- xheaders: True(支持通过`x-real-ip`或`x-forwarded-for`获取ip) False(当torando之前有反向代理或者负载均衡self.request.remote_ip只能获得127.0.0.1)
+- ssl_options: ssl传输数据
+
+  使用例子 
+  ```
+  HTTPServer(applicaton, ssl_options={
+       "certfile": os.path.join(data_dir, "mydomain.crt"),
+       "keyfile": os.path.join(data_dir, "mydomain.key"),
+        }) 
+  ```
+下面应该说下 `TCPServer` 主体内容在 `TCPServer`, 
+</code></pre>
+
+<p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -164,6 +239,10 @@ res.__defineGetter__('headerSent', function(){ return this._header; }); 这里�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/09/02/connect-code-reading/">Connect Code Reading</a>
