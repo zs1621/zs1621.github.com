@@ -54,40 +54,36 @@ res.on('header', function(){
 
 [lib -> middle -> basicAuth.js](https://github.com/senchalabs/connect/blob/master/lib/middleware/basicAuth.js)
 
-**3种应用形式**
+**应用形式**
 
- - 简单输入 username , password 
-```
-  connect(connect.basicAuth('username', 'password'));
-```
-
+ -  
+ ```
+   connect(connect.basicAuth('username', 'password'));
+ ```
  - 回调
-
-```
+ ```
    connect()
    .use(connect.basicAuth(function(user, pass){
       return 'tj' == user & 'wahoo' == pass;
    }))
-```
+ ```
  - 异步回调
-
-```
+ ```
    connect()
    .use(connect.basicAuth(function(user, pass, fn){
   	User.authenticate({user: user, pass: pass}, fn); 
    }))
-```
+ ```
 
  
 **Authrization**
-
 页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个 Header:
 
 ```
 Authorization: Basic bXl1c2VyOm15cGFzcw==
 ```
 
-这里的 `bXl1c2VyOm15cGFzcw==` 是 `base64 encoded`。例如, `base64_decode('bXl1c2VyOm15cGFzcw==')` -> `myuser:mypass`
+这里的 `bXl1c2VyOm15cGFzcw==` 是 `base64 encoded`。 例如, `base64_decode('bXl1c2VyOm15cGFzcw==')` -> `myuser:mypass`
 
 理解头文件的 Authrization, 下面来看代码
 
@@ -100,7 +96,7 @@ Authorization: Basic bXl1c2VyOm15cGFzcw==
 
 下面解析出头文件的即 `req.headers.authorization` 解码出用户输入的用户名和密码得到 `user` 和 `pass`
 
-最后调用`callback`做验证 分一下两种情况
+最后做调用 callback 做验证 分两种情况
 
   - 异步callback
 ```
@@ -110,8 +106,8 @@ if (callback.length >= 3) {
 		if (err || !user) return unauthorized(res, realm);	
 		req.user = req.remoteUser = user;
 		next();
-		pause.resume(); // nodejs version < 0.10, 在中间间使用异步调用时使用， 为了在异步操作完成后， 重新触发消息， 以免事件丢失
-	});
+		pause.resume(); //
+	})
 }
 ```
 
