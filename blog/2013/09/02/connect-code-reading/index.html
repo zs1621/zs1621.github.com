@@ -146,37 +146,56 @@ res.__defineGetter__('headerSent', function(){ return this._header; }); 这里�
 
 <p><a href="https://github.com/senchalabs/connect/blob/master/lib/middleware/basicAuth.js">lib &ndash;> middle &ndash;> basicAuth.js</a></p>
 
-<p><strong>应用形式</strong></p>
+<p><strong>3种应用形式</strong></p>
 
 <ul>
-<li><p><code>
-connect(connect.basicAuth('username', 'password'));
-</code></p></li>
-<li>回调
-<code>
-connect()
-.use(connect.basicAuth(function(user, pass){
-   return 'tj' == user &amp; 'wahoo' == pass;
-}))
-</code></li>
-<li>异步回调
-<code>
-connect()
-.use(connect.basicAuth(function(user, pass, fn){
- User.authenticate({user: user, pass: pass}, fn);
-}))
-</code></li>
+<li>简单输入 username , password</li>
 </ul>
 
 
-<p><strong>Authrization</strong>
-页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个 Header:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  connect(connect.basicAuth('username', 'password'));</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>回调</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
+</span><span class='line'>   .use(connect.basicAuth(function(user, pass){
+</span><span class='line'>      return 'tj' == user & 'wahoo' == pass;
+</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>异步回调</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
+</span><span class='line'>   .use(connect.basicAuth(function(user, pass, fn){
+</span><span class='line'>      User.authenticate({user: user, pass: pass}, fn); 
+</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Authrization</strong></p>
+
+<p>页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个 Header:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>Authorization: Basic bXl1c2VyOm15cGFzcw==</span></code></pre></td></tr></table></div></figure>
 
 
-<p>这里的 <code>bXl1c2VyOm15cGFzcw==</code> 是 <code>base64 encoded</code>。 例如, <code>base64_decode('bXl1c2VyOm15cGFzcw==')</code> &ndash;> <code>myuser:mypass</code></p>
+<p>这里的 <code>bXl1c2VyOm15cGFzcw==</code> 是 <code>base64 encoded</code>。例如, <code>base64_decode('bXl1c2VyOm15cGFzcw==')</code> &ndash;> <code>myuser:mypass</code></p>
 
 <p>理解头文件的 Authrization, 下面来看代码</p>
 
@@ -192,7 +211,7 @@ connect()
 
 <p>下面解析出头文件的即 <code>req.headers.authorization</code> 解码出用户输入的用户名和密码得到 <code>user</code> 和 <code>pass</code></p>
 
-<p>最后做调用 callback 做验证 分两种情况</p>
+<p>最后调用<code>callback</code>做验证 分一下两种情况</p>
 
 <ul>
 <li>异步callback</li>
@@ -214,8 +233,8 @@ connect()
 </span><span class='line'>      if (err || !user) return unauthorized(res, realm);  
 </span><span class='line'>      req.user = req.remoteUser = user;
 </span><span class='line'>      next();
-</span><span class='line'>      pause.resume(); //
-</span><span class='line'>  })
+</span><span class='line'>      pause.resume(); // nodejs version &lt; 0.10, 在中间间使用异步调用时使用， 为了在异步操作完成后， 重新触发消息， 以免事件丢失
+</span><span class='line'>  });
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
