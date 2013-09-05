@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-05T15:38:24+08:00</updated>
+  <updated>2013-09-05T15:47:40+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -82,22 +82,6 @@
 <p>下面应该说下 <code>TCPServer</code> 主体内容在 <code>TCPServer</code>,</p>
 
 <p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
-
-<p>首先看下<code>__init__</code>, 很简单只是将参数赋值给<code>self</code></p>
-
-<p>使用<code>TCPServer</code>的入口两个 <code>listen</code> 和 <code>start</code></p>
-
-<p><strong>listen</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>"""
-</span><span class='line'>在给定的端口开始接受连接, 这个方法为了监听多个端口
-</span><span class='line'>可以被调用多次，"""</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   
@@ -153,121 +137,6 @@
 此时 <code>stream</code> 监听 到 发出去的数据 就 开始 res.write<code>stream.write(new Buffer(chunk, encoding))</code> 这里的 stream 监听 是 <code>node version 0.10</code>后的<code>stream api</code> 具体 参考 <a href="https://github.com/joyent/node/blob/master/doc/api/stream.markdown">stream</a></li>
 <li>直到 流文件 <code>"流出"</code></li>
 </ul>
-
-
-<p><a href="https://github.com/senchalabs/connect/blob/master/lib/middleware/basicAuth.js">lib &ndash;> middle &ndash;> basicAuth.js</a></p>
-
-<p><strong>3种应用形式</strong></p>
-
-<ul>
-<li>简单参数 用户名 和 密码</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   connect(connect.basicAuth('username', 'password'));</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>回调</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
-</span><span class='line'>   .use(connect.basicAuth(function(user, pass){
-</span><span class='line'>      return 'tj' == user & 'wahoo' == pass;
-</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>异步回调</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
-</span><span class='line'>   .use(connect.basicAuth(function(user, pass, fn){
-</span><span class='line'>      User.authenticate({user: user, pass: pass}, fn); 
-</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Authrization</strong></p>
-
-<p>页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个Header:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Authorization: Basic bXl1c2VyOm15cGFzcw==</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的 <code>bXl1c2VyOm15cGFzcw==</code> 是 <code>base64 encoded</code>。例如, <code>base64_decode('bXl1c2VyOm15cGFzcw==')</code> &ndash;> <code>myuser:mypass</code></p>
-
-<p>理解头文件的 Authrization, 下面来看代码</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  if ('string' == typeof callback)  //对应第一个应用例子, 见上 
-</span><span class='line'>  callback = function(user, pass) {
-</span><span class='line'>      return user == username && pass == password; 
-</span><span class='line'>  } //这时给callback赋值 function</span></code></pre></td></tr></table></div></figure>
-
-
-<p>下面解析出头文件的即 <code>req.headers.authorization</code> 解码出用户输入的用户名和密码得到 <code>user</code> 和 <code>pass</code></p>
-
-<p>最后做调用 callback 做验证 分两种情况</p>
-
-<ul>
-<li>异步callback</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  if (callback.length &gt;= 3) {
-</span><span class='line'>  var pause = utils.pause(req); 
-</span><span class='line'>  callback(user, pass, function(err, user){
-</span><span class='line'>      if (err || !user) return unauthorized(res, realm);  
-</span><span class='line'>      req.user = req.remoteUser = user;
-</span><span class='line'>      next();
-</span><span class='line'>      pause.resume(); //
-</span><span class='line'>  })
-</span><span class='line'>  }</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>同步callback</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> if (callback(user, pass){
-</span><span class='line'>  req.user = req.remoteUser = user; 
-</span><span class='line'>  next();
-</span><span class='line'> }else {
-</span><span class='line'>  unauthorized(res, realm); 
-</span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
-
-
 
 ]]></content>
   </entry>
