@@ -125,6 +125,41 @@ if (callback.length >= 3) {
  })
 ```
 
+[lib ->middle ->static.js](https://github.com/zs1621/connect/blob/master/lib/middle/static.js)
+
+**应用**
+
+```
+connect()
+	.use(connect.static(__dirname+ '/public', {maxAge: 1000}))
+```
+
+
+**参数**
+
+`root`: 
+
+`options`:
+	- 'maxAge' 浏览器缓存时间  默认为0
+	- 'hidden' 允许隐藏文件的转换 默认false
+	- 'redirect' 如果路径是一个文件夹， 指向 ‘/’ 默认 true
+	- 'index' 默认的文件名‘index.html’
+
+代码主体就是
+
+```
+send(req, path)
+	.maxage(options.maxAge || 0)
+	.root(root)
+	.index(options.index || 'index.html')
+	.hidden(options.hidden)
+	.on('error', error)
+	.on('directory', directory)
+	.pipe(res)
+```
+
+对于 `send` 模块分析见 [send](zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading)
+
 
 
 
