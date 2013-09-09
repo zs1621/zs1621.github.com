@@ -9,15 +9,8 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="服务器建立 HTTPServer 应用 1
-2
-3
-4
-5
-6
-application = web.Application([
-(r"/", MainPageHandler), ])
-http_server = httpserver.HTTPServer(application) &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +67,42 @@ http_server = httpserver.HTTPServer(application) &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/10/visionmedia-slash-send-reading/">Visionmedia/send Reading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:41:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -364,7 +393,49 @@ http_server = httpserver.HTTPServer(application) &hellip;">
 </span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
 
 
+<p><a href="https://github.com/zs1621/connect/blob/master/lib/middle/static.js">lib &ndash;>middle &ndash;>static.js</a></p>
 
+<p><strong>应用</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>connect()
+</span><span class='line'>  .use(connect.static(__dirname+ '/public', {maxAge: 1000}))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>参数</strong></p>
+
+<p><code>root</code>:</p>
+
+<p><code>options</code>:</p>
+
+<pre><code>- 'maxAge' 浏览器缓存时间  默认为0
+- 'hidden' 允许隐藏文件的转换 默认false
+- 'redirect' 如果路径是一个文件夹， 指向 ‘/’ 默认 true
+- 'index' 默认的文件名‘index.html’
+</code></pre>
+
+<p>代码主体就是</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>send(req, path)
+</span><span class='line'>  .maxage(options.maxAge || 0)
+</span><span class='line'>  .root(root)
+</span><span class='line'>  .index(options.index || 'index.html')
+</span><span class='line'>  .hidden(options.hidden)
+</span><span class='line'>  .on('error', error)
+</span><span class='line'>  .on('directory', directory)
+</span><span class='line'>  .pipe(res)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于 <code>send</code> 模块分析见 <a href="zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading">send</a></p>
 </div>
   
   
@@ -383,6 +454,10 @@ http_server = httpserver.HTTPServer(application) &hellip;">
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/10/visionmedia-slash-send-reading/">Visionmedia/send Reading</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a>
