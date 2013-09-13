@@ -144,7 +144,7 @@ function send(req, path, options) { return new SendStream(req, path, &hellip;">
 
 
 <ul>
-<li>下面都是 <code>SendStream</code> 原型链的方法
+<li><p>下面都是 <code>SendStream</code> 原型链的方法</p>
 
 <ul>
 <li>hidden: 赋值 this._hidden, return this</li>
@@ -152,12 +152,94 @@ function send(req, path, options) { return new SendStream(req, path, &hellip;">
 <li>root: 赋值根路径,  this._root</li>
 <li>maxage: 赋值最大缓存时间 , this._maxage</li>
 <li>error: 根据<code>status</code>&ndash;>触发<code>error</code></li>
+<li>redirect: 如果有监听事件<code>directory</code>的监听者 那么触发<code>directory</code></li>
+<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题 就是判断 有无<code>_root</code> 和 <code>path</code> 包不包含 <code>..</code> 如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 return true;</li>
+<li>hasTrailingSlash: 判断路径最后一位是不是<code>/</code></li>
+<li>hasLeadingDot: 就是文件是否有后缀 形如<code>aa.html</code></li>
+<li>isCachable: 是否缓存， 判断方法 <code>(res.statusCode &gt;= 200 &amp;&amp; res.statusCode &lt; 300) || 304 == res.statusCode</code></li>
+<li>isFresh: 判断缓存是否是新的 判断方法 引用模块 <code>fresh</code></li>
+<li>removeContentHeaderFields 去除包含 <code>content</code>的头 <code>key</code></li>
+<li>onStatError:</li>
 </ul>
 </li>
+<li><p>主体方法 <code>pipe</code> , 参数 <code>res</code></p></li>
 </ul>
 
 
-<h2>TBD :)</h2>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this
+</span><span class='line'>, args = arguments
+</span><span class='line'>, path = this.path
+</span><span class='line'>, root = this._root
+</span><span class='line'>
+</span><span class='line'>this.res = res;
+</span><span class='line'>//判断uri的有效性
+</span><span class='line'>path = utils.decode(path);
+</span><span class='line'>if (-1 == path) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//如果`path`里包含`\0` ，表明`path`为空
+</span><span class='line'>if (~path.indexOf('\0')) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//连接 this._root 和 path
+</span><span class='line'>if (root) path = normalize(join(this._root, path));
+</span><span class='line'>
+</span><span class='line'>//".."是有异常的
+</span><span class='line'>if (this.isMaliciout()) return this.error(403);
+</span><span class='line'>
+</span><span class='line'>//异常 路径
+</span><span class='line'>if (root && 0 != path.indexOf(root)) return this.error(403)
+</span><span class='line'>
+</span><span class='line'>//隐藏文件支持
+</span><span class='line'>if (!this._hidden && this.hasLeadingDot()) return this.error(404);
+</span><span class='line'>
+</span><span class='line'>//index 文件支持
+</span><span class='line'>if (this._index && this.hasTrailingSlash()) path += this._index
+</span><span class='line'>
+</span><span class='line'>//最后看path 的信息
+</span><span class='line'>fs.stat(path, function(err, stat){
+</span><span class='line'>  if (err) return self.onStatError(err); //上面已介绍
+</span><span class='line'>  if (stat.isDirectory) return self.redirect(self.path); //见上
+</span><span class='line'>  self.emit('file', path, stat); //见下
+</span><span class='line'>  self.send(path, stat);//见下
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
