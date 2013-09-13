@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-13T14:53:01+08:00</updated>
+  <updated>2013-09-13T22:03:59+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -75,7 +75,7 @@
 <li>maxage: 赋值最大缓存时间 , this._maxage</li>
 <li>error: 根据<code>status</code>&ndash;>触发<code>error</code></li>
 <li>redirect: 如果有监听事件<code>directory</code>的监听者 那么触发<code>directory</code></li>
-<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题 就是判断 有无<code>_root</code> 和 <code>path</code> 包不包含 <code>..</code> 如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 return true;</li>
+<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题,判断方法如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 就是有异常的路径;</li>
 <li>hasTrailingSlash: 判断路径最后一位是不是<code>/</code></li>
 <li>hasLeadingDot: 就是文件是否有后缀 形如<code>aa.html</code></li>
 <li>isCachable: 是否缓存， 判断方法 <code>(res.statusCode &gt;= 200 &amp;&amp; res.statusCode &lt; 300) || 304 == res.statusCode</code></li>
@@ -139,13 +139,13 @@
 </span><span class='line'>//连接 this._root 和 path
 </span><span class='line'>if (root) path = normalize(join(this._root, path));
 </span><span class='line'>
-</span><span class='line'>//".."是有异常的
-</span><span class='line'>if (this.isMaliciout()) return this.error(403);
+</span><span class='line'>//如果异常路径禁止访问
+</span><span class='line'>if (this.isMalicious()) return this.error(403);
 </span><span class='line'>
-</span><span class='line'>//异常 路径
+</span><span class='line'>//此时`path`已经是 `this._root`和 `path`的结合, 所以此种情况不会出现,如果有root
 </span><span class='line'>if (root && 0 != path.indexOf(root)) return this.error(403)
 </span><span class='line'>
-</span><span class='line'>//隐藏文件支持
+</span><span class='line'>//如果_hidden为`false`,那么不支持隐藏文件，此时文件如果以`.`开头那么就不支持 
 </span><span class='line'>if (!this._hidden && this.hasLeadingDot()) return this.error(404);
 </span><span class='line'>
 </span><span class='line'>//index 文件支持
@@ -159,6 +159,173 @@
 </span><span class='line'>  self.send(path, stat);//见下
 </span><span class='line'>});
 </span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <strong><code>send</code></strong>
+
+<ul>
+<li>path: 路径</li>
+<li>stat: 文件状态</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var options = this.options;
+</span><span class='line'>var len = stat.size;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>var ranges = req.headers.range; //截取部分文件之用
+</span><span class='line'>var offset = options.start || 0;
+</span><span class='line'>
+</span><span class='line'>//赋值header
+</span><span class='line'>this.setHeader(stat);
+</span><span class='line'>
+</span><span class='line'>//赋值 content-type
+</span><span class='line'>this.type(path);
+</span><span class='line'>
+</span><span class='line'>//条件 GET 支持
+</span><span class='line'>if (this.isConditionGET()
+</span><span class='line'>&& this.isCachable()
+</span><span class='line'>&& this.isFresh()) {
+</span><span class='line'>  return this.notModified();
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>//
+</span><span class='line'>len = Math.max(0, len - offset);
+</span><span class='line'>if (options.end != undefined) {
+</span><span class='line'>  var bytes = options.end - offset + 1;
+</span><span class='line'>  if (len &gt; bytes) len = bytes;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// Range 支持
+</span><span class='line'>if (ranges) {
+</span><span class='line'>  ... 
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// content-length
+</span><span class='line'>res.setHeader('Content-Length', len);
+</span><span class='line'>
+</span><span class='line'>// HEAD support
+</span><span class='line'>if ('HEAD' == req.method) return res.end();
+</span><span class='line'>
+</span><span class='line'>this.stream(path, options); //见下</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <code>stream</code>
+
+<ul>
+<li>参数
+
+<ul>
+<li>path : 路径</li>
+<li>options</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>
+</span><span class='line'>//pipe 把流数据加入 `res`管道
+</span><span class='line'>var stream = fs.createReadStream(path, options);
+</span><span class='line'>this.emit('stream', stream);
+</span><span class='line'>stream.pipe(res);
+</span><span class='line'>
+</span><span class='line'>//socket 关闭， 
+</span><span class='line'>
+</span><span class='line'>req.on('close', stream.destroy.bind(stream));
+</span><span class='line'>
+</span><span class='line'>//error处理
+</span><span class='line'>steam.on('error', function(err){
+</span><span class='line'>  //不回复
+</span><span class='line'>  if (res._header) {
+</span><span class='line'>      console.error(err.stack);
+</span><span class='line'>      req.destroy();
+</span><span class='line'>      return;
+</span><span class='line'>  }
+</span><span class='line'>  erro.status = 500;
+</span><span class='line'>  self.emit('error', err);
+</span><span class='line'>});
+</span><span class='line'>
+</span><span class='line'>//end
+</span><span class='line'>stream.on('end', function(){
+</span><span class='line'>  self.emit('end');   
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
 
 
 
