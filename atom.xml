@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-13T22:03:59+08:00</updated>
+  <updated>2013-09-14T14:07:51+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -224,7 +224,7 @@
 </span><span class='line'>//赋值 content-type
 </span><span class='line'>this.type(path);
 </span><span class='line'>
-</span><span class='line'>//条件 GET 支持
+</span><span class='line'>//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
 </span><span class='line'>if (this.isConditionGET()
 </span><span class='line'>&& this.isCachable()
 </span><span class='line'>&& this.isFresh()) {

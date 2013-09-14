@@ -302,7 +302,7 @@ function send(req, path, options) { return new SendStream(req, path, &hellip;">
 </span><span class='line'>//赋值 content-type
 </span><span class='line'>this.type(path);
 </span><span class='line'>
-</span><span class='line'>//条件 GET 支持
+</span><span class='line'>//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
 </span><span class='line'>if (this.isConditionGET()
 </span><span class='line'>&& this.isCachable()
 </span><span class='line'>&& this.isFresh()) {
