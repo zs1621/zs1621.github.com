@@ -110,7 +110,7 @@ this.setHeader(stat);
 //赋值 content-type
 this.type(path);
 
-//条件 GET 支持
+//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
 if (this.isConditionGET()
 && this.isCachable()
 && this.isFresh()) {
