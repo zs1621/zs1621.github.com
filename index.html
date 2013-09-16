@@ -9,11 +9,11 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="send入口 1
-exports = module.exports = send; send 函数返回 SendStream 构造函数 1
+  <meta name="description" content="TCPserver 一个非阻塞， 单进程的 TCP 服务器 为了使用 TCPServer, 定义一个子类改写其中的 handle_stream 方法 如果让服务器通过 SSL 传输， 如下例 1
 2
 3
-function send(req, path, options) { return new SendStream(req, path, &hellip;">
+4
+TCPServer(ssl_options={ "certfile": os.path. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,169 @@ function send(req, path, options) { return new SendStream(req, path, &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/16/tornado-code-reading-tcpserver/">Tornado Code Reading-TCPServer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-16T16:31:00+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></p>
+
+<p>一个非阻塞， 单进程的 <code>TCP</code> 服务器</p>
+
+<p>为了使用 <code>TCPServer</code>, 定义一个子类改写其中的 <code>handle_stream</code> 方法</p>
+
+<p>如果让服务器通过 <code>SSL</code> 传输， 如下例</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>TCPServer(ssl_options={
+</span><span class='line'>  "certfile": os.path.join(data_dir, "mydomain.crt"),
+</span><span class='line'>  "keyfile": os.path.join(data_dir, "mydomain.key"),
+</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>TCPServer</code> simple single-process::</p>
+
+<ol>
+<li><code>listen</code>: 监听单个进程</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server = TCPServer()
+</span><span class='line'>server.listen(8888)
+</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li><code>bind</code> / <code>start</code>: simple multi-process::</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server = TCPServer()
+</span><span class='line'>server.bind(8888)
+</span><span class='line'>server.start(0) #Forks multiple sub-process
+</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果使用<code>start</code>接口， 一个 <code>.IOLoop</code> 不可以传入 <code>TCPServer</code> 结构里。 <code>start</code>将总是开始服务在默认的单例 <code>.IOLoop</code></p>
+
+<ol>
+<li><code>add_sockets</code>: 高级多进程::</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sockets = bind_sockets(8888)
+</span><span class='line'>tornaado.process.fork_processes(0)
+</span><span class='line'>server = TCPServer()
+</span><span class='line'>server.add_sockets(sockets)
+</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>add_sockets</code> 接口更为复杂， 但是和<code>tornado.process.fork_processes</code>使用将会更明了， <code>add_sockets</code>也可以用在单进程服务中 ， 如果你想要创建你的监听套节字而不是<code>~tornado.netutil.bind_sockets</code></p>
+
+<p>以上是怎么应用
+下面看源码</p>
+
+<p><strong>初始化</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def __init__(self, io_loop=None, ssl_options=None, max_buffer_size=None):
+</span><span class='line'>  self.io_loop = io_loop
+</span><span class='line'>  self.ssl_options = ssl_options
+</span><span class='line'>  self.sockets = {}
+</span><span class='line'>  self._pending_sockets = []
+</span><span class='line'>  self._started = False
+</span><span class='line'>  self.max_buffer_size = max_buffer_size
+</span><span class='line'>  #下面是检验 SSL 文件，此处略</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>listen</strong></p>
+
+<p>在给定的端口接受连接
+这个方法可能被调用多次为了监听多个端口。<code>listen</code> 立即生效; 之后不必调用<code>TCPServer.start</code> , 但是， <code>,IOLoop</code> 是必要的</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sockets = bind_sockets(port, address=address)
+</span><span class='line'>self.add_sockets(sockets)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>源码里的 <code>bind_sockets</code> 见 <a href="" title="#netutil">netutil</a>, <code>add_sockets</code> 见下</p>
+
+<p><strong>add_sockets</strong></p>
+
+<p>让服务接受多个连接</p>
+
+<p><code>sockets</code> 参数是一个socket数组, <code>add_sockets</code>一般和 <code>tornado.process.fork_processes</code>联合使用 为了控制 多进程服务的启动</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if self.io_loop is None:
+</span><span class='line'>  self.io_loop = IOLoop.current()
+</span><span class='line'>
+</span><span class='line'>for sock in sockets:
+</span><span class='line'>  self._sockets[sock.fileno()] = sock
+</span><span class='line'>  add_accept_handler(sock, self._handle_connection, io_loop=self.io.loop) #这里的 add_accept_handler 见 [netutil](https://github.com/facebook/tornado/blob/master/tornado/netutil.py)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8220;`</p>
+
+<p>&#8220;`</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -767,6 +930,10 @@ function send(req, path, options) { return new SendStream(req, path, &hellip;">
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/16/tornado-code-reading-tcpserver/">Tornado Code Reading-TCPServer</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/09/10/visionmedia-slash-send-reading/">Visionmedia/send Reading</a>
