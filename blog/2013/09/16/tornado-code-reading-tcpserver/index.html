@@ -165,6 +165,8 @@ TCPServer(ssl_options={ "certfile": os.path. &hellip;">
 
 <p><code>add_sockets</code> 接口更为复杂， 但是和<code>tornado.process.fork_processes</code>使用将会更明了， <code>add_sockets</code>也可以用在单进程服务中 ， 如果你想要创建你的监听套节字而不是<code>~tornado.netutil.bind_sockets</code></p>
 
+<hr />
+
 <p>以上是怎么应用
 下面看源码</p>
 
@@ -199,7 +201,7 @@ TCPServer(ssl_options={ "certfile": os.path. &hellip;">
 </span><span class='line'>self.add_sockets(sockets)</span></code></pre></td></tr></table></div></figure>
 
 
-<p>源码里的 <code>bind_sockets</code> 见 <a href="" title="#netutil">netutil</a>, <code>add_sockets</code> 见下</p>
+<p>源码里的 <code>bind_sockets</code> 见 <a href="#bind_sockets">bind_sockets</a>, <code>add_sockets</code> 见下</p>
 
 <p><strong>add_sockets</strong></p>
 
@@ -218,12 +220,108 @@ TCPServer(ssl_options={ "certfile": os.path. &hellip;">
 </span><span class='line'>
 </span><span class='line'>for sock in sockets:
 </span><span class='line'>  self._sockets[sock.fileno()] = sock
-</span><span class='line'>  add_accept_handler(sock, self._handle_connection, io_loop=self.io.loop) #这里的 add_accept_handler 见 [netutil](https://github.com/facebook/tornado/blob/master/tornado/netutil.py)</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  add_accept_handler(sock, self._handle_connection, io_loop=self.io.loop) </span></code></pre></td></tr></table></div></figure>
 
 
-<p>&#8220;`</p>
+<p>上面的 add_accept_handler 见 <a href="#add_accept_handler">add_accept_handler</a></p>
 
-<p>&#8220;`</p>
+<hr />
+
+<p><a name="bind_sockets" id="bind_sockets"><strong>bind_sockets</strong></a>
+  &ndash; 解释:创建监听套节字绑定到给定的端口和地址</p>
+
+<ul>
+<li><p>参数</p>
+
+<ul>
+<li>address: IP地址或主机名。如果是主机名，服务将会监听所有跟此域名有关的<code>IP</code></li>
+<li>Family: <code>socket.AF_INET</code> 或 <code>socket.AF_INET6</code></li>
+<li>backlog: 这个参数跟<code>socket.listen()&lt;socket.socket.listen&gt;</code>一样</li>
+<li>flags:</li>
+</ul>
+</li>
+<li><p>代码</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">sockets</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">if</span> <span class="n">address</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">address</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'><span class="k">if</span> <span class="ow">not</span> <span class="n">socket</span><span class="o">.</span><span class="n">has_ipv6</span> <span class="ow">and</span> <span class="n">family</span> <span class="o">==</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_UNSPEC</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">family</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span>
+</span><span class='line'><span class="k">if</span> <span class="n">flags</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">flags</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AI_PASSIVE</span>
+</span><span class='line'>  <span class="c">#见 [getaddrinfo](https://github.com/zs1621/pythostudy/wiki/socket)</span>
+</span><span class='line'>  <span class="c">#`getaddrinfo`会返回服务器的所有网卡信息， 每个网卡都要监听客户端的请求并返回创建的sockets</span>
+</span><span class='line'><span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">getaddrinfo</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK</span><span class="o">.</span><span class="n">STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="p">)):</span>
+</span><span class='line'>  <span class="n">af</span><span class="p">,</span> <span class="n">socktype</span><span class="p">,</span> <span class="n">proto</span><span class="p">,</span> <span class="n">canoname</span><span class="p">,</span> <span class="n">sockaddr</span> <span class="o">=</span> <span class="n">res</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>      <span class="c">#创建套节字</span>
+</span><span class='line'>      <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">socktype</span><span class="p">,</span> <span class="n">proto</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EAFNOSUPPORT</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">continue</span>
+</span><span class='line'>      <span class="k">raise</span>
+</span><span class='line'>  <span class="n">set_close_exec</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s">&#39;nt&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="c">#TCP连接中，recv等函数默认为阻塞模式(block)，</span>
+</span><span class='line'>      <span class="c">#即直到有数据到来之前函数不会返回，</span>
+</span><span class='line'>      <span class="c">#而我们有时则需要一种超时机制使其在一定时间后返回而不管是否有数据到来，</span>
+</span><span class='line'>      <span class="c">#这里我们就会用到setsockopt()函数 见 [setsockopt](http://blog.chinaunix.net/uid-25749806-id-348637.html)</span>
+</span><span class='line'>      <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOREUSERADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>  <span class="c">#在linux ipv6 sockets 也接受 ipv4，这样的话不能同时绑定 ipv4 和 ipv6.为了方便，在ipv6 sockets中总是禁用ipv4 </span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">af</span> <span class="o">==</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET6</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s">&quot;IPPROTO_IPV6&quot;</span><span class="p">):</span>
+</span><span class='line'>          <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IPV6</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IPV6_V6ONLY</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
+</span><span class='line'>  <span class="c">#默认设定等待被处理的连接最大个数</span>
+</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">backlog</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">sockets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+</span><span class='line'><span class="k">return</span> <span class="n">sockets</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a name="add_accept_handler" id="add_accept_handler"><strong>add_accept_handler</strong></a></p>
+
+<p>添加一个<code>IOLoop</code>事件去接受新的连接在 <code>sock</code></p>
+
+<p>TBC</p>
 </div>
 
 
