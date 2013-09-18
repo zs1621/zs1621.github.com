@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-18T14:56:19+08:00</updated>
+  <updated>2013-09-18T15:07:28+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -18,7 +18,7 @@
     <link href="http://zs1621.github.io/blog/2013/09/16/tornado-code-reading-tcpserver/"/>
     <updated>2013-09-16T16:31:00+08:00</updated>
     <id>http://zs1621.github.io/blog/2013/09/16/tornado-code-reading-tcpserver</id>
-    <content type="html"><![CDATA[<p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></p>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></h2>
 
 <p>一个非阻塞， 单进程的 <code>TCP</code> 服务器</p>
 
@@ -173,7 +173,7 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
 <hr />
 
-<p>==netutil</p>
+<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/netutil.py">netutil</a></h2>
 
 <p><a name="bind_sockets" id="bind_sockets"><strong>bind_sockets</strong></a>
   &ndash; 解释:创建监听套节字绑定到给定的端口和地址</p>
@@ -269,32 +269,46 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
 <blockquote><p>当一个连接被接受了， <code>callback(connection, address)</code>(<code>connection</code>是socket对象， <code>address</code>是连接的另外结尾处的地址)将会运行</p></blockquote>
 
-<p> &#8220;`
- if io_loop is None:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">if</span> <span class="n">io_loop</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">io_loop</span> <span class="o">=</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">accept_handler</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">connection</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span class='line'>          <span class="c">#EWOULDBLOCK 和 EAGAIN 表明我们</span>
+</span><span class='line'>          <span class="c">#已经接受了每个可以接受的连接</span>
+</span><span class='line'>          <span class="c">#具体见[EWOULDBLOCK](http://stackoverflow.com/questions/3647539/socket-error-errno-ewouldblock)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EWOULDBLOCK</span><span class="p">,</span> <span class="n">errno</span><span class="o">.</span><span class="n">EAGAIN</span><span class="p">):</span>
+</span><span class='line'>              <span class="k">return</span>
+</span><span class='line'>          <span class="c">#ECONNABORTED 表明有个连接还在接受队列时被关闭了</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">ECONNABORTED</span><span class="p">:</span>
+</span><span class='line'>              <span class="k">continue</span>
+</span><span class='line'>          <span class="k">raise</span>
+</span><span class='line'>      <span class="n">callback</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+</span><span class='line'><span class="n">io_loop</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">accept_handler</span><span class="p">,</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>io_loop = IOLoop.current()
-</code></pre>
 
-<p>def accept_handler(fd, events):</p>
 
-<pre><code>while True:
-    try:
-        connection, address = sock.accept()
-    except socket.error as e:
-        #EWOULDBLOCK 和 EAGAIN 表明我们
-        #已经接受了每个可以接受的连接
-        #具体见[EWOULDBLOCK](http://stackoverflow.com/questions/3647539/socket-error-errno-ewouldblock)
-        if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
-            return
-        #ECONNABORTED 表明有个连接还在接受队列时被关闭了
-        if e.args[0] == errno.ECONNABORTED:
-            continue
-        raise
-    callback(connection, address)
-</code></pre>
-
-<p>io_loop.add_handler(sock.fileno(), accept_handler, IOLoop.READ)
- &#8220;`</p>
 ]]></content>
   </entry>
   
