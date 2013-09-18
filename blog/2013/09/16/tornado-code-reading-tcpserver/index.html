@@ -223,9 +223,35 @@ TCPServer(ssl_options={ "certfile": os.path. &hellip;">
 </span><span class='line'>  add_accept_handler(sock, self._handle_connection, io_loop=self.io.loop) </span></code></pre></td></tr></table></div></figure>
 
 
-<p>上面的 add_accept_handler 见 <a href="#add_accept_handler">add_accept_handler</a></p>
+<p>上面的 add_accept_handler 见 <a href="#add_accept_handler">add_accept_handler</a>
+add_accept_handler 第二个参数 self._handle_connection是个回调函数, 分析如下</p>
+
+<blockquote><p>_handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#如果self.ssl_options不为空，处理ssl代码略</span>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_options</span> <span class="ow">in</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">stream</span> <span class="o">=</span> <span class="n">SSLTOSTREAM</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">io_loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">,</span> <span class="n">max_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_size</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">stream</span> <span class="o">=</span> <span class="n">IOSTream</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">io_loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">,</span> <span class="n">max_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_size</span><span class="p">)</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">handle_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+</span><span class='line'><span class="k">except</span> <span class="n">Excetpion</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">app_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Error in connection callback&#39;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <hr />
+
+<p>==netutil</p>
 
 <p><a name="bind_sockets" id="bind_sockets"><strong>bind_sockets</strong></a>
   &ndash; 解释:创建监听套节字绑定到给定的端口和地址</p>
@@ -317,11 +343,36 @@ TCPServer(ssl_options={ "certfile": os.path. &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><a name="add_accept_handler" id="add_accept_handler"><strong>add_accept_handler</strong></a></p>
+<p><a name="add_accept_handler" id="add_accept_handler"><strong>add_accept_handler</strong></a>: 添加一个<code>IOLoop</code>事件去接受新的连接在 <code>sock</code></p>
 
-<p>添加一个<code>IOLoop</code>事件去接受新的连接在 <code>sock</code></p>
+<blockquote><p>当一个连接被接受了， <code>callback(connection, address)</code>(<code>connection</code>是socket对象， <code>address</code>是连接的另外结尾处的地址)将会运行</p></blockquote>
 
-<p>TBC</p>
+<p> &#8220;`
+ if io_loop is None:</p>
+
+<pre><code>io_loop = IOLoop.current()
+</code></pre>
+
+<p>def accept_handler(fd, events):</p>
+
+<pre><code>while True:
+    try:
+        connection, address = sock.accept()
+    except socket.error as e:
+        #EWOULDBLOCK 和 EAGAIN 表明我们
+        #已经接受了每个可以接受的连接
+        #具体见[EWOULDBLOCK](http://stackoverflow.com/questions/3647539/socket-error-errno-ewouldblock)
+        if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
+            return
+        #ECONNABORTED 表明有个连接还在接受队列时被关闭了
+        if e.args[0] == errno.ECONNABORTED:
+            continue
+        raise
+    callback(connection, address)
+</code></pre>
+
+<p>io_loop.add_handler(sock.fileno(), accept_handler, IOLoop.READ)
+ &#8220;`</p>
 </div>
 
 
