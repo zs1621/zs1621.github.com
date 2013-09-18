@@ -6,7 +6,7 @@ comments: true
 categories: 
 ---
 
-[TCPserver](https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py)
+##[TCPserver](https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py)
 
 
 一个非阻塞， 单进程的 `TCP` 服务器
@@ -102,8 +102,26 @@ for sock in sockets:
 ```
 
 上面的 add_accept_handler 见 [add_accept_handler](#add_accept_handler)
+add_accept_handler 第二个参数 self._handle_connection是个回调函数, 分析如下
+
+> _handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写
+
+
+```python
+#如果self.ssl_options不为空，处理ssl代码略
+try:
+	if self.ssl_options in not None:
+		stream = SSLTOSTREAM(connection, io_loop=self.io_loop, max_buffer_size=self.max_buffer_size)
+	else:
+		stream = IOSTream(connection, io_loop=self.io_loop, max_buffer_size=self.max_buffer_size)
+	self.handle_stream(stream, address)
+except Excetpion:
+	app_log.error('Error in connection callback', exc_info=True)
+```
 
 ---
+
+##[netutil](https://github.com/facebook/tornado/blob/master/tornado/netutil.py)
 
 <a name="bind_sockets" id="bind_sockets">**bind_sockets**</a>
   - 解释:创建监听套节字绑定到给定的端口和地址
@@ -154,9 +172,29 @@ for res in set(socket.getaddrinfo(address, port, family, socket.SOCK.STREAM, 0, 
 return sockets
 ```
 
-<a name="add_accept_handler" id="add_accept_handler">**add_accept_handler**</a>
+<a name="add_accept_handler" id="add_accept_handler">**add_accept_handler**</a>: 添加一个`IOLoop`事件去接受新的连接在 `sock`
 
-添加一个`IOLoop`事件去接受新的连接在 `sock`
+> 当一个连接被接受了， `callback(connection, address)`(`connection`是socket对象， `address`是连接的另外结尾处的地址)将会运行
 
 
-TBC
+```python
+if io_loop is None:
+ 	io_loop = IOLoop.current()
+def accept_handler(fd, events):
+	while True:
+		try:
+			connection, address = sock.accept()
+		except socket.error as e:
+			#EWOULDBLOCK 和 EAGAIN 表明我们
+			#已经接受了每个可以接受的连接
+			#具体见[EWOULDBLOCK](http://stackoverflow.com/questions/3647539/socket-error-errno-ewouldblock)
+			if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
+				return
+			#ECONNABORTED 表明有个连接还在接受队列时被关闭了
+			if e.args[0] == errno.ECONNABORTED:
+				continue
+			raise
+		callback(connection, address)
+io_loop.add_handler(sock.fileno(), accept_handler, IOLoop.READ)
+```
+
