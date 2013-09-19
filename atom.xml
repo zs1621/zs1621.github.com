@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-18T15:07:28+08:00</updated>
+  <updated>2013-09-19T13:52:35+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,17 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tornado Code Reading - IOLoop]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop/"/>
+    <updated>2013-09-19T12:36:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/ioloop.py">IOLoop</a></h2>
+
+<p>TBC</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tornado Code Reading-TCPServer]]></title>
@@ -38,9 +49,9 @@
 
 <p><code>TCPServer</code> simple single-process::</p>
 
-<ol>
+<ul>
 <li><code>listen</code>: 监听单个进程</li>
-</ol>
+</ul>
 
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -51,9 +62,9 @@
 </span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
+<ul>
 <li><code>bind</code> / <code>start</code>: simple multi-process::</li>
-</ol>
+</ul>
 
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -68,9 +79,9 @@
 
 <p>如果使用<code>start</code>接口， 一个 <code>.IOLoop</code> 不可以传入 <code>TCPServer</code> 结构里。 <code>start</code>将总是开始服务在默认的单例 <code>.IOLoop</code></p>
 
-<ol>
+<ul>
 <li><code>add_sockets</code>: 高级多进程::</li>
-</ol>
+</ul>
 
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -148,7 +159,7 @@
 <p>上面的 add_accept_handler 见 <a href="#add_accept_handler">add_accept_handler</a>
 add_accept_handler 第二个参数 self._handle_connection是个回调函数, 分析如下</p>
 
-<blockquote><p>_handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写</p></blockquote>
+<blockquote><p>_handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写;然后调用 <code>handle_stream</code>(注意这里的handle_stream 文档说了如果你只是用<code>tcpserver</code>那么，handle_stream得自己重写, 如果用tornado的httpserver 那handle_stream 在 <a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">httpserver</a>), 传入创建的<code>IOStream</code>对象初始化一个<code>HTTPConnection</code>, <code>HTTPConnection</code>  封装了<code>IOStream</code> 的一些操作， 用于处俩 <code>HTTPRequest</code> 并返回。 至此 <code>HTTPServer</code>的创建、启动、注册回调函数过程结束</p></blockquote>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -170,6 +181,8 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 </span><span class='line'>  <span class="n">app_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Error in connection callback&#39;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>从上面的分析和源码 可知 服务器的工作流程 socket->bind->listen创建 listen socket 监听客户端， 并将每个listen socket 的 fd 注册到IOLoop的单例实例中; 当 listen socket 可读时回调 _handle_events 处理客户端请求；在与客户端通信的过程中使用 IOStream 封装读写缓冲区， 实现与客户端的异步读写。 下面我们将具体了解listen socket 的 fd 被注册到IOLoop的单例实例中  见 <a href="http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop/">IOLoop</a></p>
 
 <hr />
 
