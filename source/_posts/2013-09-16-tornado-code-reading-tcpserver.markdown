@@ -24,7 +24,7 @@ TCPServer(ssl_options={
 
 `TCPServer` simple single-process::
 
-1. `listen`: 监听单个进程
+- `listen`: 监听单个进程
 
 ```
 server = TCPServer()
@@ -32,7 +32,7 @@ server.listen(8888)
 IOLoop.instance().start()
 ```
 
-2. `bind` / `start`: simple multi-process::
+- `bind` / `start`: simple multi-process::
 
 ```
 server = TCPServer()
@@ -43,7 +43,7 @@ IOLoop.instance().start()
 
 如果使用`start`接口， 一个 `.IOLoop` 不可以传入 `TCPServer` 结构里。 `start`将总是开始服务在默认的单例 `.IOLoop`
 
-3. `add_sockets`: 高级多进程::
+- `add_sockets`: 高级多进程::
 
 ```
 sockets = bind_sockets(8888)
@@ -104,7 +104,7 @@ for sock in sockets:
 上面的 add_accept_handler 见 [add_accept_handler](#add_accept_handler)
 add_accept_handler 第二个参数 self._handle_connection是个回调函数, 分析如下
 
-> _handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写
+> _handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写;然后调用 `handle_stream`(注意这里的handle_stream 文档说了如果你只是用`tcpserver`那么，handle_stream得自己重写, 如果用tornado的httpserver 那handle_stream 在 [httpserver](https://github.com/facebook/tornado/blob/master/tornado/httpserver.py)), 传入创建的`IOStream`对象初始化一个`HTTPConnection`, `HTTPConnection`  封装了`IOStream` 的一些操作， 用于处俩 `HTTPRequest` 并返回。 至此 `HTTPServer`的创建、启动、注册回调函数过程结束
 
 
 ```python
@@ -118,6 +118,8 @@ try:
 except Excetpion:
 	app_log.error('Error in connection callback', exc_info=True)
 ```
+
+从上面的分析和源码 可知 服务器的工作流程 socket->bind->listen创建 listen socket 监听客户端， 并将每个listen socket 的 fd 注册到IOLoop的单例实例中; 当 listen socket 可读时回调 _handle_events 处理客户端请求；在与客户端通信的过程中使用 IOStream 封装读写缓冲区， 实现与客户端的异步读写。 下面我们将具体了解listen socket 的 fd 被注册到IOLoop的单例实例中  见 [IOLoop](http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop/)
 
 ---
 
