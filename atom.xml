@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-19T13:59:45+08:00</updated>
+  <updated>2013-09-23T14:53:47+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -20,7 +20,94 @@
     <id>http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop</id>
     <content type="html"><![CDATA[<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/ioloop.py">IOLoop</a></h2>
 
-<p>TBC</p>
+<p>对着IOLoop 的源码瞅了一天，楞是没有明白， 为什么 父类实例可以调用子类方法?</p>
+
+<p>最后看到<a href="http://hswg.info/blog/2013/03/24/configurable-of-tornado-note/">configurable</a></p>
+
+<p>看一下可配置接口的实现</p>
+
+<p><a name='IOLoop' id='IOLoop'>configurable两函数</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="nd">@classmethod</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">configurable_base</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">IOLoop</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@classmethod</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">configurable_default</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s">&quot;epoll&quot;</span><span class="p">):</span>
+</span><span class='line'>      <span class="kn">from</span> <span class="nn">tornado.platform.epoll</span> <span class="kn">import</span> <span class="n">EPollIOLoop</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">EPollIOLoop</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s">&quot;kqueue&quot;</span><span class="p">):</span>
+</span><span class='line'>      <span class="c">#python 2.6+ on BSD or Mac</span>
+</span><span class='line'>      <span class="kn">from</span> <span class="nn">tornado.platform.kqueue</span> <span class="kn">import</span> <span class="n">KQueueIOLoop</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">KQueueIOLoop</span>
+</span><span class='line'>  <span class="kn">from</span> <span class="nn">tornado.platform.select</span> <span class="kn">import</span> <span class="n">SelectIOLoop</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">SelectIOLoop</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>Configurable类是可配置接口的父类， 可配置接口对外提供一致的接口标志， 但它的子类实现可以在运行时进行configure。一般跨平台时由于子类实现有多种选择， 这时候就可以使用配置接口， 例如 select 和 epoll。首先注意 Configurable 的两个函数: configurable_base 和 configurable_default, 两函数都需要被子类(即可配置接口类)覆盖重写。其中， base函数一般返回接口类自身， default 返回接口的默认子类实现， 除非接口指定了 __impl_class。IOLoop及其子类实现都没有实现初始化函数也没有构造函数， 七构造函数继承于 Configurable, 如下::</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_base</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">cls</span> <span class="ow">is</span> <span class="n">base</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">impl</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configured_class</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">__impl_kwargs</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">__impl_kwargs</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">impl</span> <span class="o">=</span> <span class="n">cls</span>
+</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Configurable</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">impl</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">instance</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">instance</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当子类对象被构造时， 子类<strong>new</strong>被调用， 因此参数里的cls 指的是Configurable的子类(可配置接口类， 如IOLoop)。先得到base,  <a href="#IOLoop">IOLoop代码</a> 可知, configurable_base返回的是自身类。由于 base 和 cls 是一样的， 所以调用 configured_class() 得到接口的子类实现(见<a href="#configured_class">configured_class</a>) 其实就是调用 base的 configurable_default, 就是返回一个子类实现(epoll/kqueue/select之一),顺便把<strong>impl_kwargs合并到args 里 。然后调用Configurable类的父类(Object)的 </strong>new__方法， 生成一个impl的对象， 紧接着把args当参数调用该队想的initialize(继承PollIOLoop) , 返回该对象。 所以， 当构造IOLoop对象时， 实际得到的是EPollIOLoop或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用 或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用</p>
+
+<p><a name="configured_class" id="configured_class">configured_class</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">base</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_base</span><span class="p">()</span>
+</span><span class='line'><span class="k">if</span> <span class="n">cls</span><span class="o">.</span><span class="n">__impl_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">base</span><span class="o">.</span><span class="n">_impl_class</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_default</span><span class="p">()</span>
+</span><span class='line'><span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">__impl_class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面来看 IOLoop 的对象 instance</p>
 ]]></content>
   </entry>
   
