@@ -1,7 +1,6 @@
 ---
 layout: post
-title: "Tornado Code Reading - IOLoop"
-date: 2013-09-19 12:36
+title: "Tornado Code Reading - IOLoop" date: 2013-09-19 12:36
 comments: true
 categories: 
 ---
@@ -52,7 +51,9 @@ def __new__(cls, **kwargs):
 	instance.initialize(**args)
 	return instance
 ```
-当子类对象被构造时， 子类__new__被调用， 因此参数里的cls 指的是Configurable的子类(可配置接口类， 如IOLoop)。先得到base,  [IOLoop代码](#IOLoop) 可知, configurable_base返回的是自身类。由于 base 和 cls 是一样的， 所以调用 configured_class() 得到接口的子类实现(见[configured_class](#configured_class)) 其实就是调用 base的 configurable_default(?????TBD), 就是返回一个子类实现(epoll/kqueue/select之一),顺便把__impl_kwargs合并到args 里 。然后调用Configurable类的父类(Object)的 __new__方法， 生成一个impl的对象， 紧接着把args当参数调用该队想的initialize(继承PollIOLoop) , 返回该对象。 所以， 当构造IOLoop对象时， 实际得到的是EPollIOLoop或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用 或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用 
+当子类对象被构造时， 子类__new__被调用， 因此参数里的cls 指的是Configurable的子类(可配置接口类， 如IOLoop)。先得到base,  [IOLoop代码](#IOLoop) 可知, configurable_base返回的是自身类。由于 base 和 cls 是一样的， 所以调用 configured_class() 得到接口的子类实现(见[configured_class](#configured_class)) 其实就是调用 base的 configurable_default(?????TBD), 就是返回一个子类实现(epoll/kqueue/select之一),顺便把__impl_kwargs合并到args 里 。然后调用Configurable类的父类(Object)的 __new__方法， 生成一个impl的对象， 紧接着把args当参数调用该队想的initialize(继承PollIOLoop) , 返回该对象。 所以， 当构造IOLoop对象时， 实际得到的是EPollIOLoop或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用 或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用   
+
+上面的过程如果不好太理解  可以去看  [example](https://github.com/zs1621/pythostudy/blob/master/tcp/tcp_loop_server.py) 这样大致能理解 ioloop 实例的初始化过程
 
 <a name="configured_class" id="configured_class">configured_class</a>
 ```
@@ -87,4 +88,61 @@ add_handler 代码如下， 首先把 处理方法的上下文 存入 _handlers 
 
 下面来看下 IOLoop 的主循环 `start()`
 
+```
+def start(self):
+	if not logging.getLogger().handlers:
+		logging.basicConfig
+	if self._stopped:
+		self._stopped = False
+		return
+	old_current = getattr(IOLoop._current, "instance", None)
+	IOLoop._current.instance = self
+	self._thread_ident = thread.get_ident() #Return the ‘thread identifier’ of the current thread. This is a nonzero integer
+	self._running = True
 
+	old_wakeup_fd = None
+	if hasattr(singal, 'set_wakeup_fd') and os.name == 'posix':
+		try:
+			old_wakeup_fd = signal.set_wakeup_fd(self._waker.write_fileno())
+			if old_wakeup_fd != -1:
+				signal.set_walkeup_fd(old_wakeup_fd)
+				old_walkup_fd = None
+		except ValueError:
+			pass
+
+```
+
+上面这段代码 TBD
+
+
+```
+while True:
+	poll_timeout = _POLL_TIMEOUT
+	#Prevent IO event starvation by delaying new callbacks 
+	# to the next iteration of the event loop.
+	with self._callback_lock:
+		callbacks = self._callbacks
+		self._callbacks = []
+	for callback in callbacks:
+		self._run_callback(callback)
+	# Closures may be holding on to a lot of memory, so allow
+	# them to be freed before we go into our poll wait.
+	callbacks = callback = None
+
+	if self._timeouts:
+		now = self.time()
+		while self_timeouts:
+			if self._timesouts[0].callback is None:
+				# the timeout was cancelled
+				heapq.heappop(self._timeouts)
+				self._cancellations -= 1
+			elif self._timeouts[0].deadline <= now:
+				timeout = heapq.heappop(self._timeouts)
+				self._run_callback(timeout.callback)
+				del timeout
+			else:
+				seconds = self._timeouts[0].deadline - now
+				poll_timeout = min(seconds, poll_timeout)
+				break
+
+```
