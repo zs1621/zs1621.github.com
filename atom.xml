@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-09-25T15:03:27+08:00</updated>
+  <updated>2013-11-08T15:24:40+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,128 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tornado Code Reading - tornado.concurrent]]></title>
+    <link href="http://zs1621.github.io/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/"/>
+    <updated>2013-11-08T13:38:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent</id>
+    <content type="html"><![CDATA[<h2>Future背景</h2>
+
+<p>Future 代表一个函数的调用结果. 函数返回一个值或者抛出一个异常， 所以future 包含一个值或者一个异常(可以通过future.result()获得这个结果，异常和返回值). Fuures存在与对应的函数结束前. 在 一个  多线程场景下,简单的调用 future.result()等待另外一个线程或者进程完成。在 异步场景下，你可以附带一个callback给future为了当调用结束可以得到通知。（with future.add_done_callback or io_loop.add_future）</p>
+
+<h2>了解 Future</h2>
+
+<p><code>Futures</code> 已经在Python3.2应用了 <a href="http://python.readthedocs.org/en/latest/library/concurrent.futures.html#concurrent.futures">concurrent.futures</a> , 如果在python3.2之前版本用 可以 (pip install futures). 那在 tornado 中如果可以将用就用python包，否则将会使用一个兼容的类 <code>tornado.concurrent.Future</code></p>
+
+<h2>class tornado.concurrent.Future</h2>
+
+<p>这个类封装了异步操作的接口。在同步程序中， Futures被用来等待一个线程或者进程池的结果。在Tornado一般用在 IOLoop.add_future 或者 在一个 gen.coroutine</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"""
+</span><span class='line'>如果有 concurrent.futures 可用，那就用它; 否则用 _DummyFuture 
+</span><span class='line'>"""
+</span><span class='line'>if futures is None:
+</span><span class='line'>    Future = _DummyFuture
+</span><span class='line'>else:
+</span><span class='line'>    Future = futures.Future</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>_DummyFuture</h2>
+
+<ul>
+<li>result</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"""
+</span><span class='line'>先检查有没有完成 ，没有完成 ,直接抛出异常!如果有异常就raise 异常，否则返回 result
+</span><span class='line'>"""
+</span><span class='line'>def result(self, timeout=None):
+</span><span class='line'>  self._check_done()
+</span><span class='line'>  if self._exception:
+</span><span class='line'>      raise self._exception
+</span><span class='line'>  return self._result</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>exception</li>
+</ul>
+
+
+<p>这个函数先与result唯一的不同是 无异常的时候 return None ;</p>
+
+<ul>
+<li>add_done_callback(fn)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">给Future加入一个回调。当它完成将会 以Future为参数调用回调函数. </span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TracebackFuture</h2>
+
+<p>存储 异常的追踪</p>
+
+<h2>DummyExecutor</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">DummyExecutor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">future</span> <span class="o">=</span> <span class="n">TracebackFuture</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+</span><span class='line'>      <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">future</span><span class="o">.</span><span class="n">set_exc_info</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">future</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+</span><span class='line'>      <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TBC</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tornado Code Reading - IOLoop]]></title>
@@ -135,6 +257,110 @@
 <p>======</p>
 
 <p>下面来看下 IOLoop 的主循环 <code>start()</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">if</span> <span class="ow">not</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>      <span class="k">return</span>
+</span><span class='line'>  <span class="n">old_current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_thread_ident</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span> <span class="c">#Return the ‘thread identifier’ of the current thread. This is a nonzero integer</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">singal</span><span class="p">,</span> <span class="s">&#39;set_wakeup_fd&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;posix&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">set_wakeup_fd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_waker</span><span class="o">.</span><span class="n">write_fileno</span><span class="p">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">old_wakeup_fd</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">signal</span><span class="o">.</span><span class="n">set_walkeup_fd</span><span class="p">(</span><span class="n">old_wakeup_fd</span><span class="p">)</span>
+</span><span class='line'>              <span class="n">old_walkup_fd</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>      <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这段代码 TBD</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">poll_timeout</span> <span class="o">=</span> <span class="n">_POLL_TIMEOUT</span>
+</span><span class='line'>  <span class="c">#Prevent IO event starvation by delaying new callbacks </span>
+</span><span class='line'>  <span class="c"># to the next iteration of the event loop.</span>
+</span><span class='line'>  <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Closures may be holding on to a lot of memory, so allow</span>
+</span><span class='line'>  <span class="c"># them to be freed before we go into our poll wait.</span>
+</span><span class='line'>  <span class="n">callbacks</span> <span class="o">=</span> <span class="n">callback</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">while</span> <span class="n">self_timeouts</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timesouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">callback</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>              <span class="c"># the timeout was cancelled</span>
+</span><span class='line'>              <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
+</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>          <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">timeout</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
+</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">del</span> <span class="n">timeout</span>
+</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">-</span> <span class="n">now</span>
+</span><span class='line'>              <span class="n">poll_timeout</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">poll_timeout</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">break</span>
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   

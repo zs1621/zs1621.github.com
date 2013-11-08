@@ -225,6 +225,110 @@ tornado 解读 看一下可配置接口的实现 configurable两函数 1
 <p>======</p>
 
 <p>下面来看下 IOLoop 的主循环 <code>start()</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">if</span> <span class="ow">not</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>      <span class="k">return</span>
+</span><span class='line'>  <span class="n">old_current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_thread_ident</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span> <span class="c">#Return the ‘thread identifier’ of the current thread. This is a nonzero integer</span>
+</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">singal</span><span class="p">,</span> <span class="s">&#39;set_wakeup_fd&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;posix&#39;</span><span class="p">:</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">set_wakeup_fd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_waker</span><span class="o">.</span><span class="n">write_fileno</span><span class="p">())</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">old_wakeup_fd</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">signal</span><span class="o">.</span><span class="n">set_walkeup_fd</span><span class="p">(</span><span class="n">old_wakeup_fd</span><span class="p">)</span>
+</span><span class='line'>              <span class="n">old_walkup_fd</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>      <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这段代码 TBD</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">poll_timeout</span> <span class="o">=</span> <span class="n">_POLL_TIMEOUT</span>
+</span><span class='line'>  <span class="c">#Prevent IO event starvation by delaying new callbacks </span>
+</span><span class='line'>  <span class="c"># to the next iteration of the event loop.</span>
+</span><span class='line'>  <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>  <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Closures may be holding on to a lot of memory, so allow</span>
+</span><span class='line'>  <span class="c"># them to be freed before we go into our poll wait.</span>
+</span><span class='line'>  <span class="n">callbacks</span> <span class="o">=</span> <span class="n">callback</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">while</span> <span class="n">self_timeouts</span><span class="p">:</span>
+</span><span class='line'>          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timesouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">callback</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>              <span class="c"># the timeout was cancelled</span>
+</span><span class='line'>              <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
+</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>          <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">timeout</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
+</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">del</span> <span class="n">timeout</span>
+</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>              <span class="n">seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">-</span> <span class="n">now</span>
+</span><span class='line'>              <span class="n">poll_timeout</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">poll_timeout</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">break</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
@@ -265,6 +369,8 @@ tornado 解读 看一下可配置接口的实现 configurable两函数 1
         <a class="basic-alignment left" href="/blog/2013/09/16/tornado-code-reading-tcpserver/" title="Previous Post: Tornado Code Reading-TCPServer">&laquo; Tornado Code Reading-TCPServer</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/" title="Next Post: Tornado Code Reading - tornado.concurrent">Tornado Code Reading - tornado.concurrent &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -276,6 +382,10 @@ tornado 解读 看一下可配置接口的实现 configurable两函数 1
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/">Tornado Code Reading - tornado.concurrent</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/09/19/tornado-code-reading-ioloop/">Tornado Code Reading - IOLoop</a>
@@ -291,10 +401,6 @@ tornado 解读 看一下可配置接口的实现 configurable两函数 1
     
       <li class="post">
         <a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/02/connect-code-reading/">Connect Code Reading</a>
       </li>
     
   </ul>
