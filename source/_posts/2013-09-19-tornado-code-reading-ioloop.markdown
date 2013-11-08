@@ -1,6 +1,7 @@
 ---
 layout: post
-title: "Tornado Code Reading - IOLoop" date: 2013-09-19 12:36
+title: "Tornado Code Reading - IOLoop"
+date: 2013-09-19 12:36
 comments: true
 categories: 
 ---
