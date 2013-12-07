@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-11-08T15:24:40+08:00</updated>
+  <updated>2013-12-07T11:59:18+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,41 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[generic-pool Reding]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/07/generic-pool-reding/"/>
+    <updated>2013-12-07T02:00:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/07/generic-pool-reding</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/coopernurse/node-pool">node-pool</a></h2>
+
+<h3>why pool</h3>
+
+<ul>
+<li>与数据建立连接关闭连接， 每次建立一个连接对象会有消耗!(在并发很高的情况消耗会更明显)</li>
+</ul>
+
+
+<h3>what node-pool can do ?</h3>
+
+<ul>
+<li>动态调整连接数的连接池, 数据库频繁读写时, 就建多个连接, 当然连接数有最大值Max, 如果读写实际需要的连接数 > Max 那么加入队列里;如果数据库读写空闲，就释放多余的连接;</li>
+</ul>
+
+
+<h3>how node-pool do that ? &ndash;> Code Reading</h3>
+
+<ul>
+<li>栗子</li>
+</ul>
+
+
+<script src="https://gist.github.com/zs1621/7836578.js"></script>
+
+
+<p>TBC</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tornado Code Reading - tornado.concurrent]]></title>

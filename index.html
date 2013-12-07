@@ -9,7 +9,7 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="Future背景 Future 代表一个函数的调用结果. 函数返回一个值或者抛出一个异常， 所以future 包含一个值或者一个异常(可以通过future.result()获得这个结果，异常和返回值). Fuures存在与对应的函数结束前. 在 一个 多线程场景下,简单的调用 future. &hellip;">
+  <meta name="description" content="node-pool why pool 与数据建立连接关闭连接， 每次建立一个连接对象会有消耗!(在并发很高的情况消耗会更明显) what node-pool can do ? 动态调整连接数的连接池, 数据库频繁读写时, 就建多个连接, 当然连接数有最大值Max, 如果读写实际需要的连接数 > &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/07/generic-pool-reding/">Generic-pool Reding</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-07T02:00:00+08:00" pubdate data-updated="true">Dec 7<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://github.com/coopernurse/node-pool">node-pool</a></h2>
+
+<h3>why pool</h3>
+
+<ul>
+<li>与数据建立连接关闭连接， 每次建立一个连接对象会有消耗!(在并发很高的情况消耗会更明显)</li>
+</ul>
+
+
+<h3>what node-pool can do ?</h3>
+
+<ul>
+<li>动态调整连接数的连接池, 数据库频繁读写时, 就建多个连接, 当然连接数有最大值Max, 如果读写实际需要的连接数 > Max 那么加入队列里;如果数据库读写空闲，就释放多余的连接;</li>
+</ul>
+
+
+<h3>how node-pool do that ? &ndash;> Code Reading</h3>
+
+<ul>
+<li>栗子</li>
+</ul>
+
+
+<script src="https://gist.github.com/zs1621/7836578.js"></script>
+
+
+<p>TBC</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1498,6 +1560,10 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/07/generic-pool-reding/">Generic-pool Reding</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/">Tornado Code Reading - tornado.concurrent</a>
       </li>
     
@@ -1511,10 +1577,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
     
       <li class="post">
         <a href="/blog/2013/09/10/visionmedia-slash-send-reading/">Visionmedia/send Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a>
       </li>
     
   </ul>
