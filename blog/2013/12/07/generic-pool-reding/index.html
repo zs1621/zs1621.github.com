@@ -118,7 +118,209 @@
 <script src="https://gist.github.com/zs1621/7836578.js"></script>
 
 
-<p>TBC</p>
+<p>运行上面的例子</p>
+
+<ol>
+<li>新建一个pool对象, 初始化一些变量
+
+<ul>
+<li>idleTimeoutMillis: 一个连接空闲时间最大值, 如果设置为30000, 那么一个连接空闲30000ms 后会自动关闭, 默认 30000ms</li>
+<li>reapIntervalMillis:  每<code>reapIntervalMillis</code>检查空闲并移除, 默认1000ms</li>
+<li>max: 连接池存在的最大连接数, 例子里设置为10</li>
+<li>min: 连接池存在的最小连接数, 例子里默认为0(备注: 这里有个疑问，当我将min设为1, 从mongodb log 中可以看到 在空闲时间 连接是每隔<code>idleTimeoutMillis</code>关闭并新建连接, 问题是为什么不保持一个连接而要不停的关闭新建, 如果这样不如)</li>
+<li>log: 可以自定义node-pool, 例子直接设为true 默认用node-pool提供的log</li>
+<li>create: 应该创建一个item(db) 被 <code>acquired</code>, 然后调用其创建的 item 作为参数</li>
+<li>destory: 在items毁之前,关闭所有资源使用的item(db)</li>
+</ul>
+</li>
+<li>ensureMinimum, 确保有最小连接数</li>
+<li> 例子中如果给min赋一个大于0的值, 2, 那么就 createResource()两次</li>
+<li> 因为例子默认为0 跳过</li>
+<li>至此已经建立pool, 下一步等待<code>acquired</code>, 资源准备就续, 就等消费了</li>
+<li><code>curl http://127.0.0.1:8080</code></li>
+<li><code>acquire(callback, priority)</code>
+
+<ul>
+<li>waitingClients.enqueue(callback, priority): 将回调根据priority推入队列</li>
+<li>dispense(): 由单词意思可知分配资源， 施行; 试着拿一个客户端工作， 清除空闲的item. 如果有等待的client, shift(), call its callback. 如果没有等待的client, 创建一个; 如果创建一个client将超过max, 把客户端加入等待list!代码见 <a href="#dispense">dispense</a></li>
+</ul>
+</li>
+<li> dispense() 结束,此时 waitingClients.size() = 0, availableObjects.length = 0</li>
+<li>release(): 如果client不再需要，将之返回pool, 代码见<a href="#release">release</a></li>
+<li><p>removeIdle(): check and removes the available clients that have timed out. 见<a href="#removeIdle">removeIdle</a></p></li>
+<li><p>me.destroy(): client to be destroyed.见<a href="#destroy">destroy</a></p></li>
+</ol>
+
+
+<p><a name="dispense" id="despense"><strong>dispense</strong></a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">dispense</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">objWithTimeout</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">err</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">clientCb</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">waitingCount</span> <span class="o">=</span> <span class="nx">waitingClients</span><span class="p">.</span><span class="nx">size</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">waitingCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//此时waitingCount = 1</span>
+</span><span class='line'>        <span class="k">while</span><span class="p">(</span><span class="nx">availableObjects</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="nx">objWithTimeout</span> <span class="o">=</span> <span class="nx">avaiableObjects</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">factory</span><span class="p">.</span><span class="nx">validate</span><span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">.</span><span class="nx">obj</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">me</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span> <span class="c1">// 这一步验证对象</span>
+</span><span class='line'>            <span class="nx">avaiableObjects</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> <span class="c1">// LIFO</span>
+</span><span class='line'>            <span class="nx">clientCb</span> <span class="o">=</span> <span class="nx">waitingClients</span><span class="p">.</span><span class="nx">dequeue</span><span class="p">();</span> <span class="c1">// dequeue</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">clientCb</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">objWithTimeout</span><span class="p">.</span><span class="nx">obj</span><span class="p">);</span> <span class="c1">// callback</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">&lt;</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">createResource</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a name="release" id="release"><strong>release</strong></a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">me</span><span class="p">.</span><span class="nx">release</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 确保对象已经被释放</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">availableObjects</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">.</span><span class="nx">obj</span> <span class="o">===</span> <span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;release called twice for the same resource&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">objWithTimeout</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">obj</span><span class="o">:</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">timeout</span><span class="o">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()</span> <span class="o">+</span> <span class="nx">idleTimeoutMillis</span><span class="p">)</span> <span class="p">};</span>
+</span><span class='line'>    <span class="nx">availableObjects</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">);</span> <span class="c1">// 此时 availableObjects.size()=1</span>
+</span><span class='line'>    <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;timeout:..&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">dispense</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">scheduleRemoveIdle</span><span class="p">();</span> <span class="c1">// 计划移走idle items(空闲项目) 延迟1000ms 执行 removeIdle</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a name="removeIdle" id="removeIdle"><strong>removeIdle</strong></a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="kd">function</span> <span class="nx">removeIdle</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">toRemove</span> <span class="o">=</span> <span class="p">[],</span>
+</span><span class='line'>        <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">(),</span>
+</span><span class='line'>        <span class="nx">i</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">al</span><span class="p">,</span> <span class="nx">tr</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">timeout</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">removeIdleScheduled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// go through the available(idle) items, check if they have timed out;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">al</span><span class="o">=</span><span class="nx">availableObjects</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span> <span class="nx">al</span> <span class="o">&amp;&amp;</span>
+</span><span class='line'>        <span class="p">(</span><span class="nx">refreshIdle</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">count</span> <span class="o">-</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">min</span> <span class="o">&gt;</span> <span class="nx">toRemove</span><span class="p">.</span><span class="nx">length</span><span class="p">));</span><span class="nx">i</span><span class="o">+=</span><span class="mi">1</span>
+</span><span class='line'>        <span class="p">){</span>
+</span><span class='line'>        <span class="nx">timeout</span> <span class="o">=</span> <span class="nx">availableObjects</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">timeout</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">now</span> <span class="o">&gt;=</span> <span class="nx">timeout</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>           <span class="c1">//client timed out, so destroy it </span>
+</span><span class='line'>           <span class="nx">toRemove</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">availableObjects</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nx">tr</span><span class="o">=</span><span class="nx">toRemove</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">tr</span><span class="p">;</span> <span class="nx">i</span><span class="o">+=</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">me</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">toRemove</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="nx">al</span> <span class="o">=</span> <span class="nx">availableObjects</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">al</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>           <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="p">);</span>
+</span><span class='line'>           <span class="nx">scheduleRemoveIdle</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">log</span><span class="p">(</span><span class="s2">&quot;removeIdle() all objects removed&quot;</span><span class="p">,</span> <span class="s1">&#39;verbose&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>     <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a name="destroy" id="destroy"><strong>destroy</strong></a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="nx">me</span><span class="p">.</span><span class="nx">destroy</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">count</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">availableOjbects</span> <span class="o">=</span> <span class="nx">availableObjects</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>       <span class="k">return</span> <span class="p">(</span><span class="nx">objWithTimeout</span><span class="p">.</span><span class="nx">obj</span> <span class="o">!=</span> <span class="nx">obj</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">});</span><span class="c1">//过滤掉return true 的对象</span>
+</span><span class='line'>    <span class="nx">factory</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">ensureMinimum</span><span class="p">();</span>
+</span><span class='line'>     <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
