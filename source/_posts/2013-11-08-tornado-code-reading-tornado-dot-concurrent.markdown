@@ -77,6 +77,25 @@ class DummyExecutor(object):
 		pass
 ```
 
+## run_on_executor
+
+```python
+def run_on_executor(fn):
+    """
+    异步的跑同步方法
+    """
+    @functools.wraps(fn):
+    def wrapper(self, *args, **kwargs):
+        callback = kwargs.pop("callback", None)
+        future = self.executor.submit(fn, self, *args, **kwargs) #self.executor  理解为线程池
+        if callback:
+            self.io_loop.add_future(future, \
+                lambda future: callback(future.result()))
+        return future
+    return wrapper
+```
+
+这里有关于`run_on_executor`的应用例子 https://gist.github.com/zs1621/7921770
 
 
-TBC
+TBC 
