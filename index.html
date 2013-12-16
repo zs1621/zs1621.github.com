@@ -666,7 +666,7 @@
 </ul>
 
 
-<blockquote><p>从 a-b 可以理解 replacer.replace 的作用: 提取callback 的值， 并将callback 放入kwargs; 由c 可以知道 f() 函数是不会return 的; f()的结果只能由 future.result() 得到, 只要知道reuturn_future 是返回Future 本身是不会return 的， 如果return 就会报错; 由d 可知 函数赋值给了callback</p></blockquote>
+<blockquote><p>从 a-b 可以理解 replacer.replace 的作用: 提取callback 的值， 并将callback 放入kwargs; 由c 可以知道 f() 函数是不会return 的; f()的结果只能由 future.result() 得到, 只要知道reuturn_future 是返回Future 本身是不会return 的， 如果return 就会报错; 由d 可知匿名函数<code>fuction &lt;lambda&gt; at 0xb6ba8f0c</code>赋值给了callback,而这个匿名函数的作用就是<code>set_result</code>。</p></blockquote>
 
 <ul>
 <li><strong>同步有回调LOG</strong> <code>f(args, kwargs, callback): future = sync_process() callback(future)</code>
@@ -685,17 +685,15 @@
 <blockquote><p>与无回调相比; 明显多出 e log; run_callback 就是将 future.result()作为callback的参数运行;</p></blockquote>
 
 <ul>
-<li><strong>异步无回调</strong> <code>f(args, kwargs): future = async_process()</code></li>
+<li><strong>异步无回调LOG</strong> <code>f(args, kwargs): future = async_process()</code></li>
 <li><em>a</em> &mdash; (&lt;test_return_future.ReturnFutureTest testMethod=test_async_future>,) {} argsssssssss</li>
 <li><em>b</em> &mdash; None (&lt;test_return_future.ReturnFutureTest testMethod=test_async_future>,) {&lsquo;callback&rsquo;: <function <lambda> at 0x8518f44>} callback</li>
 <li><em>c</em> &mdash; None result&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</li>
-<li><em>d</em> &mdash; <function <lambda> at 0x8518f44> ++++++++++++++</li>
+<li><em>d</em> &mdash; (function <lambda> at 0x8518f44) ++++++++++++++</li>
 </ul>
 
 
-<blockquote><p>与同步无回调相比; 看<code>test_async_future(self)</code>, 将 f() 获得的 future &ndash;> self.io_loop.add_future(future, self.stop) &ndash;> self.stop(future) &ndash;> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中都是这种例子, 一般将 return_future 与 gen.engine 联合使用  yield f()</p></blockquote>
-
-<p>TBC(i am tired)</p>
+<blockquote><p>与同步无回调相比; 看<code>test_async_future(self)</code>, 将 f() 获得的 future &ndash;> self.io_loop.add_future(future, self.stop) &ndash;> self.stop(future) &ndash;> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中一般将 return_future 与 gen.engine 联合使用  , 通过在 gen.engine &ndash;> yield f() 获得结果</p></blockquote>
 </div>
   
   
