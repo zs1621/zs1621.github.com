@@ -184,7 +184,7 @@ def return_future(f):
    - *c* -- None result------------------ 
    - *d* -- (function <lambda> at 0xb6ba8f0c>) +++++++++++++
 
-> 从 a-b 可以理解 replacer.replace 的作用: 提取callback 的值， 并将callback 放入kwargs; 由c 可以知道 f() 函数是不会return 的; f()的结果只能由 future.result() 得到, 只要知道reuturn_future 是返回Future 本身是不会return 的， 如果return 就会报错; 由d 可知 函数赋值给了callback
+> 从 a-b 可以理解 replacer.replace 的作用: 提取callback 的值， 并将callback 放入kwargs; 由c 可以知道 f() 函数是不会return 的; f()的结果只能由 future.result() 得到, 只要知道reuturn_future 是返回Future 本身是不会return 的， 如果return 就会报错; 由d 可知匿名函数`fuction <lambda> at 0xb6ba8f0c`赋值给了callback,而这个匿名函数的作用就是`set_result`。
 
  - **同步有回调LOG** `f(args, kwargs, callback): future = sync_process() callback(future)`
    - *a* -- (<test_return_future.ReturnFutureTest testMethod=test_callback_kw>,) {'callback':<bound method ReturnFutureTest.stop of <test_return_future.ReturnFutureTest testMethod=test_callback_kw>>} argsssssssss
@@ -195,13 +195,12 @@ def return_future(f):
 
 > 与无回调相比; 明显多出 e log; run_callback 就是将 future.result()作为callback的参数运行; 
  
- - **异步无回调** `f(args, kwargs): future = async_process()`
+ - **异步无回调LOG** `f(args, kwargs): future = async_process()`
   - *a* -- (<test_return_future.ReturnFutureTest testMethod=test_async_future>,) {} argsssssssss 
   - *b* -- None (<test_return_future.ReturnFutureTest testMethod=test_async_future>,) {'callback': <function <lambda> at 0x8518f44>} callback 
   - *c* -- None result------------------ 
-  - *d* -- <function <lambda> at 0x8518f44> ++++++++++++++ 
+  - *d* -- (function <lambda> at 0x8518f44) ++++++++++++++ 
 
-> 与同步无回调相比; 看`test_async_future(self)`, 将 f() 获得的 future -> self.io_loop.add_future(future, self.stop) -> self.stop(future) -> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中都是这种例子, 一般将 return_future 与 gen.engine 联合使用  yield f()
+> 与同步无回调相比; 看`test_async_future(self)`, 将 f() 获得的 future -> self.io_loop.add_future(future, self.stop) -> self.stop(future) -> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中一般将 return_future 与 gen.engine 联合使用  , 通过在 gen.engine -> yield f() 获得结果
 
-TBC(i am tired,2013/12/13 21:53)
 
