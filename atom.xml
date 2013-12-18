@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-12-18T08:55:13+08:00</updated>
+  <updated>2013-12-18T08:58:51+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -14,7 +14,16 @@
 
   
   <entry>
-    <title type="html"><![CDATA[generic-pool Reding]]></title>
+    <title type="html"><![CDATA[Lazy.js code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading/"/>
+    <updated>2013-12-18T08:58:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[generic-pool Reading]]></title>
     <link href="http://zs1621.github.io/blog/2013/12/07/generic-pool-reading/"/>
     <updated>2013-12-07T02:00:00+08:00</updated>
     <id>http://zs1621.github.io/blog/2013/12/07/generic-pool-reading</id>
