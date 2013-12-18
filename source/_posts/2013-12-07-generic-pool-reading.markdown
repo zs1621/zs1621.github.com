@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "generic-pool Reding"
+title: "generic-pool Reading"
 date: 2013-12-07 02:00
 comments: true
 categories: 
