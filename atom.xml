@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-12-16T11:37:42+08:00</updated>
+  <updated>2013-12-18T08:55:13+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[generic-pool Reding]]></title>
-    <link href="http://zs1621.github.io/blog/2013/12/07/generic-pool-reding/"/>
+    <link href="http://zs1621.github.io/blog/2013/12/07/generic-pool-reading/"/>
     <updated>2013-12-07T02:00:00+08:00</updated>
-    <id>http://zs1621.github.io/blog/2013/12/07/generic-pool-reding</id>
+    <id>http://zs1621.github.io/blog/2013/12/07/generic-pool-reading</id>
     <content type="html"><![CDATA[<h2><a href="https://github.com/coopernurse/node-pool">node-pool</a></h2>
 
 <h3>why pool</h3>
