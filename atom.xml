@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-12-18T08:58:51+08:00</updated>
+  <updated>2013-12-18T13:58:16+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -18,7 +18,11 @@
     <link href="http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading/"/>
     <updated>2013-12-18T08:58:00+08:00</updated>
     <id>http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
+
+<p>在看源码前， 可以先看下Lazy.js的基本思想 <a href="https://github.com/zs1621/lazy.js/wiki/%E4%BB%8B%E7%BB%8D-LAZYJS(%E7%BF%BB%E8%AF%91">Lazy.js 的设计模式</a>)</p>
+
+<p>TBC</p>
 ]]></content>
   </entry>
   
