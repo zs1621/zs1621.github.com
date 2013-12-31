@@ -43,5 +43,12 @@ seq.each(function(x) { console.log(x); })
 
 > in fact, when i think about  the performance of `underscore` and `lazy.js`; i cann't understand why lazy is faster.  lazy.js: 1 2s 3 underscore: 1 2 3 1 2 3 1 2 3 . so what's the difference. lazy.js just hold off some process; i cann't get it.... so continue to read code. >_< 
 
+
+```javascript
+function Sequence() {} # 创建Sequence构造函数
+
+```
+
+
 TBC
 
