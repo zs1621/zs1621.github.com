@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2013-12-27T21:15:25+08:00</updated>
+  <updated>2013-12-31T17:48:09+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -75,6 +75,11 @@
 <p>上面这个例子中 前四步除了创建对应的sequece没有做任何的遍历source或者别的操作。 只有在第5步调用 each 时，将一次性按照鍊條(chain)的順序处理source 得到最后的结果。所以lazy做的就是延迟遍历处理数据.</p>
 
 <blockquote><p>in fact, when i think about  the performance of <code>underscore</code> and <code>lazy.js</code>; i cann&rsquo;t understand why lazy is faster.  lazy.js: 1 2s 3 underscore: 1 2 3 1 2 3 1 2 3 . so what&rsquo;s the difference. lazy.js just hold off some process; i cann&rsquo;t get it&hellip;. so continue to read code. >_&lt;</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Sequence</span><span class="p">()</span> <span class="p">{}</span> <span class="err">#</span> <span class="err">创建</span><span class="nx">Sequence</span><span class="err">构造函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>TBC</p>
 ]]></content>
