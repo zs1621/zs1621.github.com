@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-01-17T15:33:41+08:00</updated>
+  <updated>2014-05-09T15:06:55+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -20,7 +20,36 @@
     <id>http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading</id>
     <content type="html"><![CDATA[<p>TBC 继续挖坑待填&hellip;</p>
 
-<h2><strong><a href="https://github.com/koajs/koa">Koa</a></strong></h2>
+<h2><a href="https://github.com/koajs/koa">Koa</a></h2>
+
+<h2>源码简况</h2>
+
+<ul>
+<li>version： 0.6.0</li>
+<li>用到的库
+
+<ul>
+<li>escape-html: >=1.0.1</li>
+<li>statuses: >=1.0.1</li>
+<li>accepts: 1.0.0</li>
+<li>type-is: 1.1.0</li>
+<li>set-type: 1.0.0</li>
+<li>finished: 1.1.1</li>
+<li>co: 3.0.2</li>
+<li>debug</li>
+<li>fresh: 0.2.1</li>
+<li>koa-compose: 2.2.0</li>
+<li>koa-is-json: 1.0.0</li>
+<li>cookies: 0.4.0</li>
+<li>delegates: 0.0.3</li>
+<li>dethroy: 1.0.0</li>
+<li>error-inject: 1.0.0</li>
+<li>only: 0.0.2</li>
+</ul>
+</li>
+<li>运行条件: node 版本大于0.11.9</li>
+</ul>
+
 ]]></content>
   </entry>
   
