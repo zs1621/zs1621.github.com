@@ -10,7 +10,8 @@ TBC 继续挖坑待填...
 ##[Koa](https://github.com/koajs/koa)
 
  
-##源码简况
+源码简况
+
  - version： 0.6.0
  - 用到的库
    - escape-html: =1.0.1
@@ -25,10 +26,10 @@ TBC 继续挖坑待填...
    - koa-compose: 2.2.0
    - koa-is-json: 1.0.0
    - cookies: 0.4.0
-   - delegates: 0.0.3
+   - [delegates](https://github.com/visionmedia/node-delegates/blob/master/index.js): 0.0.3 -已读 -13/5
    - dethroy: 1.0.0
    - error-inject: 1.0.0
-   - only: 0.0.2  -已读 -9/5
+   - [only](https://github.com/visionmedia/node-only): 0.0.2  -已读 -9/5
  - 运行条件: node 版本大于0.11.9
 
 
