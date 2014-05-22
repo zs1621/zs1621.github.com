@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: codeReading | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2014-05-22T08:58:29+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[node-thunkify Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading/"/>
+    <updated>2014-05-21T12:02:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
+
+<h2>code</h2>
+
+<p>```
+function thunkify(fn) {</p>
+
+<pre><code>assert('function' == typeof fn, 'function required');    
+
+return function () {
+    var args = slice.call(arguments);    
+    var ctx = this;
+    return function (done) {   // done 是回调函数
+        var called;
+        args.push(function() {
+            if (called) return;
+            called = true;    
+            done.apply(null, arguments); 
+        }); // 将回调处理加入参数列表
+
+        try {
+            fn.apply(ctx, args);   // 函数处理 
+        } catch (err) {
+            done(err);   // 异常获取并用回调处理 
+        }
+    }
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<h2>例子</h2>
+
+<p>```
+var thunkify = require(&lsquo;thunkify&rsquo;);
+var fs = require(&lsquo;fs&rsquo;);</p>
+
+<p>var read = thunkify(fs.readFile);</p>
+
+<p>read(&lsquo;package.json&rsquo;, &lsquo;utf8&rsquo;)(function(err, str){
+});
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

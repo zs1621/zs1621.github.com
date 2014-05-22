@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-05-13T14:46:10+08:00</updated>
+  <updated>2014-05-22T08:58:29+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,85 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[node-thunkify Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading/"/>
+    <updated>2014-05-21T12:02:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
+
+<h2>code</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function thunkify(fn) {
+</span><span class='line'>    assert('function' == typeof fn, 'function required');    
+</span><span class='line'>
+</span><span class='line'>    return function () {
+</span><span class='line'>        var args = slice.call(arguments);    
+</span><span class='line'>        var ctx = this;
+</span><span class='line'>        return function (done) {   // done 是回调函数
+</span><span class='line'>            var called;
+</span><span class='line'>            args.push(function() {
+</span><span class='line'>                if (called) return;
+</span><span class='line'>                called = true;    
+</span><span class='line'>                done.apply(null, arguments); 
+</span><span class='line'>            }); // 将回调处理加入参数列表
+</span><span class='line'>
+</span><span class='line'>            try {
+</span><span class='line'>                fn.apply(ctx, args);   // 函数处理 
+</span><span class='line'>            } catch (err) {
+</span><span class='line'>                done(err);   // 异常获取并用回调处理 
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>例子</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var thunkify = require('thunkify');
+</span><span class='line'>var fs = require('fs');
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>var read = thunkify(fs.readFile);
+</span><span class='line'>
+</span><span class='line'>read('package.json', 'utf8')(function(err, str){
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Koa.js Code Reading]]></title>
