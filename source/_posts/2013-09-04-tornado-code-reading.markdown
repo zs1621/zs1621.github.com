@@ -3,7 +3,7 @@ layout: post
 title: "Tornado code Reading"
 date: 2013-09-04 13:26
 comments: true
-categories: 
+categories: codeReading
 ---
 
 ##服务器建立

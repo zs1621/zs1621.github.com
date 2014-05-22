@@ -3,7 +3,7 @@ layout: post
 title: "underscore.js Code Reading"
 date: 2013-12-27 21:14
 comments: true
-categories: 
+categories: codeReading
 ---
 
 

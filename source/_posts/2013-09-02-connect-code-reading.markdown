@@ -3,7 +3,7 @@ layout: post
 title: "connect code reading"
 date: 2013-09-02 22:12
 comments: true
-categories: 
+categories: codeReading
 ---
 
 [lib -> patch.js](https://github.com/zs1621/connect/blob/master/lib/patch.js)
