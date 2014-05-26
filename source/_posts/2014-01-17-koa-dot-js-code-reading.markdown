@@ -34,4 +34,51 @@ TBC 继续挖坑待填...
 
 
 
+##**从入口说起**
+
+
+```
+var koa = require('koa');
+var app = koa();
+
+app.use(function *(){
+    this.body = 'Hello World';    
+});
+
+app.listen(3000);
+```
+
+
+上面是一个最简单的服务,输出`Hello World`; 我们用到两个koa的api
+
+ - app.use()
+ - app.listen();
+
+下面就先从app.listen() 开始
+
+
+看 [application.js](https://github.com/koajs/koa/blob/master/lib/application.js) 
+
+
+```
+app.listen = function () {
+    var server = http.createServer(this.callback()) ;  
+    return server.listen.apply(server, arguments);
+}
+```
+
+> http.createServer([requestListener])
+ returns a new web server object
+
+> `requestListener` is a function which is automatically added to the `'request'` 事件
+
+
+由代码可以知道 this.callback() 就是一个 `requestListener`;
+
+
+TBC
+
+
+
+
 
