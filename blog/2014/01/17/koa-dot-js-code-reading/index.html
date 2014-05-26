@@ -131,6 +131,57 @@ co &hellip;">
 <li>运行条件: node 版本大于0.11.9</li>
 </ul>
 
+
+<h2><strong>从入口说起</strong></h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var koa = require('koa');
+</span><span class='line'>var app = koa();
+</span><span class='line'>
+</span><span class='line'>app.use(function *(){
+</span><span class='line'>    this.body = 'Hello World';    
+</span><span class='line'>});
+</span><span class='line'>
+</span><span class='line'>app.listen(3000);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面是一个最简单的服务,输出<code>Hello World</code>; 我们用到两个koa的api</p>
+
+<ul>
+<li>app.use()</li>
+<li>app.listen();</li>
+</ul>
+
+
+<p>下面就先从app.listen() 开始</p>
+
+<p>看 <a href="https://github.com/koajs/koa/blob/master/lib/application.js">application.js</a></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>app.listen = function () {
+</span><span class='line'>    var server = http.createServer(this.callback()) ;  
+</span><span class='line'>    return server.listen.apply(server, arguments);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>http.createServer([requestListener])
+ returns a new web server object</p>
+
+<p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
+
+<p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>TBC</p>
 </div>
 
 

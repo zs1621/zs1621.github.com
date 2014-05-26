@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-05-22T09:47:29+08:00</updated>
+  <updated>2014-05-26T15:17:07+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -101,6 +101,53 @@ var fs = require(&lsquo;fs&rsquo;);</p>
 <li>运行条件: node 版本大于0.11.9</li>
 </ul>
 
+
+<h2><strong>从入口说起</strong></h2>
+
+<p>```
+var koa = require(&lsquo;koa&rsquo;);
+var app = koa();</p>
+
+<p>app.use(function *(){</p>
+
+<pre><code>this.body = 'Hello World';    
+</code></pre>
+
+<p>});</p>
+
+<p>app.listen(3000);
+```</p>
+
+<p>上面是一个最简单的服务,输出<code>Hello World</code>; 我们用到两个koa的api</p>
+
+<ul>
+<li>app.use()</li>
+<li>app.listen();</li>
+</ul>
+
+
+<p>下面就先从app.listen() 开始</p>
+
+<p>看 <a href="https://github.com/koajs/koa/blob/master/lib/application.js">application.js</a></p>
+
+<p>```
+app.listen = function () {</p>
+
+<pre><code>var server = http.createServer(this.callback()) ;  
+return server.listen.apply(server, arguments);
+</code></pre>
+
+<p>}
+```</p>
+
+<blockquote><p>http.createServer([requestListener])
+ returns a new web server object</p>
+
+<p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
+
+<p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>TBC</p>
 ]]></content>
   </entry>
   
