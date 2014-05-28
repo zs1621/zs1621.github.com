@@ -9,7 +9,7 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="thunkify code 1
+  <meta name="description" content="compose 1
 2
 3
 4
@@ -23,15 +23,7 @@
 12
 13
 14
-15
-16
-17
-18
-19
-20
-21
-22
-function thunkify(fn) { assert('function' == typeof fn, 'function required'); &hellip;">
+function compose(middleware) { return function *(next) { var i = middleware.length; var prev = next || noop &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +80,114 @@ function thunkify(fn) { assert('function' == typeof fn, 'function required'); &h
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-28T10:37:00+08:00" pubdate data-updated="true">May 28<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><strong><a href="https://github.com/koajs/compose/blob/master/index.js">compose</a></strong></h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function compose(middleware) {
+</span><span class='line'>   return function *(next) {
+</span><span class='line'>        var i = middleware.length;   
+</span><span class='line'>        var prev = next || noop ();
+</span><span class='line'>        var curr;
+</span><span class='line'>        
+</span><span class='line'>        while (i--) {
+</span><span class='line'>            curr = middleware[1];    
+</span><span class='line'>            prev = curr.call(this, prev); // 
+</span><span class='line'>        }
+</span><span class='line'>
+</span><span class='line'>        yield *prev;
+</span><span class='line'>   } 
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看下运行效果</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var co = require('co');
+</span><span class='line'>
+</span><span class='line'>var stack = [];
+</span><span class='line'>stack.push(function *(next) {
+</span><span class='line'>    arr.push(1);    
+</span><span class='line'>    yield next;
+</span><span class='line'>    arr.push(3);
+</span><span class='line'>});
+</span><span class='line'>stack.push(function *(next){
+</span><span class='line'>    arr.push(2);    
+</span><span class='line'>    yield next;
+</span><span class='line'>    arr.push(4)
+</span><span class='line'>});
+</span><span class='line'>
+</span><span class='line'>co(compose(stack)) (function (err) {
+</span><span class='line'>    if (err) throw err;   
+</span><span class='line'>    console.log(arr); // 输出 [1, 2, 3, 4], 从输出可以看到其执行顺序
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2003,105 +2103,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/04/tornado-code-reading/">Tornado Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-04T13:26:00+08:00" pubdate data-updated="true">Sep 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>服务器建立</h2>
-
-<p><a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">HTTPServer</a></p>
-
-<p><strong>应用</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>application = web.Application([
-</span><span class='line'>(r"/", MainPageHandler),  
-</span><span class='line'>])
-</span><span class='line'>http_server = httpserver.HTTPServer(application)
-</span><span class='line'>http_server.listen(8080)
-</span><span class='line'>ioloop.IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对照应用例子理解源码</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def __init__(self, request_callback, no_keep_alive=False, io_loop=None,
-</span><span class='line'>                 xheaders=False, ssl_options=None, protocol=None, **kwargs):
-</span><span class='line'>        self.request_callback = request_callback
-</span><span class='line'>        self.no_keep_alive = no_keep_alive
-</span><span class='line'>        self.xheaders = xheaders
-</span><span class='line'>        self.protocol = protocol
-</span><span class='line'>        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options,
-</span><span class='line'>                           **kwargs) #HTTPServer 继承自 TCPServer, 初始化TCPServer</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>参数</strong></p>
-
-<ul>
-<li>request_callback: 必须产生一个http回复, 例子中 application 即是回复</li>
-<li>xheaders: True(支持通过<code>x-real-ip</code>或<code>x-forwarded-for</code>获取ip) False(当torando之前有反向代理或者负载均衡self.request.remote_ip只能获得127.0.0.1)</li>
-<li>ssl_options: ssl传输数据</li>
-</ul>
-
-
-<p>ssl_options 使用例子</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>HTTPServer(applicaton, ssl_options={
-</span><span class='line'>   "certfile": os.path.join(data_dir, "mydomain.crt"),
-</span><span class='line'>   "keyfile": os.path.join(data_dir, "mydomain.key"),
-</span><span class='line'>  }) </span></code></pre></td></tr></table></div></figure>
-
-
-<p>下面应该说下 <code>TCPServer</code> 主体内容在 <code>TCPServer</code>,</p>
-
-<p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2117,6 +2118,10 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/21/node-thunkify-code-reading/">Node-thunkify Code Reading</a>
       </li>
     
@@ -2130,10 +2135,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
     
       <li class="post">
         <a href="/blog/2013/12/18/lazy-dot-js-code-reading/">Lazy.js Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/07/generic-pool-reading/">Generic-pool Reading</a>
       </li>
     
   </ul>
