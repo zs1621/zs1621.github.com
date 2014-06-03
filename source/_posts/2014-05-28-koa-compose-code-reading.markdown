@@ -27,7 +27,7 @@ function compose(middleware) {
 ```
 
 
-看下运行效果
+看下例的运行效果
 
 
 ```
@@ -51,3 +51,29 @@ co(compose(stack)) (function (err) {
 });
 ```
 
+从上例的程序可以看到[koa](https://github.com/koajs/koa/blob/master/lib/application.js#L113)。koa在加载中间件时是通过co 和 compose来按次序拨开一层一层的middleware。
+
+
+```
+co (function *() {
+    var arr = []
+    var funa = function *(next) {
+        arr.push(1);    
+        yield *next;
+        arr.push(3);
+    };
+    var funb = function *(next) {
+        arr.push(2);
+        yield *next;
+        arr.push(4)
+    };
+    funa ();
+    funb ();
+    return arr;
+})(function (err, items) {
+ if (err) {
+    console.log(err);     
+ }
+ console.log(items);    
+});
+```
