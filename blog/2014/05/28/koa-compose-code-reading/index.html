@@ -138,7 +138,7 @@ function compose(middleware) { return function *(next) { var i = middleware.leng
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
-<p>看下运行效果</p>
+<p>看下例的运行效果</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -178,6 +178,50 @@ function compose(middleware) { return function *(next) { var i = middleware.leng
 </span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
 
 
+<p>从上例的程序可以看到<a href="https://github.com/koajs/koa/blob/master/lib/application.js#L113">koa</a>。koa在加载中间件时是通过co 和 compose来按次序拨开一层一层的middleware。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>co (function *() {
+</span><span class='line'>    var arr = []
+</span><span class='line'>    var funa = function *(next) {
+</span><span class='line'>        arr.push(1);    
+</span><span class='line'>        yield *next;
+</span><span class='line'>        arr.push(3);
+</span><span class='line'>    };
+</span><span class='line'>    var funb = function *(next) {
+</span><span class='line'>        arr.push(2);
+</span><span class='line'>        yield *next;
+</span><span class='line'>        arr.push(4)
+</span><span class='line'>    };
+</span><span class='line'>    funa ();
+</span><span class='line'>    funb ();
+</span><span class='line'>    return arr;
+</span><span class='line'>})(function (err, items) {
+</span><span class='line'> if (err) {
+</span><span class='line'>    console.log(err);     
+</span><span class='line'> }
+</span><span class='line'> console.log(items);    
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
 
 </div>
 

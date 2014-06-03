@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-05-28T11:30:14+08:00</updated>
+  <updated>2014-05-30T18:58:29+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -40,7 +40,7 @@ function compose(middleware) {
 }
 ```</p>
 
-<p>看下运行效果</p>
+<p>看下例的运行效果</p>
 
 <p>```
 var co = require(&lsquo;co&rsquo;);</p>
@@ -70,6 +70,38 @@ console.log(arr); // 输出 [1, 2, 3, 4], 从输出可以看到其执行顺序
 </code></pre>
 
 <p>});
+```</p>
+
+<p>从上例的程序可以看到<a href="https://github.com/koajs/koa/blob/master/lib/application.js#L113">koa</a>。koa在加载中间件时是通过co 和 compose来按次序拨开一层一层的middleware。</p>
+
+<p>```
+co (function *() {</p>
+
+<pre><code>var arr = []
+var funa = function *(next) {
+    arr.push(1);    
+    yield *next;
+    arr.push(3);
+};
+var funb = function *(next) {
+    arr.push(2);
+    yield *next;
+    arr.push(4)
+};
+funa ();
+funb ();
+return arr;
+</code></pre>
+
+<p>})(function (err, items) {
+ if (err) {</p>
+
+<pre><code>console.log(err);     
+</code></pre>
+
+<p> }
+ console.log(items);  <br/>
+});
 ```</p>
 ]]></content>
   </entry>
