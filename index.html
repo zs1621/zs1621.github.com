@@ -9,21 +9,11 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="compose 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-function compose(middleware) { return function *(next) { var i = middleware.length; var prev = next || noop &hellip;">
+  <meta name="description" content="WWDC14 观后感 WWDC苹果全球开发者大会. 看完10小时，列下我能记住的几点 mac 在手机在旁边的情况下，可以拨接电话，收发短信
+spotlight 可以联网搜索
+touchId 指纹解锁
+instant hotspot: mac 和 iphone ipad 即时同步
+swift 语言， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +70,106 @@ function compose(middleware) { return function *(next) { var i = middleware.leng
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/04/wwdc14/">WWDC14</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T00:26:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>WWDC14 观后感</h2>
+
+<p>WWDC苹果全球开发者大会.
+ 看完10小时，列下我能记住的几点</p>
+
+<ul>
+<li>mac 在手机在旁边的情况下，可以拨接电话，收发短信</li>
+<li>spotlight 可以联网搜索</li>
+<li>touchId 指纹解锁</li>
+<li>instant hotspot: mac 和 iphone ipad 即时同步</li>
+<li>swift 语言，新的apple开发语言</li>
+<li>heathKit 监测健康信息，包括心率、胆固醇等</li>
+</ul>
+
+
+<h3>mac打电话</h3>
+
+<ul>
+<li>just cool, convenient</li>
+</ul>
+
+
+<h3>spotlight</h3>
+
+<ul>
+<li>Alfred堪忧了，从接触的朋友来看， 接触MAC OS的比Windows的用此功能的多。可能windows中本地搜素太慢了吧,其实联网搜索聚合windows8就有了，但是&hellip;</li>
+</ul>
+
+
+<h3>TouchId</h3>
+
+<ul>
+<li>还是方便快捷， 从一个侧面反映未来的互联网安全是更加被看重了,因为一个账号，可以牵一发而动全身。可以预见安全研究员之类的工作会越来越多。</li>
+</ul>
+
+
+<h3>instant hotspot</h3>
+
+<ul>
+<li>体验不间断</li>
+</ul>
+
+
+<h3>swift</h3>
+
+<ul>
+<li>新的即视编程语言， 语言的发展就是向着更方便，更快。更方便就是对于程序员更好上手， 更快是对于编译器的要求， 从事编译器工作的同学要求会更高， 对于普通程序员在我看来是应用创意的提高!</li>
+</ul>
+
+
+<h3>HeathKit</h3>
+
+<ul>
+<li>heathKit 是我觉得最牛的东西了， 直接体现apple的态度， 专做软件和服务， 与硬件厂商合作， 与第三方开发者合作， 提供接口， 连接各种硬件。但是Iphone 始终是<strong>中枢系统</strong>(安全的重要性)。 heathKit重点是健康类的监控， 这与医药公司合作， 对于病人的各方面数据监控， 而改善人们的生活&hellip;.</li>
+</ul>
+
+
+<h3>企业市场</h3>
+
+<ul>
+<li>大会中提到500强企业中498家都在用苹果的设备。个人觉得苹果会慢慢渗入企业，包括其软件服务，not only <strong>大众消费品</strong>。</li>
+</ul>
+
+
+<blockquote><p>(PS： 此文是用<a href="http://maxiang.info/">马克飞象</a> 挺好用的~~)</p></blockquote>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1801,352 +1891,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/10/visionmedia-slash-send-reading/">Visionmedia/send Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-10T00:41:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong><code>send</code>入口</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>exports = module.exports = send;</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong><code>send</code> 函数返回 <code>SendStream</code> 构造函数</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>function send(req, path, options) {
-</span><span class='line'>  return new SendStream(req, path, options);
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>来看<code>SendStream</code></strong></p>
-
-<ul>
-<li>参数
-
-<ul>
-<li>req 即 <code>request</code></li>
-<li>path : <code>string</code> 路径</li>
-<li>options:</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>function SendStream(req, path, options) {
-</span><span class='line'>  ....
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>继承 <code>Stream.prototype</code></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>SendStream.prototype.__proto__ = Stream.prototype;</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>下面都是 <code>SendStream</code> 原型链的方法</p>
-
-<ul>
-<li>hidden: 赋值 this._hidden, return this</li>
-<li>index: 赋值默认的 index <code>path</code>, this._index, return this</li>
-<li>root: 赋值根路径,  this._root</li>
-<li>maxage: 赋值最大缓存时间 , this._maxage</li>
-<li>error: 根据<code>status</code>&ndash;>触发<code>error</code></li>
-<li>redirect: 如果有监听事件<code>directory</code>的监听者 那么触发<code>directory</code></li>
-<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题,判断方法如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 就是有异常的路径;</li>
-<li>hasTrailingSlash: 判断路径最后一位是不是<code>/</code></li>
-<li>hasLeadingDot: 就是文件是否有后缀 形如<code>aa.html</code></li>
-<li>isCachable: 是否缓存， 判断方法 <code>(res.statusCode &gt;= 200 &amp;&amp; res.statusCode &lt; 300) || 304 == res.statusCode</code></li>
-<li>isFresh: 判断缓存是否是新的 判断方法 引用模块 <code>fresh</code></li>
-<li>removeContentHeaderFields 去除包含 <code>content</code>的头 <code>key</code></li>
-<li>onStatError:</li>
-</ul>
-</li>
-<li><p>主体方法 <code>pipe</code> , 参数 <code>res</code></p></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this
-</span><span class='line'>, args = arguments
-</span><span class='line'>, path = this.path
-</span><span class='line'>, root = this._root
-</span><span class='line'>
-</span><span class='line'>this.res = res;
-</span><span class='line'>//判断uri的有效性
-</span><span class='line'>path = utils.decode(path);
-</span><span class='line'>if (-1 == path) return this.error(400);
-</span><span class='line'>
-</span><span class='line'>//如果`path`里包含`\0` ，表明`path`为空
-</span><span class='line'>if (~path.indexOf('\0')) return this.error(400);
-</span><span class='line'>
-</span><span class='line'>//连接 this._root 和 path
-</span><span class='line'>if (root) path = normalize(join(this._root, path));
-</span><span class='line'>
-</span><span class='line'>//如果异常路径禁止访问
-</span><span class='line'>if (this.isMalicious()) return this.error(403);
-</span><span class='line'>
-</span><span class='line'>//此时`path`已经是 `this._root`和 `path`的结合, 所以此种情况不会出现,如果有root
-</span><span class='line'>if (root && 0 != path.indexOf(root)) return this.error(403)
-</span><span class='line'>
-</span><span class='line'>//如果_hidden为`false`,那么不支持隐藏文件，此时文件如果以`.`开头那么就不支持 
-</span><span class='line'>if (!this._hidden && this.hasLeadingDot()) return this.error(404);
-</span><span class='line'>
-</span><span class='line'>//index 文件支持
-</span><span class='line'>if (this._index && this.hasTrailingSlash()) path += this._index
-</span><span class='line'>
-</span><span class='line'>//最后看path 的信息
-</span><span class='line'>fs.stat(path, function(err, stat){
-</span><span class='line'>  if (err) return self.onStatError(err); //上面已介绍
-</span><span class='line'>  if (stat.isDirectory) return self.redirect(self.path); //见上
-</span><span class='line'>  self.emit('file', path, stat); //见下
-</span><span class='line'>  self.send(path, stat);//见下
-</span><span class='line'>});
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>方法 <strong><code>send</code></strong>
-
-<ul>
-<li>path: 路径</li>
-<li>stat: 文件状态</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>var options = this.options;
-</span><span class='line'>var len = stat.size;
-</span><span class='line'>var res = this.res;
-</span><span class='line'>var req = this.req;
-</span><span class='line'>var ranges = req.headers.range; //截取部分文件之用
-</span><span class='line'>var offset = options.start || 0;
-</span><span class='line'>
-</span><span class='line'>//赋值header
-</span><span class='line'>this.setHeader(stat);
-</span><span class='line'>
-</span><span class='line'>//赋值 content-type
-</span><span class='line'>this.type(path);
-</span><span class='line'>
-</span><span class='line'>//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
-</span><span class='line'>if (this.isConditionGET()
-</span><span class='line'>&& this.isCachable()
-</span><span class='line'>&& this.isFresh()) {
-</span><span class='line'>  return this.notModified();
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>//
-</span><span class='line'>len = Math.max(0, len - offset);
-</span><span class='line'>if (options.end != undefined) {
-</span><span class='line'>  var bytes = options.end - offset + 1;
-</span><span class='line'>  if (len &gt; bytes) len = bytes;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>// Range 支持
-</span><span class='line'>if (ranges) {
-</span><span class='line'>  ... 
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>// content-length
-</span><span class='line'>res.setHeader('Content-Length', len);
-</span><span class='line'>
-</span><span class='line'>// HEAD support
-</span><span class='line'>if ('HEAD' == req.method) return res.end();
-</span><span class='line'>
-</span><span class='line'>this.stream(path, options); //见下</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>方法 <code>stream</code>
-
-<ul>
-<li>参数
-
-<ul>
-<li>path : 路径</li>
-<li>options</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this;
-</span><span class='line'>var res = this.res;
-</span><span class='line'>var req = this.req;
-</span><span class='line'>
-</span><span class='line'>//pipe 把流数据加入 `res`管道
-</span><span class='line'>var stream = fs.createReadStream(path, options);
-</span><span class='line'>this.emit('stream', stream);
-</span><span class='line'>stream.pipe(res);
-</span><span class='line'>
-</span><span class='line'>//socket 关闭， 
-</span><span class='line'>
-</span><span class='line'>req.on('close', stream.destroy.bind(stream));
-</span><span class='line'>
-</span><span class='line'>//error处理
-</span><span class='line'>steam.on('error', function(err){
-</span><span class='line'>  //不回复
-</span><span class='line'>  if (res._header) {
-</span><span class='line'>      console.error(err.stack);
-</span><span class='line'>      req.destroy();
-</span><span class='line'>      return;
-</span><span class='line'>  }
-</span><span class='line'>  erro.status = 500;
-</span><span class='line'>  self.emit('error', err);
-</span><span class='line'>});
-</span><span class='line'>
-</span><span class='line'>//end
-</span><span class='line'>stream.on('end', function(){
-</span><span class='line'>  self.emit('end');   
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2162,6 +1906,10 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
       </li>
     
@@ -2175,10 +1923,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
     
       <li class="post">
         <a href="/blog/2013/12/27/underscore-dot-js-code-reading/">underscore.js Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/18/lazy-dot-js-code-reading/">Lazy.js Code Reading</a>
       </li>
     
   </ul>
