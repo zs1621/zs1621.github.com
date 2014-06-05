@@ -1,104 +1,24 @@
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>三余无梦</title>
-  <meta name="author" content="admin">
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[三余无梦]]></title>
+  <link href="http://zs1621.github.io/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2014-06-04T23:35:51+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-  <meta name="description" content="WWDC14 观后感 WWDC苹果全球开发者大会. 看完10小时，列下我能记住的几点 mac 在手机在旁边的情况下，可以拨接电话，收发短信
-spotlight 可以联网搜索
-touchId 指纹解锁
-instant hotspot: mac 和 iphone ipad 即时同步
-swift 语言， &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://zs1621.github.io">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">三余无梦</a></h1>
-  
-    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:zs1621.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">首页</a></li>
-  <li><a href="/blog/archives">归档</a></li>
-  <li><a href="/about">关于</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/04/wwdc14/">WWDC14</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-04T00:26:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>WWDC14 观后感</h2>
+  <entry>
+    <title type="html"><![CDATA[WWDC14]]></title>
+    <link href="http://zs1621.github.io/blog/2014/06/04/wwdc14/"/>
+    <updated>2014-06-04T00:26:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/06/04/wwdc14</id>
+    <content type="html"><![CDATA[<h2>WWDC14 观后感</h2>
 
 <p>WWDC苹果全球开发者大会.
  看完10小时，列下我能记住的几点</p>
@@ -163,42 +83,15 @@ swift 语言， &hellip;">
 
 
 <blockquote><p>(PS： 此文是用<a href="http://maxiang.info/">马克飞象</a> 挺好用的~~)</p></blockquote>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-05-28T10:37:00+08:00" pubdate data-updated="true">May 28<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><strong><a href="https://github.com/koajs/compose/blob/master/index.js">compose</a></strong></h2>
+  <entry>
+    <title type="html"><![CDATA[koa-compose Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/"/>
+    <updated>2014-05-28T10:37:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading</id>
+    <content type="html"><![CDATA[<h2><strong><a href="https://github.com/koajs/compose/blob/master/index.js">compose</a></strong></h2>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -315,42 +208,15 @@ swift 语言， &hellip;">
 </span><span class='line'> console.log(items);    
 </span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/21/node-thunkify-code-reading/">Node-thunkify Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-05-21T12:02:00+08:00" pubdate data-updated="true">May 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
+  <entry>
+    <title type="html"><![CDATA[node-thunkify Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading/"/>
+    <updated>2014-05-21T12:02:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
 
 <h2>code</h2>
 
@@ -421,42 +287,15 @@ swift 语言， &hellip;">
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/17/koa-dot-js-code-reading/">Koa.js Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-17T15:23:00+08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>TBC 继续挖坑待填&hellip;</p>
+  <entry>
+    <title type="html"><![CDATA[Koa.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading/"/>
+    <updated>2014-01-17T15:23:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<p>TBC 继续挖坑待填&hellip;</p>
 
 <h2><a href="https://github.com/koajs/koa">Koa</a></h2>
 
@@ -539,80 +378,26 @@ swift 语言， &hellip;">
 <p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
 
 <p>TBC</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/27/underscore-dot-js-code-reading/">underscore.js Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-27T21:14:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
+  <entry>
+    <title type="html"><![CDATA[underscore.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading/"/>
+    <updated>2013-12-27T21:14:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
 
 <p>挖坑待续</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/18/lazy-dot-js-code-reading/">Lazy.js Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-18T08:58:00+08:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
+  <entry>
+    <title type="html"><![CDATA[Lazy.js code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading/"/>
+    <updated>2013-12-18T08:58:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
 
 <p>在看源码前， 可以先看下Lazy.js的基本思想 <a href="https://github.com/zs1621/lazy.js/wiki/%E4%BB%8B%E7%BB%8D-LAZYJS(%E7%BF%BB%E8%AF%91">Lazy.js 的设计模式</a>)</p>
 
@@ -665,42 +450,15 @@ swift 语言， &hellip;">
 
 
 <p>TBC</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/07/generic-pool-reading/">Generic-pool Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-07T02:00:00+08:00" pubdate data-updated="true">Dec 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/coopernurse/node-pool">node-pool</a></h2>
+  <entry>
+    <title type="html"><![CDATA[generic-pool Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/07/generic-pool-reading/"/>
+    <updated>2013-12-07T02:00:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/07/generic-pool-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/coopernurse/node-pool">node-pool</a></h2>
 
 <h3>why pool</h3>
 
@@ -929,42 +687,15 @@ swift 语言， &hellip;">
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/">Tornado Code Reading - tornado.concurrent</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-08T13:38:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Future背景</h2>
+  <entry>
+    <title type="html"><![CDATA[Tornado Code Reading - tornado.concurrent]]></title>
+    <link href="http://zs1621.github.io/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent/"/>
+    <updated>2013-11-08T13:38:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent</id>
+    <content type="html"><![CDATA[<h2>Future背景</h2>
 
 <p>Future 代表一个函数的调用结果. 函数返回一个值或者抛出一个异常， 所以future 包含一个值或者一个异常(可以通过future.result()获得这个结果，异常和返回值). Fuures存在与对应的函数结束前. 在 一个  多线程场景下,简单的调用 future.result()等待另外一个线程或者进程完成。在 异步场景下，你可以附带一个callback给future为了当调用结束可以得到通知。（with future.add_done_callback or io_loop.add_future）</p>
 
@@ -1299,42 +1030,15 @@ swift 语言， &hellip;">
 
 
 <blockquote><p>与同步无回调相比; 看<code>test_async_future(self)</code>, 将 f() 获得的 future &ndash;> self.io_loop.add_future(future, self.stop) &ndash;> self.stop(future) &ndash;> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中一般将 return_future 与 gen.engine 联合使用  , 通过在 gen.engine &ndash;> yield f() 获得结果</p></blockquote>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/19/tornado-code-reading-ioloop/">Tornado Code Reading - IOLoop</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-19T12:36:00+08:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/facebook/tornado/blob/master/tornado/ioloop.py">IOLoop</a></h2>
+  <entry>
+    <title type="html"><![CDATA[Tornado Code Reading - IOLoop]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop/"/>
+    <updated>2013-09-19T12:36:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/ioloop.py">IOLoop</a></h2>
 
 <p>对着IOLoop 的源码瞅了一天，楞是没有明白， 为什么 父类实例可以调用子类方法?</p>
 
@@ -1555,42 +1259,15 @@ swift 语言， &hellip;">
 </span><span class='line'>              <span class="k">break</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/16/tornado-code-reading-tcpserver/">Tornado Code Reading-TCPServer</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-16T16:31:00+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></h2>
+  <entry>
+    <title type="html"><![CDATA[Tornado Code Reading-TCPServer]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/16/tornado-code-reading-tcpserver/"/>
+    <updated>2013-09-16T16:31:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/16/tornado-code-reading-tcpserver</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></h2>
 
 <p>一个非阻塞， 单进程的 <code>TCP</code> 服务器</p>
 
@@ -1883,77 +1560,611 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
 
 
-</div>
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[visionmedia/send Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading/"/>
+    <updated>2013-09-10T00:41:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading</id>
+    <content type="html"><![CDATA[<p><strong><code>send</code>入口</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>exports = module.exports = send;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong><code>send</code> 函数返回 <code>SendStream</code> 构造函数</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function send(req, path, options) {
+</span><span class='line'>  return new SendStream(req, path, options);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>来看<code>SendStream</code></strong></p>
+
+<ul>
+<li>参数
+
+<ul>
+<li>req 即 <code>request</code></li>
+<li>path : <code>string</code> 路径</li>
+<li>options:</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function SendStream(req, path, options) {
+</span><span class='line'>  ....
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>继承 <code>Stream.prototype</code></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SendStream.prototype.__proto__ = Stream.prototype;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>下面都是 <code>SendStream</code> 原型链的方法</p>
+
+<ul>
+<li>hidden: 赋值 this._hidden, return this</li>
+<li>index: 赋值默认的 index <code>path</code>, this._index, return this</li>
+<li>root: 赋值根路径,  this._root</li>
+<li>maxage: 赋值最大缓存时间 , this._maxage</li>
+<li>error: 根据<code>status</code>&ndash;>触发<code>error</code></li>
+<li>redirect: 如果有监听事件<code>directory</code>的监听者 那么触发<code>directory</code></li>
+<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题,判断方法如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 就是有异常的路径;</li>
+<li>hasTrailingSlash: 判断路径最后一位是不是<code>/</code></li>
+<li>hasLeadingDot: 就是文件是否有后缀 形如<code>aa.html</code></li>
+<li>isCachable: 是否缓存， 判断方法 <code>(res.statusCode &gt;= 200 &amp;&amp; res.statusCode &lt; 300) || 304 == res.statusCode</code></li>
+<li>isFresh: 判断缓存是否是新的 判断方法 引用模块 <code>fresh</code></li>
+<li>removeContentHeaderFields 去除包含 <code>content</code>的头 <code>key</code></li>
+<li>onStatError:</li>
+</ul>
+</li>
+<li><p>主体方法 <code>pipe</code> , 参数 <code>res</code></p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this
+</span><span class='line'>, args = arguments
+</span><span class='line'>, path = this.path
+</span><span class='line'>, root = this._root
+</span><span class='line'>
+</span><span class='line'>this.res = res;
+</span><span class='line'>//判断uri的有效性
+</span><span class='line'>path = utils.decode(path);
+</span><span class='line'>if (-1 == path) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//如果`path`里包含`\0` ，表明`path`为空
+</span><span class='line'>if (~path.indexOf('\0')) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//连接 this._root 和 path
+</span><span class='line'>if (root) path = normalize(join(this._root, path));
+</span><span class='line'>
+</span><span class='line'>//如果异常路径禁止访问
+</span><span class='line'>if (this.isMalicious()) return this.error(403);
+</span><span class='line'>
+</span><span class='line'>//此时`path`已经是 `this._root`和 `path`的结合, 所以此种情况不会出现,如果有root
+</span><span class='line'>if (root && 0 != path.indexOf(root)) return this.error(403)
+</span><span class='line'>
+</span><span class='line'>//如果_hidden为`false`,那么不支持隐藏文件，此时文件如果以`.`开头那么就不支持 
+</span><span class='line'>if (!this._hidden && this.hasLeadingDot()) return this.error(404);
+</span><span class='line'>
+</span><span class='line'>//index 文件支持
+</span><span class='line'>if (this._index && this.hasTrailingSlash()) path += this._index
+</span><span class='line'>
+</span><span class='line'>//最后看path 的信息
+</span><span class='line'>fs.stat(path, function(err, stat){
+</span><span class='line'>  if (err) return self.onStatError(err); //上面已介绍
+</span><span class='line'>  if (stat.isDirectory) return self.redirect(self.path); //见上
+</span><span class='line'>  self.emit('file', path, stat); //见下
+</span><span class='line'>  self.send(path, stat);//见下
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <strong><code>send</code></strong>
+
+<ul>
+<li>path: 路径</li>
+<li>stat: 文件状态</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var options = this.options;
+</span><span class='line'>var len = stat.size;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>var ranges = req.headers.range; //截取部分文件之用
+</span><span class='line'>var offset = options.start || 0;
+</span><span class='line'>
+</span><span class='line'>//赋值header
+</span><span class='line'>this.setHeader(stat);
+</span><span class='line'>
+</span><span class='line'>//赋值 content-type
+</span><span class='line'>this.type(path);
+</span><span class='line'>
+</span><span class='line'>//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
+</span><span class='line'>if (this.isConditionGET()
+</span><span class='line'>&& this.isCachable()
+</span><span class='line'>&& this.isFresh()) {
+</span><span class='line'>  return this.notModified();
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>//
+</span><span class='line'>len = Math.max(0, len - offset);
+</span><span class='line'>if (options.end != undefined) {
+</span><span class='line'>  var bytes = options.end - offset + 1;
+</span><span class='line'>  if (len &gt; bytes) len = bytes;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// Range 支持
+</span><span class='line'>if (ranges) {
+</span><span class='line'>  ... 
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// content-length
+</span><span class='line'>res.setHeader('Content-Length', len);
+</span><span class='line'>
+</span><span class='line'>// HEAD support
+</span><span class='line'>if ('HEAD' == req.method) return res.end();
+</span><span class='line'>
+</span><span class='line'>this.stream(path, options); //见下</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <code>stream</code>
+
+<ul>
+<li>参数
+
+<ul>
+<li>path : 路径</li>
+<li>options</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>
+</span><span class='line'>//pipe 把流数据加入 `res`管道
+</span><span class='line'>var stream = fs.createReadStream(path, options);
+</span><span class='line'>this.emit('stream', stream);
+</span><span class='line'>stream.pipe(res);
+</span><span class='line'>
+</span><span class='line'>//socket 关闭， 
+</span><span class='line'>
+</span><span class='line'>req.on('close', stream.destroy.bind(stream));
+</span><span class='line'>
+</span><span class='line'>//error处理
+</span><span class='line'>steam.on('error', function(err){
+</span><span class='line'>  //不回复
+</span><span class='line'>  if (res._header) {
+</span><span class='line'>      console.error(err.stack);
+</span><span class='line'>      req.destroy();
+</span><span class='line'>      return;
+</span><span class='line'>  }
+</span><span class='line'>  erro.status = 500;
+</span><span class='line'>  self.emit('error', err);
+</span><span class='line'>});
+</span><span class='line'>
+</span><span class='line'>//end
+</span><span class='line'>stream.on('end', function(){
+</span><span class='line'>  self.emit('end');   
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[Tornado code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/04/tornado-code-reading/"/>
+    <updated>2013-09-04T13:26:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/04/tornado-code-reading</id>
+    <content type="html"><![CDATA[<h2>服务器建立</h2>
+
+<p><a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">HTTPServer</a></p>
+
+<p><strong>应用</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>application = web.Application([
+</span><span class='line'>(r"/", MainPageHandler),  
+</span><span class='line'>])
+</span><span class='line'>http_server = httpserver.HTTPServer(application)
+</span><span class='line'>http_server.listen(8080)
+</span><span class='line'>ioloop.IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
 
 
-    </article>
+<p>对照应用例子理解源码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def __init__(self, request_callback, no_keep_alive=False, io_loop=None,
+</span><span class='line'>                 xheaders=False, ssl_options=None, protocol=None, **kwargs):
+</span><span class='line'>        self.request_callback = request_callback
+</span><span class='line'>        self.no_keep_alive = no_keep_alive
+</span><span class='line'>        self.xheaders = xheaders
+</span><span class='line'>        self.protocol = protocol
+</span><span class='line'>        TCPServer.__init__(self, io_loop=io_loop, ssl_options=ssl_options,
+</span><span class='line'>                           **kwargs) #HTTPServer 继承自 TCPServer, 初始化TCPServer</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>参数</strong></p>
+
+<ul>
+<li>request_callback: 必须产生一个http回复, 例子中 application 即是回复</li>
+<li>xheaders: True(支持通过<code>x-real-ip</code>或<code>x-forwarded-for</code>获取ip) False(当torando之前有反向代理或者负载均衡self.request.remote_ip只能获得127.0.0.1)</li>
+<li>ssl_options: ssl传输数据</li>
+</ul>
+
+
+<p>ssl_options 使用例子</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HTTPServer(applicaton, ssl_options={
+</span><span class='line'>   "certfile": os.path.join(data_dir, "mydomain.crt"),
+</span><span class='line'>   "keyfile": os.path.join(data_dir, "mydomain.key"),
+</span><span class='line'>  }) </span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面应该说下 <code>TCPServer</code> 主体内容在 <code>TCPServer</code>,</p>
+
+<p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
+]]></content>
+  </entry>
   
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
+  <entry>
+    <title type="html"><![CDATA[connect code reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/09/02/connect-code-reading/"/>
+    <updated>2013-09-02T22:12:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/09/02/connect-code-reading</id>
+    <content type="html"><![CDATA[<p><a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">lib &ndash;> patch.js</a></p>
+
+<p><strong>headerSent</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res.__defineGetter__('headerSent', function(){
+</span><span class='line'>    return this._header;
+</span><span class='line'>  });</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的this._header是header内容发出后才有的， 内容为header的所有内容， 所以headerSent 只有在res.end()后才有值</p>
+
+<p><a href="https://github.com/zs1621/connect/blob/master/lib/middleware/compress.js">lib->middle->compress.js</a></p>
+
+<p><strong>options</strong></p>
+
+<p>compress中间件用了nodejs 内部模块 <code>zlib</code></p>
+
+<p>这里的options 参考 <a href="http://nodejs.org/api/zlib.html#zlib_options">options</a></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>res.on('header', function(){
+</span><span class='line'>
+</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>监听到 <code>header</code> 开始</p>
+
+<ul>
+<li>如果没有compress 直接return;</li>
+<li><code>var encoding = res.getHeader('Content-Encoding') || 'identity'</code></li>
+<li>如果 <code>encoding</code> 不等于 <code>identity</code> 说明已经编码了 直接 return</li>
+<li>如果需要压缩的文件 符合过滤条件 也即在给的文件列表中 就继续下一步, 否则 return</li>
+<li>如果请求头文件 没有 accept-encoding 值 ， return (why)</li>
+<li>如果请求方法 为 <code>HEAD</code> , <code>return</code></li>
+<li>默认压缩方法为 <code>gzip</code></li>
+<li>确定压缩方法 即给 <code>method</code> 赋值</li>
+<li>此时<code>method</code> 还是空的话  return</li>
+<li>压缩流文件 <code>stream = exports.methods[method](options)</code> 即 <code>zlib.createGzip</code> 或 <code>zlib.createDeflate</code> 得到 流 <code>stream</code></li>
+<li>开始赋值 <code>Content-Encoding</code> , 并去除 <code>Content-Length</code> 明显压缩后 文件大小会变
+此时 <code>stream</code> 监听 到 发出去的数据 就 开始 res.write<code>stream.write(new Buffer(chunk, encoding))</code> 这里的 stream 监听 是 <code>node version 0.10</code>后的<code>stream api</code> 具体 参考 <a href="https://github.com/joyent/node/blob/master/doc/api/stream.markdown">stream</a></li>
+<li>直到 流文件 <code>"流出"</code></li>
+</ul>
+
+
+<p><a href="https://github.com/senchalabs/connect/blob/master/lib/middleware/basicAuth.js">lib &ndash;> middle &ndash;> basicAuth.js</a></p>
+
+<p><strong>3种应用形式</strong></p>
+
+<ul>
+<li>简单输入 username , password</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  connect(connect.basicAuth('username', 'password'));</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>回调</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
+</span><span class='line'>   .use(connect.basicAuth(function(user, pass){
+</span><span class='line'>      return 'tj' == user & 'wahoo' == pass;
+</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>异步回调</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
+</span><span class='line'>   .use(connect.basicAuth(function(user, pass, fn){
+</span><span class='line'>      User.authenticate({user: user, pass: pass}, fn); 
+</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Authrization</strong></p>
+
+<p>页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个 Header:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Authorization: Basic bXl1c2VyOm15cGFzcw==</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的 <code>bXl1c2VyOm15cGFzcw==</code> 是 <code>base64 encoded</code>。例如, <code>base64_decode('bXl1c2VyOm15cGFzcw==')</code> &ndash;> <code>myuser:mypass</code></p>
+
+<p>理解头文件的 Authrization, 下面来看代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  if ('string' == typeof callback)  //对应第一个应用例子, 见上 
+</span><span class='line'>  callback = function(user, pass) {
+</span><span class='line'>      return user == username && pass == password; 
+</span><span class='line'>  } //这时给callback赋值 function</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面解析出头文件的即 <code>req.headers.authorization</code> 解码出用户输入的用户名和密码得到 <code>user</code> 和 <code>pass</code></p>
+
+<p>最后调用<code>callback</code>做验证 分一下两种情况</p>
+
+<ul>
+<li>异步callback</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if (callback.length &gt;= 3) {
+</span><span class='line'>  var pause = utils.pause(req); 
+</span><span class='line'>  callback(user, pass, function(err, user){
+</span><span class='line'>      if (err || !user) return unauthorized(res, realm);  
+</span><span class='line'>      req.user = req.remoteUser = user;
+</span><span class='line'>      next();
+</span><span class='line'>      pause.resume(); // nodejs version &lt; 0.10, 在中间间使用异步调用时使用， 为了在异步操作完成后， 重新触发消息， 以免事件丢失
+</span><span class='line'>  });
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>同步callback</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> if (callback(user, pass){
+</span><span class='line'>  req.user = req.remoteUser = user; 
+</span><span class='line'>  next();
+</span><span class='line'> }else {
+</span><span class='line'>  unauthorized(res, realm); 
+</span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://github.com/zs1621/connect/blob/master/lib/middle/static.js">lib &ndash;>middle &ndash;>static.js</a></p>
+
+<p><strong>应用</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>connect()
+</span><span class='line'>  .use(connect.static(__dirname+ '/public', {maxAge: 1000}))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>参数</strong></p>
+
+<p><code>root</code>:</p>
+
+<p><code>options</code>:</p>
+
+<pre><code>- 'maxAge' 浏览器缓存时间  默认为0
+- 'hidden' 允许隐藏文件的转换 默认false
+- 'redirect' 如果路径是一个文件夹， 指向 ‘/’ 默认 true
+- 'index' 默认的文件名‘index.html’
+</code></pre>
+
+<p>代码主体就是</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>send(req, path)
+</span><span class='line'>  .maxage(options.maxAge || 0)
+</span><span class='line'>  .root(root)
+</span><span class='line'>  .index(options.index || 'index.html')
+</span><span class='line'>  .hidden(options.hidden)
+</span><span class='line'>  .on('error', error)
+</span><span class='line'>  .on('directory', directory)
+</span><span class='line'>  .pipe(res)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于 <code>send</code> 模块分析见 <a href="zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading">send</a></p>
+]]></content>
+  </entry>
   
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/21/node-thunkify-code-reading/">Node-thunkify Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/17/koa-dot-js-code-reading/">Koa.js Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/27/underscore-dot-js-code-reading/">underscore.js Code Reading</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - admin -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-
-
-
-
-
-
-
-
-
-
-</body>
-</html>
->>>>>>> 05269ec9e8adf6f886e6f548afe7cc53317e1794
+</feed>
