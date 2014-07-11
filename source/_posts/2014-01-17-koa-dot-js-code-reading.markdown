@@ -23,7 +23,7 @@ TBC 继续挖坑待填...
    - co: 3.0.2
    - debug
    - fresh: 0.2.1
-   - koa-compose: 2.2.0
+   - [koa-compose: 2.2.0](https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/)
    - koa-is-json: 1.0.0
    - cookies: 0.4.0
    - [delegates](https://github.com/visionmedia/node-delegates/blob/master/index.js): 0.0.3 -已读 -13/5
@@ -76,9 +76,37 @@ app.listen = function () {
 由代码可以知道 this.callback() 就是一个 `requestListener`;
 
 
+来到`app.callback`
+
+
+```
+app.callback = function () {
+    var mw = [respond].concat(this.middleware);   // 实际上 respond 就是最后一个需要执行的中间件， 负责返回数据的 
+    var gen = compose(mw); 
+    var fn = co(gen);  // co 和 compose 就是将一个个middle，按序执行的操作, 此时middle还没有运行
+    var self = this;
+    
+    if (!this.listeners('error').length) this.on('error', this.onerror);
+    
+    return function (req, res) {
+        res.statusCode = 404;    
+        var ctx = self.createContext(req, res);
+        finished(ctx, ctx.onerror);
+        fn.call(ctx, ctx.onerror); // 这步运行了说明服务器接收到了请求， 然后一步步的运行middle 和 请求业务处理
+    }
+}
+```
+
+
+上面的代码基本上就解释了整个请求到回复的流程
+
+
+
+下面分解开来
+
+ - `createContext(req, res)`
+ - `finished(ctx, ctx.onerror)`
+ - `fn.call(ctx, ctx.onerror)`
+
+
 TBC
-
-
-
-
-
