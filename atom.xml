@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-07-11T15:23:21+08:00</updated>
+  <updated>2014-07-11T15:30:47+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -413,10 +413,14 @@
 
 <p>上面的代码基本上就解释了整个请求到回复的流程</p>
 
-<p>下面分解开来
- &ndash; createContext(req, res)
- &ndash; finished(ctx, ctx.onerror)
- &ndash; fn.call(ctx, ctx.onerror)</p>
+<p>下面分解开来</p>
+
+<ul>
+<li><code>createContext(req, res)</code></li>
+<li><code>finished(ctx, ctx.onerror)</code></li>
+<li><code>fn.call(ctx, ctx.onerror)</code></li>
+</ul>
+
 
 <p>TBC</p>
 ]]></content>
