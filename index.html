@@ -477,7 +477,7 @@ swift 语言， &hellip;">
 <li>co: 3.0.2</li>
 <li>debug</li>
 <li>fresh: 0.2.1</li>
-<li>koa-compose: 2.2.0</li>
+<li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
 <li>koa-is-json: 1.0.0</li>
 <li>cookies: 0.4.0</li>
 <li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
@@ -538,6 +538,47 @@ swift 语言， &hellip;">
 <p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
 
 <p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>来到<code>app.callback</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>app.callback = function () {
+</span><span class='line'>    var mw = [respond].concat(this.middleware);   // 实际上 respond 就是最后一个需要执行的中间件， 负责返回数据的 
+</span><span class='line'>    var gen = compose(mw); 
+</span><span class='line'>    var fn = co(gen);  // co 和 compose 就是将一个个middle，按序执行的操作, 此时middle还没有运行
+</span><span class='line'>    var self = this;
+</span><span class='line'>    
+</span><span class='line'>    if (!this.listeners('error').length) this.on('error', this.onerror);
+</span><span class='line'>    
+</span><span class='line'>    return function (req, res) {
+</span><span class='line'>        res.statusCode = 404;    
+</span><span class='line'>        var ctx = self.createContext(req, res);
+</span><span class='line'>        finished(ctx, ctx.onerror);
+</span><span class='line'>        fn.call(ctx, ctx.onerror); // 这步运行了说明服务器接收到了请求， 然后一步步的运行middle 和 请求业务处理
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码基本上就解释了整个请求到回复的流程</p>
+
+<p>下面分解开来
+ &ndash; createContext(req, res)
+ &ndash; finished(ctx, ctx.onerror)
+ &ndash; fn.call(ctx, ctx.onerror)</p>
 
 <p>TBC</p>
 </div>

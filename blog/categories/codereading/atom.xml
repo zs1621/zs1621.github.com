@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-06-04T23:35:51+08:00</updated>
+  <updated>2014-07-11T15:23:21+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -182,7 +182,7 @@ var fs = require(&lsquo;fs&rsquo;);</p>
 <li>co: 3.0.2</li>
 <li>debug</li>
 <li>fresh: 0.2.1</li>
-<li>koa-compose: 2.2.0</li>
+<li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
 <li>koa-is-json: 1.0.0</li>
 <li>cookies: 0.4.0</li>
 <li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
@@ -239,6 +239,36 @@ return server.listen.apply(server, arguments);
 <p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
 
 <p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>来到<code>app.callback</code></p>
+
+<p>```
+app.callback = function () {</p>
+
+<pre><code>var mw = [respond].concat(this.middleware);   // 实际上 respond 就是最后一个需要执行的中间件， 负责返回数据的 
+var gen = compose(mw); 
+var fn = co(gen);  // co 和 compose 就是将一个个middle，按序执行的操作, 此时middle还没有运行
+var self = this;
+
+if (!this.listeners('error').length) this.on('error', this.onerror);
+
+return function (req, res) {
+    res.statusCode = 404;    
+    var ctx = self.createContext(req, res);
+    finished(ctx, ctx.onerror);
+    fn.call(ctx, ctx.onerror); // 这步运行了说明服务器接收到了请求， 然后一步步的运行middle 和 请求业务处理
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码基本上就解释了整个请求到回复的流程</p>
+
+<p>下面分解开来
+ &ndash; createContext(req, res)
+ &ndash; finished(ctx, ctx.onerror)
+ &ndash; fn.call(ctx, ctx.onerror)</p>
 
 <p>TBC</p>
 ]]></content>
