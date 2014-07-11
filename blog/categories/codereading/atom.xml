@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: codeReading | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2014-06-04T23:35:51+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[koa-compose Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/"/>
+    <updated>2014-05-28T10:37:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading</id>
+    <content type="html"><![CDATA[<h2><strong><a href="https://github.com/koajs/compose/blob/master/index.js">compose</a></strong></h2>
+
+<p>```
+function compose(middleware) {
+   return function *(next) {</p>
+
+<pre><code>    var i = middleware.length;   
+    var prev = next || noop ();
+    var curr;
+
+    while (i--) {
+        curr = middleware[1];    
+        prev = curr.call(this, prev); // 
+    }
+
+    yield *prev;
+</code></pre>
+
+<p>   }
+}
+```</p>
+
+<p>看下例的运行效果</p>
+
+<p>```
+var co = require(&lsquo;co&rsquo;);</p>
+
+<p>var stack = [];
+stack.push(function *(next) {</p>
+
+<pre><code>arr.push(1);    
+yield next;
+arr.push(3);
+</code></pre>
+
+<p>});
+stack.push(function *(next){</p>
+
+<pre><code>arr.push(2);    
+yield next;
+arr.push(4)
+</code></pre>
+
+<p>});</p>
+
+<p>co(compose(stack)) (function (err) {</p>
+
+<pre><code>if (err) throw err;   
+console.log(arr); // 输出 [1, 2, 3, 4], 从输出可以看到其执行顺序
+</code></pre>
+
+<p>});
+```</p>
+
+<p>从上例的程序可以看到<a href="https://github.com/koajs/koa/blob/master/lib/application.js#L113">koa</a>。koa在加载中间件时是通过co 和 compose来按次序拨开一层一层的middleware。</p>
+
+<p>```
+co (function *() {</p>
+
+<pre><code>var arr = []
+var funa = function *(next) {
+    arr.push(1);    
+    yield *next;
+    arr.push(3);
+};
+var funb = function *(next) {
+    arr.push(2);
+    yield *next;
+    arr.push(4)
+};
+funa ();
+funb ();
+return arr;
+</code></pre>
+
+<p>})(function (err, items) {
+ if (err) {</p>
+
+<pre><code>console.log(err);     
+</code></pre>
+
+<p> }
+ console.log(items);  <br/>
+});
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[node-thunkify Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading/"/>
+    <updated>2014-05-21T12:02:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
+
+<h2>code</h2>
+
+<p>```
+function thunkify(fn) {</p>
+
+<pre><code>assert('function' == typeof fn, 'function required');    
+
+return function () {
+    var args = slice.call(arguments);    
+    var ctx = this;
+    return function (done) {   // done 是回调函数
+        var called;
+        args.push(function() {
+            if (called) return;
+            called = true;    
+            done.apply(null, arguments); 
+        }); // 将回调处理加入参数列表
+
+        try {
+            fn.apply(ctx, args);   // 函数处理 
+        } catch (err) {
+            done(err);   // 异常获取并用回调处理 
+        }
+    }
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<h2>例子</h2>
+
+<p>```
+var thunkify = require(&lsquo;thunkify&rsquo;);
+var fs = require(&lsquo;fs&rsquo;);</p>
+
+<p>var read = thunkify(fs.readFile);</p>
+
+<p>read(&lsquo;package.json&rsquo;, &lsquo;utf8&rsquo;)(function(err, str){
+});
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Koa.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading/"/>
+    <updated>2014-01-17T15:23:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<p>TBC 继续挖坑待填&hellip;</p>
+
+<h2><a href="https://github.com/koajs/koa">Koa</a></h2>
+
+<p>源码简况</p>
+
+<ul>
+<li>version： 0.6.0</li>
+<li>用到的库
+
+<ul>
+<li>escape-html: =1.0.1</li>
+<li>statuses: =1.0.1</li>
+<li>accepts: 1.0.0</li>
+<li>type-is: 1.1.0</li>
+<li>set-type: 1.0.0</li>
+<li>finished: 1.1.1</li>
+<li>co: 3.0.2</li>
+<li>debug</li>
+<li>fresh: 0.2.1</li>
+<li>koa-compose: 2.2.0</li>
+<li>koa-is-json: 1.0.0</li>
+<li>cookies: 0.4.0</li>
+<li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
+<li>dethroy: 1.0.0</li>
+<li>error-inject: 1.0.0</li>
+<li><a href="https://github.com/visionmedia/node-only">only</a>: 0.0.2  -已读 -9/5</li>
+</ul>
+</li>
+<li>运行条件: node 版本大于0.11.9</li>
+</ul>
+
+
+<h2><strong>从入口说起</strong></h2>
+
+<p>```
+var koa = require(&lsquo;koa&rsquo;);
+var app = koa();</p>
+
+<p>app.use(function *(){</p>
+
+<pre><code>this.body = 'Hello World';    
+</code></pre>
+
+<p>});</p>
+
+<p>app.listen(3000);
+```</p>
+
+<p>上面是一个最简单的服务,输出<code>Hello World</code>; 我们用到两个koa的api</p>
+
+<ul>
+<li>app.use()</li>
+<li>app.listen();</li>
+</ul>
+
+
+<p>下面就先从app.listen() 开始</p>
+
+<p>看 <a href="https://github.com/koajs/koa/blob/master/lib/application.js">application.js</a></p>
+
+<p>```
+app.listen = function () {</p>
+
+<pre><code>var server = http.createServer(this.callback()) ;  
+return server.listen.apply(server, arguments);
+</code></pre>
+
+<p>}
+```</p>
+
+<blockquote><p>http.createServer([requestListener])
+ returns a new web server object</p>
+
+<p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
+
+<p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>TBC</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[underscore.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading/"/>
+    <updated>2013-12-27T21:14:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
+
+<p>挖坑待续</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Lazy.js code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading/"/>
+    <updated>2013-12-18T08:58:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
+
+<p>在看源码前， 可以先看下Lazy.js的基本思想 <a href="https://github.com/zs1621/lazy.js/wiki/%E4%BB%8B%E7%BB%8D-LAZYJS(%E7%BF%BB%E8%AF%91">Lazy.js 的设计模式</a>)</p>
+
+<h3>Lazy</h3>
+
+<p><code>javascript
+Lazy([1, 2, 4]) // in [1, 2, 4] -&gt; out instanceof Lazy.ArrayLikeSequence
+Lazy({ a: 'b'})
+Lazy("hello world")
+Lazy()
+Lazy(null)
+</code></p>
+
+<ul>
+<li>输入参数 Array | object | string |  | null</li>
+<li>输出 { source: [1, 2, 4] } | { source: {&lsquo;a&rsquo;: b} } | { source: &ldquo;hello world&rdquo;} | { source: undefined }  | { source: null }</li>
+<li>可以看到输入的参数被打包成相应的对象, 而这些对象都继承自 <code>sequence</code></li>
+</ul>
+
+
+<h3>Sequence</h3>
+
+<p><code>sequence</code> 对象提供对 0或者更多连续元素的集合 的统一的 API 封装.为什么所有的操作需要一个 sequence. 看下面的例子</p>
+
+<p>```javascript
+var seq = Lazy(source) // 1st sequence</p>
+
+<pre><code>    .map(func) // 2nd MappedSequence
+   .filter(pred) // 3rd FilteredSequence
+    .reverse() // 4th ReversedSequence
+</code></pre>
+
+<p>seq.each(function(x) { console.log(x); })
+```</p>
+
+<p>上面这个例子中 前四步除了创建对应的sequece没有做任何的遍历source或者别的操作。 只有在第5步调用 each 时，将一次性按照鍊條(chain)的順序处理source 得到最后的结果。所以lazy做的就是延迟遍历处理数据.</p>
+
+<blockquote><p>in fact, when i think about  the performance of <code>underscore</code> and <code>lazy.js</code>; i cann&rsquo;t understand why lazy is faster.  lazy.js: 1 2s 3 underscore: 1 2 3 1 2 3 1 2 3 . so what&rsquo;s the difference. lazy.js just hold off some process; i cann&rsquo;t get it&hellip;. so continue to read code. >_&lt;</p></blockquote>
+
+<p>```javascript
+function Sequence() {} # 创建Sequence构造函数</p>
+
+<p>```</p>
+
+<p>TBC</p>
+]]></content>
+  </entry>
+  
+</feed>
