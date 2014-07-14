@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
@@ -8,11 +9,15 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="WWDC14 观后感 WWDC苹果全球开发者大会. 看完10小时，列下我能记住的几点 mac 在手机在旁边的情况下，可以拨接电话，收发短信
-spotlight 可以联网搜索
-touchId 指纹解锁
-instant hotspot: mac 和 iphone ipad 即时同步
-swift 语言， &hellip;">
+  <meta name="description" content="finished 功能: 在请求关闭，完成， 或者出错时执行回调
+用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁 从一个koa例子开始 1
+2
+3
+4
+5
+6
+7
+var onFinished = require('finished'); &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +74,128 @@ swift 语言， &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-14T11:57:26+08:00" pubdate data-updated="true">Jul 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://github.com/expressjs/finished">finished</a></h2>
+
+<ul>
+<li>功能: 在请求关闭，完成， 或者出错时执行回调</li>
+<li>用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁</li>
+</ul>
+
+
+<h2>从一个koa例子开始</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var onFinished = require('finished');
+</span><span class='line'>function* () {
+</span><span class='line'>    var stream = this.body = fs.createReadStream('thingie.json');   
+</span><span class='line'>    onFinished(this, function(err) {
+</span><span class='line'>        stream.destroy();    
+</span><span class='line'>    })
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再看finished的代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function finished (thingie, callback) {
+</span><span class='line'>    var socket = thingie.socket || thingie;    
+</span><span class='line'>    var res = thingie.res || thingie;  // 主要需要监测socket, res的事件
+</span><span class='line'>
+</span><span class='line'>    if ( res.finished || !socket.writable) {
+</span><span class='line'>        defer(callback);    
+</span><span class='line'>        return thingie;
+</span><span class='line'>    };   // res完成或者socket不可写的时候， 直接执行callback, 返回thingie
+</span><span class='line'>
+</span><span class='line'>    var listener = res.__onFinished; 
+</span><span class='line'>
+</span><span class='line'>    if (!listener || !listener.queue) {
+</span><span class='line'>        listener = res.__onFinished = function onFinished(err)  {
+</span><span class='line'>            if (res.__onFinished === listener) res.__onFinished = null;
+</span><span class='line'>            var queue = listener.queue || [];
+</span><span class='line'>            while (queue.length) queue.shift()(err)
+</span><span class='line'>        }   
+</span><span class='line'>        listerner.queue = [];
+</span><span class='line'>
+</span><span class='line'>        first([
+</span><span class='line'>            [socket, 'error', 'close'], 
+</span><span class='line'>            [res, 'finish'],
+</span><span class='line'>        ], listener); // 看下面的first模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    listener.queue.push(callback);
+</span><span class='line'>
+</span><span class='line'>    return thingie;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1607,334 +1734,6 @@ swift 语言， &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/16/tornado-code-reading-tcpserver/">Tornado Code Reading-TCPServer</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-16T16:31:00+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPserver</a></h2>
-
-<p>一个非阻塞， 单进程的 <code>TCP</code> 服务器</p>
-
-<p>为了使用 <code>TCPServer</code>, 定义一个子类改写其中的 <code>handle_stream</code> 方法</p>
-
-<p>如果让服务器通过 <code>SSL</code> 传输， 如下例</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>TCPServer(ssl_options={
-</span><span class='line'>  "certfile": os.path.join(data_dir, "mydomain.crt"),
-</span><span class='line'>  "keyfile": os.path.join(data_dir, "mydomain.key"),
-</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>TCPServer</code> simple single-process::</p>
-
-<ul>
-<li><code>listen</code>: 监听单个进程</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>server = TCPServer()
-</span><span class='line'>server.listen(8888)
-</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>bind</code> / <code>start</code>: simple multi-process::</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>server = TCPServer()
-</span><span class='line'>server.bind(8888)
-</span><span class='line'>server.start(0) #Forks multiple sub-process
-</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果使用<code>start</code>接口， 一个 <code>.IOLoop</code> 不可以传入 <code>TCPServer</code> 结构里。 <code>start</code>将总是开始服务在默认的单例 <code>.IOLoop</code></p>
-
-<ul>
-<li><code>add_sockets</code>: 高级多进程::</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sockets = bind_sockets(8888)
-</span><span class='line'>tornaado.process.fork_processes(0)
-</span><span class='line'>server = TCPServer()
-</span><span class='line'>server.add_sockets(sockets)
-</span><span class='line'>IOLoop.instance().start()</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>add_sockets</code> 接口更为复杂， 但是和<code>tornado.process.fork_processes</code>使用将会更明了， <code>add_sockets</code>也可以用在单进程服务中 ， 如果你想要创建你的监听套节字而不是<code>~tornado.netutil.bind_sockets</code></p>
-
-<hr />
-
-<p>以上是怎么应用
-下面看源码</p>
-
-<p><strong>初始化</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def __init__(self, io_loop=None, ssl_options=None, max_buffer_size=None):
-</span><span class='line'>  self.io_loop = io_loop
-</span><span class='line'>  self.ssl_options = ssl_options
-</span><span class='line'>  self.sockets = {}
-</span><span class='line'>  self._pending_sockets = []
-</span><span class='line'>  self._started = False
-</span><span class='line'>  self.max_buffer_size = max_buffer_size
-</span><span class='line'>  #下面是检验 SSL 文件，此处略</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>listen</strong></p>
-
-<p>在给定的端口接受连接
-这个方法可能被调用多次为了监听多个端口。<code>listen</code> 立即生效; 之后不必调用<code>TCPServer.start</code> , 但是， <code>,IOLoop</code> 是必要的</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sockets = bind_sockets(port, address=address)
-</span><span class='line'>self.add_sockets(sockets)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>源码里的 <code>bind_sockets</code> 见 <a href="#bind_sockets">bind_sockets</a>, <code>add_sockets</code> 见下</p>
-
-<p><strong>add_sockets</strong></p>
-
-<p>让服务接受多个连接</p>
-
-<p><code>sockets</code> 参数是一个socket数组, <code>add_sockets</code>一般和 <code>tornado.process.fork_processes</code>联合使用 为了控制 多进程服务的启动</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>if self.io_loop is None:
-</span><span class='line'>  self.io_loop = IOLoop.current()
-</span><span class='line'>
-</span><span class='line'>for sock in sockets:
-</span><span class='line'>  self._sockets[sock.fileno()] = sock
-</span><span class='line'>  add_accept_handler(sock, self._handle_connection, io_loop=self.io.loop) </span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的 add_accept_handler 见 <a href="#add_accept_handler">add_accept_handler</a>
-add_accept_handler 第二个参数 self._handle_connection是个回调函数, 分析如下</p>
-
-<blockquote><p>_handle_connection在接受客户端的连接处理结束后会被调用，调用时传入连接和ioloop对象初始化 IOStream,用于对客户端的异步读写;然后调用 <code>handle_stream</code>(注意这里的handle_stream 文档说了如果你只是用<code>tcpserver</code>那么，handle_stream得自己重写, 如果用tornado的httpserver 那handle_stream 在 <a href="https://github.com/facebook/tornado/blob/master/tornado/httpserver.py">httpserver</a>), 传入创建的<code>IOStream</code>对象初始化一个<code>HTTPConnection</code>, <code>HTTPConnection</code>  封装了<code>IOStream</code> 的一些操作， 用于处俩 <code>HTTPRequest</code> 并返回。 至此 <code>HTTPServer</code>的创建、启动、注册回调函数过程结束</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#如果self.ssl_options不为空，处理ssl代码略</span>
-</span><span class='line'><span class="k">try</span><span class="p">:</span>
-</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_options</span> <span class="ow">in</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">stream</span> <span class="o">=</span> <span class="n">SSLTOSTREAM</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">io_loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">,</span> <span class="n">max_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_size</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">stream</span> <span class="o">=</span> <span class="n">IOSTream</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">io_loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">,</span> <span class="n">max_buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_buffer_size</span><span class="p">)</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">handle_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
-</span><span class='line'><span class="k">except</span> <span class="n">Excetpion</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">app_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;Error in connection callback&#39;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面的分析和源码 可知 服务器的工作流程 socket->bind->listen创建 listen socket 监听客户端， 并将每个listen socket 的 fd 注册到IOLoop的单例实例中; 当 listen socket 可读时回调 _handle_events 处理客户端请求；在与客户端通信的过程中使用 IOStream 封装读写缓冲区， 实现与客户端的异步读写。 下面我们将具体了解listen socket 的 fd 被注册到IOLoop的单例实例中  见 <a href="http://zs1621.github.io/blog/2013/09/19/tornado-code-reading-ioloop/">IOLoop</a></p>
-
-<hr />
-
-<h2><a href="https://github.com/facebook/tornado/blob/master/tornado/netutil.py">netutil</a></h2>
-
-<p><a name="bind_sockets" id="bind_sockets"><strong>bind_sockets</strong></a>
-  &ndash; 解释:创建监听套节字绑定到给定的端口和地址</p>
-
-<ul>
-<li><p>参数</p>
-
-<ul>
-<li>address: IP地址或主机名。如果是主机名，服务将会监听所有跟此域名有关的<code>IP</code></li>
-<li>Family: <code>socket.AF_INET</code> 或 <code>socket.AF_INET6</code></li>
-<li>backlog: 这个参数跟<code>socket.listen()&lt;socket.socket.listen&gt;</code>一样</li>
-<li>flags:</li>
-</ul>
-</li>
-<li><p>代码</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">sockets</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'><span class="k">if</span> <span class="n">address</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">address</span> <span class="o">=</span> <span class="bp">None</span>
-</span><span class='line'><span class="k">if</span> <span class="ow">not</span> <span class="n">socket</span><span class="o">.</span><span class="n">has_ipv6</span> <span class="ow">and</span> <span class="n">family</span> <span class="o">==</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_UNSPEC</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">family</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span>
-</span><span class='line'><span class="k">if</span> <span class="n">flags</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">flags</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AI_PASSIVE</span>
-</span><span class='line'>  <span class="c">#见 [getaddrinfo](https://github.com/zs1621/pythostudy/wiki/socket)</span>
-</span><span class='line'>  <span class="c">#`getaddrinfo`会返回服务器的所有网卡信息， 每个网卡都要监听客户端的请求并返回创建的sockets</span>
-</span><span class='line'><span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">getaddrinfo</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">family</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK</span><span class="o">.</span><span class="n">STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="p">)):</span>
-</span><span class='line'>  <span class="n">af</span><span class="p">,</span> <span class="n">socktype</span><span class="p">,</span> <span class="n">proto</span><span class="p">,</span> <span class="n">canoname</span><span class="p">,</span> <span class="n">sockaddr</span> <span class="o">=</span> <span class="n">res</span>
-</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
-</span><span class='line'>      <span class="c">#创建套节字</span>
-</span><span class='line'>      <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">socktype</span><span class="p">,</span> <span class="n">proto</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EAFNOSUPPORT</span><span class="p">:</span>
-</span><span class='line'>          <span class="k">continue</span>
-</span><span class='line'>      <span class="k">raise</span>
-</span><span class='line'>  <span class="n">set_close_exec</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s">&#39;nt&#39;</span><span class="p">:</span>
-</span><span class='line'>      <span class="c">#TCP连接中，recv等函数默认为阻塞模式(block)，</span>
-</span><span class='line'>      <span class="c">#即直到有数据到来之前函数不会返回，</span>
-</span><span class='line'>      <span class="c">#而我们有时则需要一种超时机制使其在一定时间后返回而不管是否有数据到来，</span>
-</span><span class='line'>      <span class="c">#这里我们就会用到setsockopt()函数 见 [setsockopt](http://blog.chinaunix.net/uid-25749806-id-348637.html)</span>
-</span><span class='line'>      <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOREUSERADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>  <span class="c">#在linux ipv6 sockets 也接受 ipv4，这样的话不能同时绑定 ipv4 和 ipv6.为了方便，在ipv6 sockets中总是禁用ipv4 </span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">af</span> <span class="o">==</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET6</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s">&quot;IPPROTO_IPV6&quot;</span><span class="p">):</span>
-</span><span class='line'>          <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IPV6</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IPV6_V6ONLY</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">sockaddr</span><span class="p">)</span>
-</span><span class='line'>  <span class="c">#默认设定等待被处理的连接最大个数</span>
-</span><span class='line'>  <span class="n">sock</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">backlog</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">sockets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
-</span><span class='line'><span class="k">return</span> <span class="n">sockets</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a name="add_accept_handler" id="add_accept_handler"><strong>add_accept_handler</strong></a>: 添加一个<code>IOLoop</code>事件去接受新的连接在 <code>sock</code></p>
-
-<blockquote><p>当一个连接被接受了， <code>callback(connection, address)</code>(<code>connection</code>是socket对象， <code>address</code>是连接的另外结尾处的地址)将会运行</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">if</span> <span class="n">io_loop</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">io_loop</span> <span class="o">=</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">accept_handler</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">connection</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-</span><span class='line'>      <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span class='line'>          <span class="c">#EWOULDBLOCK 和 EAGAIN 表明我们</span>
-</span><span class='line'>          <span class="c">#已经接受了每个可以接受的连接</span>
-</span><span class='line'>          <span class="c">#具体见[EWOULDBLOCK](http://stackoverflow.com/questions/3647539/socket-error-errno-ewouldblock)</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EWOULDBLOCK</span><span class="p">,</span> <span class="n">errno</span><span class="o">.</span><span class="n">EAGAIN</span><span class="p">):</span>
-</span><span class='line'>              <span class="k">return</span>
-</span><span class='line'>          <span class="c">#ECONNABORTED 表明有个连接还在接受队列时被关闭了</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">ECONNABORTED</span><span class="p">:</span>
-</span><span class='line'>              <span class="k">continue</span>
-</span><span class='line'>          <span class="k">raise</span>
-</span><span class='line'>      <span class="n">callback</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
-</span><span class='line'><span class="n">io_loop</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">accept_handler</span><span class="p">,</span> <span class="n">IOLoop</span><span class="o">.</span><span class="n">READ</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1950,6 +1749,10 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
       </li>
     
@@ -1963,10 +1766,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
     
       <li class="post">
         <a href="/blog/2014/01/17/koa-dot-js-code-reading/">Koa.js Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/27/underscore-dot-js-code-reading/">underscore.js Code Reading</a>
       </li>
     
   </ul>
@@ -2001,4 +1800,3 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 
 </body>
 </html>
->>>>>>> 05269ec9e8adf6f886e6f548afe7cc53317e1794

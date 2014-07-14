@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-07-11T15:30:47+08:00</updated>
+  <updated>2014-07-14T14:16:53+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,101 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[expressjs/finished Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/"/>
+    <updated>2014-07-14T11:57:26+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/expressjs/finished">finished</a></h2>
+
+<ul>
+<li>功能: 在请求关闭，完成， 或者出错时执行回调</li>
+<li>用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁</li>
+</ul>
+
+
+<h2>从一个koa例子开始</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var onFinished = require('finished');
+</span><span class='line'>function* () {
+</span><span class='line'>    var stream = this.body = fs.createReadStream('thingie.json');   
+</span><span class='line'>    onFinished(this, function(err) {
+</span><span class='line'>        stream.destroy();    
+</span><span class='line'>    })
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再看finished的代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function finished (thingie, callback) {
+</span><span class='line'>    var socket = thingie.socket || thingie;    
+</span><span class='line'>    var res = thingie.res || thingie;  // 主要需要监测socket, res的事件
+</span><span class='line'>
+</span><span class='line'>    if ( res.finished || !socket.writable) {
+</span><span class='line'>        defer(callback);    
+</span><span class='line'>        return thingie;
+</span><span class='line'>    };   // res完成或者socket不可写的时候， 直接执行callback, 返回thingie
+</span><span class='line'>
+</span><span class='line'>    var listener = res.__onFinished; 
+</span><span class='line'>
+</span><span class='line'>    if (!listener || !listener.queue) {
+</span><span class='line'>        listener = res.__onFinished = function onFinished(err)  {
+</span><span class='line'>            if (res.__onFinished === listener) res.__onFinished = null;
+</span><span class='line'>            var queue = listener.queue || [];
+</span><span class='line'>            while (queue.length) queue.shift()(err)
+</span><span class='line'>        }   
+</span><span class='line'>        listerner.queue = [];
+</span><span class='line'>
+</span><span class='line'>        first([
+</span><span class='line'>            [socket, 'error', 'close'], 
+</span><span class='line'>            [res, 'finish'],
+</span><span class='line'>        ], listener); // 看下面的first模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    listener.queue.push(callback);
+</span><span class='line'>
+</span><span class='line'>    return thingie;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WWDC14]]></title>
