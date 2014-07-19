@@ -9,15 +9,12 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="finished 功能: 在请求关闭，完成， 或者出错时执行回调
-用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁 从一个koa例子开始 1
-2
-3
-4
-5
-6
-7
-var onFinished = require('finished'); &hellip;">
+  <meta name="description" content="原文 服務器遇到問題,從何下手? 不要急着衝向你的服務器， 在這之前， 你對它和具體的問題了解多少？ 必須知道的 問題的確切症狀? 丟包? 錯誤?
+問題什麼時候被發現?
+可以重現麼?
+有什麼規律(例如每小時發生一次)?
+在服務器的最後一次改變(代碼， 服務配置, 內存)?
+問題會影響客戶的哪個部分 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +77,108 @@ var onFinished = require('finished'); &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-19T17:09:13+08:00" pubdate data-updated="true">Jul 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p><a href="http://devo.ps/blog/troubleshooting-5minutes-on-a-yet-unknown-box/">原文</a></p></blockquote>
+
+<h2><strong>服務器遇到問題,從何下手?</strong></h2>
+
+<p>不要急着衝向你的服務器， 在這之前， 你對它和具體的問題了解多少？</p>
+
+<p>必須知道的</p>
+
+<ul>
+<li>問題的確切症狀? 丟包? 錯誤?</li>
+<li>問題什麼時候被發現?</li>
+<li>可以重現麼?</li>
+<li>有什麼規律(例如每小時發生一次)?</li>
+<li>在服務器的最後一次改變(代碼， 服務配置, 內存)?</li>
+<li>問題會影響客戶的哪個部分(登錄， 註銷， )?</li>
+<li><strong>有監控平臺麼?</strong> Munin, Zabbix, Nagios, NewRelic..</li>
+<li><strong>日志(集中化)?</strong> Loggly, Airbrake, Graylog</li>
+</ul>
+
+
+<p>上面的最後兩項是最方便直觀的信息來源， 但也別期望太多;爲了搞定問題，繼續往下看</p>
+
+<p><strong>誰登陸了?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ w
+</span><span class='line'>$ last</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不是很重要， 但是你在找問題時不希望還有其他人在擺弄的服務器。廚房裏一個廚師足矣</p>
+
+<p><strong>之前做了哪些操作?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ history</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看歷史記錄總是好的;配合之前誰在操作的命令.</p>
+
+<p>快速回憶一下， 你也許小要升級環境變量 <code>HISTTIMEFORMAT</code> 去跟蹤那些命令運行的時刻.沒什麼比調查一個過期命令列表更讓人沮喪的了。</p>
+
+<p><strong>正在運行哪些程序i?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pstree -a
+</span><span class='line'>$ ps aux</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果覺得<code>ps aux</code>太羅嗦， <code>pstree -a</code>會給你一個漂亮的展示關於什麼正在運行以及誰調用了它</p>
+
+<p><strong>監聽服務</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ netstat -ntlp  # t: tcp
+</span><span class='line'>$ netstat -nulp  # u: udp
+</span><span class='line'>$ netstat -nxlp  # x: unix socket</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我更傾向分開運行這些命令， 主要是因爲不喜歡同時看所有的服務。雖然<code>netstat -nalp</code>以可以做到。甚至我會省略<code>數字化</code>選項(IPs是易讀點的)</p>
+
+<p>確定正在運行的服務以及他們是否應該運行。尋找多個監聽端口。通過<code>ps aux</code>的輸出匹配進程ID；這個是很有用的特別當你同時結束2~3個Java 或者 Erlang進程</p>
+
+<p>TBC</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a></h1>
     
     
@@ -103,7 +202,7 @@ var onFinished = require('finished'); &hellip;">
   </header>
 
 
-  <div class="entry-content"><h2><a href="https://github.com/expressjs/finished">finished</a></h2>
+  <div class="entry-content"><h2>* <a href="https://github.com/expressjs/finished">finished</a></h2>
 
 <ul>
 <li>功能: 在请求关闭，完成， 或者出错时执行回调</li>
@@ -111,7 +210,7 @@ var onFinished = require('finished'); &hellip;">
 </ul>
 
 
-<h2>从一个koa例子开始</h2>
+<h2><strong>从一个koa例子开始</strong></h2>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -189,6 +288,8 @@ var onFinished = require('finished'); &hellip;">
 </span><span class='line'>
 </span><span class='line'>    return thingie;
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
 
 </div>
   
@@ -1478,262 +1579,6 @@ var onFinished = require('finished'); &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/19/tornado-code-reading-ioloop/">Tornado Code Reading - IOLoop</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-19T12:36:00+08:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><a href="https://github.com/facebook/tornado/blob/master/tornado/ioloop.py">IOLoop</a></h2>
-
-<p>对着IOLoop 的源码瞅了一天，楞是没有明白， 为什么 父类实例可以调用子类方法?</p>
-
-<p>最后看到<a href="http://hswg.info/blog/2013/03/24/configurable-of-tornado-note/">configurable</a>
-<a href="http://ispe54.blogspot.com/2013/04/tornado-7.html">tornado 解读</a></p>
-
-<p>看一下可配置接口的实现</p>
-
-<p><a name='IOLoop' id='IOLoop'>configurable两函数</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="nd">@classmethod</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">configurable_base</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">IOLoop</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@classmethod</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">configurable_default</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s">&quot;epoll&quot;</span><span class="p">):</span>
-</span><span class='line'>      <span class="kn">from</span> <span class="nn">tornado.platform.epoll</span> <span class="kn">import</span> <span class="n">EPollIOLoop</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">EPollIOLoop</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s">&quot;kqueue&quot;</span><span class="p">):</span>
-</span><span class='line'>      <span class="c">#python 2.6+ on BSD or Mac</span>
-</span><span class='line'>      <span class="kn">from</span> <span class="nn">tornado.platform.kqueue</span> <span class="kn">import</span> <span class="n">KQueueIOLoop</span>
-</span><span class='line'>      <span class="k">return</span> <span class="n">KQueueIOLoop</span>
-</span><span class='line'>  <span class="kn">from</span> <span class="nn">tornado.platform.select</span> <span class="kn">import</span> <span class="n">SelectIOLoop</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">SelectIOLoop</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>Configurable类是可配置接口的父类， 可配置接口对外提供一致的接口标志， 但它的子类实现可以在运行时进行configure。一般跨平台时由于子类实现有多种选择， 这时候就可以使用配置接口， 例如 select 和 epoll。首先注意 Configurable 的两个函数: configurable_base 和 configurable_default, 两函数都需要被子类(即可配置接口类)覆盖重写。其中， base函数一般返回接口类自身， default 返回接口的默认子类实现， 除非接口指定了 __impl_class。IOLoop及其子类实现都没有实现初始化函数也没有构造函数， 七构造函数继承于 Configurable, 如下::</p></blockquote>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">base</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_base</span><span class="p">()</span>
-</span><span class='line'>  <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">cls</span> <span class="ow">is</span> <span class="n">base</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">impl</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configured_class</span><span class="p">()</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">__impl_kwargs</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">__impl_kwargs</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">impl</span> <span class="o">=</span> <span class="n">cls</span>
-</span><span class='line'>  <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Configurable</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">impl</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">instance</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">instance</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当子类对象被构造时， 子类<strong>new</strong>被调用， 因此参数里的cls 指的是Configurable的子类(可配置接口类， 如IOLoop)。先得到base,  <a href="#IOLoop">IOLoop代码</a> 可知, configurable_base返回的是自身类。由于 base 和 cls 是一样的， 所以调用 configured_class() 得到接口的子类实现(见<a href="#configured_class">configured_class</a>) 其实就是调用 base的 configurable_default(?????TBD), 就是返回一个子类实现(epoll/kqueue/select之一),顺便把<strong>impl_kwargs合并到args 里 。然后调用Configurable类的父类(Object)的 </strong>new__方法， 生成一个impl的对象， 紧接着把args当参数调用该队想的initialize(继承PollIOLoop) , 返回该对象。 所以， 当构造IOLoop对象时， 实际得到的是EPollIOLoop或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用 或其它相关子类。可以看出， Configurable 类主要提供构造方法， 相当于对象工厂根据配置来生产对象， 同时开放configure接口以供配置。而子类按照约定调整配置即可得到不同对象， 代码得到了复用</p>
-
-<p>上面的过程如果不好太理解  可以去看  <a href="https://github.com/zs1621/pythostudy/blob/master/tcp/tcp_loop_server.py">example</a> 这样大致能理解 ioloop 实例的初始化过程</p>
-
-<p><a name="configured_class" id="configured_class">configured_class</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">base</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_base</span><span class="p">()</span>
-</span><span class='line'><span class="k">if</span> <span class="n">cls</span><span class="o">.</span><span class="n">__impl_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">base</span><span class="o">.</span><span class="n">_impl_class</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">configurable_default</span><span class="p">()</span>
-</span><span class='line'><span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">__impl_class</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>===</p>
-
-<p>上面主要解释了 IOLoop 为什么能调用子类方法  以及  可配置接口的实现
-下面来看 IOLoop 的对象 instance</p>
-
-<p>IOLoop 实现了单例的概念, 具体见 <a href="https://github.com/zs1621/pythostudy/blob/master/class/singleton.py">IOLoop单例</a></p>
-
-<p>理解了上面的概念 接着 <a href="http://zs1621.github.io/blog/2013/09/16/tornado-code-reading-tcpserver/">TCPServer</a> 最后的 add_handle !其实 此时的 object 已经是确定的 <code>EOLoop</code> 或者 <code>Kqueue</code> 的对象！ 这里的 add_handle 是 它们的父类 <code>POLoop</code> 的 方法， 这明显就是继承了!</p>
-
-<p>add_handler 代码如下， 首先把 处理方法的上下文 存入 <em>handlers ，等调用时再恢复， 这个机制是 statck_context 见 <a href="">statck_content</a> 做到的。 第二步 先来看下  self.</em>impl 从哪里来  &ndash;> self._impl = impl 此时需要知道是谁调用 initialize  &ndash;> 这里初始化是在构造函数 <strong>new</strong> 里调用的, <code>instance.initialize(**args)</code>此时的instance 为 <code>EPollIOLoop</code> 实例 &ndash;>  <code>super(EPollIOLoop, self).initialize(impl=select.epoll, **kwargs)</code> &ndash;> EPollIOLoop 的父类的 initialize() 很明显 impl 为 select.epoll<a href="http://docs.python.org/2/library/select.html">epoll</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'> <span class="k">def</span> <span class="nf">add_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_handlers</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span> <span class="o">=</span> <span class="n">statck_context</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_impl</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这步呢 就是把 监听 fd 和 accept_handler方法进行关联, 至此事件分发到此就结束了</p>
-
-<p>======</p>
-
-<p>下面来看下 IOLoop 的主循环 <code>start()</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span class='line'>  <span class="k">if</span> <span class="ow">not</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span>
-</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
-</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="bp">False</span>
-</span><span class='line'>      <span class="k">return</span>
-</span><span class='line'>  <span class="n">old_current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="p">,</span> <span class="s">&quot;instance&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">IOLoop</span><span class="o">.</span><span class="n">_current</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_thread_ident</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span> <span class="c">#Return the ‘thread identifier’ of the current thread. This is a nonzero integer</span>
-</span><span class='line'>  <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="bp">None</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">singal</span><span class="p">,</span> <span class="s">&#39;set_wakeup_fd&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;posix&#39;</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
-</span><span class='line'>          <span class="n">old_wakeup_fd</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">set_wakeup_fd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_waker</span><span class="o">.</span><span class="n">write_fileno</span><span class="p">())</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">old_wakeup_fd</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">signal</span><span class="o">.</span><span class="n">set_walkeup_fd</span><span class="p">(</span><span class="n">old_wakeup_fd</span><span class="p">)</span>
-</span><span class='line'>              <span class="n">old_walkup_fd</span> <span class="o">=</span> <span class="bp">None</span>
-</span><span class='line'>      <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span class='line'>          <span class="k">pass</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这段代码 TBD</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">poll_timeout</span> <span class="o">=</span> <span class="n">_POLL_TIMEOUT</span>
-</span><span class='line'>  <span class="c">#Prevent IO event starvation by delaying new callbacks </span>
-</span><span class='line'>  <span class="c"># to the next iteration of the event loop.</span>
-</span><span class='line'>  <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">callbacks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span>
-</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
-</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
-</span><span class='line'>  <span class="c"># Closures may be holding on to a lot of memory, so allow</span>
-</span><span class='line'>  <span class="c"># them to be freed before we go into our poll wait.</span>
-</span><span class='line'>  <span class="n">callbacks</span> <span class="o">=</span> <span class="n">callback</span> <span class="o">=</span> <span class="bp">None</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-</span><span class='line'>      <span class="k">while</span> <span class="n">self_timeouts</span><span class="p">:</span>
-</span><span class='line'>          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timesouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">callback</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-</span><span class='line'>              <span class="c"># the timeout was cancelled</span>
-</span><span class='line'>              <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
-</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_cancellations</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span class='line'>          <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">timeout</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">)</span>
-</span><span class='line'>              <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback</span><span class="p">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
-</span><span class='line'>              <span class="k">del</span> <span class="n">timeout</span>
-</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeouts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">deadline</span> <span class="o">-</span> <span class="n">now</span>
-</span><span class='line'>              <span class="n">poll_timeout</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="n">poll_timeout</span><span class="p">)</span>
-</span><span class='line'>              <span class="k">break</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1749,6 +1594,10 @@ var onFinished = require('finished'); &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
       </li>
     
@@ -1762,10 +1611,6 @@ var onFinished = require('finished'); &hellip;">
     
       <li class="post">
         <a href="/blog/2014/05/21/node-thunkify-code-reading/">Node-thunkify Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/01/17/koa-dot-js-code-reading/">Koa.js Code Reading</a>
       </li>
     
   </ul>

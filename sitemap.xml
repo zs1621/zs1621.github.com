@@ -56,7 +56,13 @@
     </url>
     <url>
         <loc>http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/</loc>
-        <lastmod>2014-07-14T14:16:18+08:00</lastmod>
+        <lastmod>2014-07-19T19:26:11+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://zs1621.github.io/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/
+        </loc>
+        <lastmod>2014-07-19T18:19:55+08:00</lastmod>
     </url>
     <url>
         <loc>http://zs1621.github.io/about/</loc>
@@ -72,10 +78,10 @@
     </url>
     <url>
         <loc>http://zs1621.github.io/</loc>
-        <lastmod>2014-07-14T14:16:18+08:00</lastmod>
+        <lastmod>2014-07-19T19:26:11+08:00</lastmod>
     </url>
     <url>
         <loc>http://zs1621.github.io/blog/archives/</loc>
-        <lastmod>2014-07-14T14:16:18+08:00</lastmod>
+        <lastmod>2014-07-19T19:26:11+08:00</lastmod>
     </url>
 </urlset>
