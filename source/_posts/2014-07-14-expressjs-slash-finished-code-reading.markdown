@@ -7,13 +7,13 @@ categories: codeReading
 ---
 
 
-## [finished](https://github.com/expressjs/finished)
+##* [finished](https://github.com/expressjs/finished) 
  
  - 功能: 在请求关闭，完成， 或者出错时执行回调
  - 用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁
 
 
-##从一个koa例子开始
+##**从一个koa例子开始**
 
 ```
 var onFinished = require('finished');
@@ -61,3 +61,4 @@ module.exports = function finished (thingie, callback) {
     return thingie;
 }
 ```
+
