@@ -259,20 +259,38 @@
 <span class='line-number'>27</span>
 <span class='line-number'>28</span>
 <span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function finished (thingie, callback) {
+</span><span class='line'>    /*
+</span><span class='line'>     * 主要需要監測socket和res的事件 
+</span><span class='line'>     */
 </span><span class='line'>    var socket = thingie.socket || thingie;    
-</span><span class='line'>    var res = thingie.res || thingie;  // 主要需要监测socket, res的事件
+</span><span class='line'>    var res = thingie.res || thingie; 
 </span><span class='line'>
+</span><span class='line'>    /*
+</span><span class='line'>     * res完成或者socket不可寫的時候， 直接執行callback, 返回thingie
+</span><span class='line'>     */
 </span><span class='line'>    if ( res.finished || !socket.writable) {
 </span><span class='line'>        defer(callback);    
 </span><span class='line'>        return thingie;
-</span><span class='line'>    };   // res完成或者socket不可写的时候， 直接执行callback, 返回thingie
+</span><span class='line'>    };  
 </span><span class='line'>
-</span><span class='line'>    var listener = res.__onFinished; 
+</span><span class='line'>    /*
+</span><span class='line'>     * 第一次運行時listener 和 res.__onFinished 是不存在的
+</span><span class='line'>     */
+</span><span class='line'>    var listener = res.__onFinished;
 </span><span class='line'>
 </span><span class='line'>    if (!listener || !listener.queue) {
 </span><span class='line'>        listener = res.__onFinished = function onFinished(err)  {
-</span><span class='line'>            if (res.__onFinished === listener) res.__onFinished = null;
+</span><span class='line'>            if (res.__onFinished === listener) res.__onFinished = null; // 這句表明每次給listener 賦完值， res.__onFinished = null;
 </span><span class='line'>            var queue = listener.queue || [];
 </span><span class='line'>            while (queue.length) queue.shift()(err)
 </span><span class='line'>        }   
@@ -281,7 +299,7 @@
 </span><span class='line'>        first([
 </span><span class='line'>            [socket, 'error', 'close'], 
 </span><span class='line'>            [res, 'finish'],
-</span><span class='line'>        ], listener); // 看下面的first模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
+</span><span class='line'>        ], listener); // 看[first](https://github.com/jonathanong/ee-first)模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
 </span><span class='line'>    }
 </span><span class='line'>
 </span><span class='line'>    listener.queue.push(callback);
@@ -290,6 +308,61 @@
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
+<h2><em>想要具体看finish的应用场景，其实在<a href="https://github.com/expressjs/finished/blob/master/test/test.js">单元测试</a>里有很多具体的例子</em></h2>
+
+<ul>
+<li>下面具体理解下其中的一个单元测试</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> describe('when the request finished', function () {
+</span><span class='line'>    it('should execute the callback when called after finish', function(done){
+</span><span class='line'>        var server = http.createServer(function(req, res){
+</span><span class='line'>            onFinished(res, function(){
+</span><span class='line'>                //第4步
+</span><span class='line'>                onFinished(res, done); // 第5步   
+</span><span class='line'>            }) // 第2步   
+</span><span class='line'>            setTimeout(res.end.bind(res), 0); // 第3步
+</span><span class='line'>        })  // 第 0 步  
+</span><span class='line'>        server.listen(function(){
+</span><span class='line'>            var port = this.address().port;    
+</span><span class='line'>            http.get('http://127.0.0.1:' + port, function(){
+</span><span class='line'>                res.resume();
+</span><span class='line'>                res.on('close', server.close.bind(server));
+</span><span class='line'>            }) //第1步
+</span><span class='line'>        })
+</span><span class='line'>    })    
+</span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>测试步骤</strong></li>
+<li>先创建服务器 第0步</li>
+<li>监听端口,做出请求 第一步</li>
+<li>服务器收到请求， 执行回调函数 <code>onFinished(res, function(){})</code> 第2步</li>
+<li>第3步的话  结束请求 res.end.bind(res)</li>
+<li>第4步  监听到结束, 执行回调 <code>onFinished(res, done)</code></li>
+<li><p>第5步  完成done</p></li>
+<li><p><strong>测试结论</strong>:当服务器完成请求后，有onFinished()的话， 直接执行回调, 然后结束</p></li>
+</ul>
 
 </div>
   
