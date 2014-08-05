@@ -34,6 +34,7 @@ function compose(middleware) {
 var co = require('co');
 
 var stack = [];
+var arr = [];
 stack.push(function *(next) {
     arr.push(1);    
     yield next;

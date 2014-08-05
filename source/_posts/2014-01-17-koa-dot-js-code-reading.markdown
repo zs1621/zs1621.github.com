@@ -12,23 +12,27 @@ TBC 继续挖坑待填...
  
 源码简况
 
- - version： 0.6.0
+ - version： 0.8.2
  - 用到的库
    - escape-html: =1.0.1
    - statuses: =1.0.1
    - accepts: 1.0.0
    - type-is: 1.1.0
    - set-type: 1.0.0
-   - finished: 1.1.1
+   - mime-types: 1.0.0
+   - [finished: 1.2.0](https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/)
    - co: 3.0.2
    - debug
    - fresh: 0.2.1
    - [koa-compose: 2.2.0](https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/)
    - koa-is-json: 1.0.0
    - cookies: 0.4.0
+   - delegates: 0.0.3
    - [delegates](https://github.com/visionmedia/node-delegates/blob/master/index.js): 0.0.3 -已读 -13/5
    - dethroy: 1.0.0
+   - vary: 0.1.0
    - error-inject: 1.0.0
+   - parseurl: 1.2.0
    - [only](https://github.com/visionmedia/node-only): 0.0.2  -已读 -9/5
  - 运行条件: node 版本大于0.11.9
 
