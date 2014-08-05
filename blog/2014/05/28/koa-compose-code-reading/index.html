@@ -158,9 +158,11 @@ function compose(middleware) { return function *(next) { var i = middleware.leng
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
+<span class='line-number'>19</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>var co = require('co');
 </span><span class='line'>
 </span><span class='line'>var stack = [];
+</span><span class='line'>var arr = [];
 </span><span class='line'>stack.push(function *(next) {
 </span><span class='line'>    arr.push(1);    
 </span><span class='line'>    yield next;

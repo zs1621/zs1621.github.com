@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-07-21T19:08:00+08:00</updated>
+  <updated>2014-08-05T12:02:20+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -165,6 +165,7 @@ function compose(middleware) {
 var co = require(&lsquo;co&rsquo;);</p>
 
 <p>var stack = [];
+var arr = [];
 stack.push(function *(next) {</p>
 
 <pre><code>arr.push(1);    
@@ -288,7 +289,7 @@ var fs = require(&lsquo;fs&rsquo;);</p>
 <p>源码简况</p>
 
 <ul>
-<li>version： 0.6.0</li>
+<li>version： 0.8.2</li>
 <li>用到的库
 
 <ul>
@@ -297,16 +298,20 @@ var fs = require(&lsquo;fs&rsquo;);</p>
 <li>accepts: 1.0.0</li>
 <li>type-is: 1.1.0</li>
 <li>set-type: 1.0.0</li>
-<li>finished: 1.1.1</li>
+<li>mime-types: 1.0.0</li>
+<li><a href="https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/">finished: 1.2.0</a></li>
 <li>co: 3.0.2</li>
 <li>debug</li>
 <li>fresh: 0.2.1</li>
 <li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
 <li>koa-is-json: 1.0.0</li>
 <li>cookies: 0.4.0</li>
+<li>delegates: 0.0.3</li>
 <li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
 <li>dethroy: 1.0.0</li>
+<li>vary: 0.1.0</li>
 <li>error-inject: 1.0.0</li>
+<li>parseurl: 1.2.0</li>
 <li><a href="https://github.com/visionmedia/node-only">only</a>: 0.0.2  -已读 -9/5</li>
 </ul>
 </li>

@@ -551,9 +551,11 @@
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
+<span class='line-number'>19</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>var co = require('co');
 </span><span class='line'>
 </span><span class='line'>var stack = [];
+</span><span class='line'>var arr = [];
 </span><span class='line'>stack.push(function *(next) {
 </span><span class='line'>    arr.push(1);    
 </span><span class='line'>    yield next;
@@ -764,7 +766,7 @@
 <p>源码简况</p>
 
 <ul>
-<li>version： 0.6.0</li>
+<li>version： 0.8.2</li>
 <li>用到的库
 
 <ul>
@@ -773,16 +775,20 @@
 <li>accepts: 1.0.0</li>
 <li>type-is: 1.1.0</li>
 <li>set-type: 1.0.0</li>
-<li>finished: 1.1.1</li>
+<li>mime-types: 1.0.0</li>
+<li><a href="https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/">finished: 1.2.0</a></li>
 <li>co: 3.0.2</li>
 <li>debug</li>
 <li>fresh: 0.2.1</li>
 <li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
 <li>koa-is-json: 1.0.0</li>
 <li>cookies: 0.4.0</li>
+<li>delegates: 0.0.3</li>
 <li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
 <li>dethroy: 1.0.0</li>
+<li>vary: 0.1.0</li>
 <li>error-inject: 1.0.0</li>
+<li>parseurl: 1.2.0</li>
 <li><a href="https://github.com/visionmedia/node-only">only</a>: 0.0.2  -已读 -9/5</li>
 </ul>
 </li>
