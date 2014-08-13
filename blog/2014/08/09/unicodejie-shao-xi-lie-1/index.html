@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>about - 三余无梦</title>
+  <title>'unicode'介绍系列1 - 三余无梦</title>
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="About Jul 12th, 2013 Jul 12th, 2013 Recent Posts 'Unicode'介绍系列1 First 5 Minutes Troubleshooting Server Translate Expressjs/finished Code Reading &hellip;">
+  <meta name="description" content="Unicode系列目前有准备有2篇文章 介绍Unicode
+Unicode在python(2.x)中的应用(让人头疼有么有) 好的下面开始 what Unicode Unicode 是一种字符集, 规定字符对应的二进制代码
+平常所说的ASCII码呢，就是英语的128个字符对应的二进制代码 why &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zs1621.github.io/about.html">
+  <link rel="canonical" href="http://zs1621.github.io/blog/2014/08/09/unicodejie-shao-xi-lie-1">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
@@ -65,32 +67,15 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">About</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-12T13:39:00+08:00" pubdate data-updated="true">Jul 12<span>th</span>, 2013</time></p>
-  </header>
-  
-  
-
-  
-    <footer>
+    
+      <h1 class="entry-title">'Unicode'介绍系列1</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -102,19 +87,105 @@
   
 
 
-<time datetime="2013-07-12T13:39:00+08:00" pubdate data-updated="true">Jul 12<span>th</span>, 2013</time>
+<time datetime="2014-08-09T17:10:12+08:00" pubdate data-updated="true">Aug 9<span>th</span>, 2014</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><code>Unicode</code>系列目前有准备有2篇文章</p>
+
+<ul>
+<li>介绍Unicode</li>
+<li>Unicode在python(2.x)中的应用(让人头疼有么有)</li>
+</ul>
+
+
+<p> 好的下面开始</p>
+
+<h2>what Unicode</h2>
+
+<ul>
+<li>Unicode 是一种字符集, 规定字符对应的二进制代码</li>
+<li>平常所说的ASCII码呢，就是英语的128个字符对应的二进制代码</li>
+</ul>
+
+
+<h2>why Unicode</h2>
+
+<ul>
+<li>如其名,统一编码,所有的字符都有对应的独一无二的二进制代码, 这样就能一统天下</li>
+</ul>
+
+
+<h2>unicode 缺陷</h2>
+
+<ul>
+<li>Unicode 规定了符号的二进制代码， 却没有规定这个二进制代码如何存储</li>
+<li>如&#8217;严&#8217;的Unicode为4E25, 至少需要两个字节来表示, 就是说这个字符需要两个字节, 问题就来了,计算机不知道怎么区分2个字节表示一个符号，计算机也可以认为1个字节一个字符, 如果统一都用4字节表示每个字符，那么对于一个字节就可以表示的字符， 就是浪费,这是不能忍的</li>
+<li>所以需要一种比较号好的实现模式,去解决&hellip;</li>
+</ul>
+
+
+<h2>UTF-8</h2>
+
+<ul>
+<li>UFT-8是在互联网上使用的最广的一种Unicode的实现方式。</li>
+<li>这是一种可变长度的编码方式, 可以使用1~4个字节表示一个符号</li>
+<li>编码规则:</li>
+<li>对于单字节的符号, 字节的第一位设为0, 后面7位是个符号的Unicode码, 因此对于英语字母, UTF-8和ASCII码相同</li>
+<li>对于n字节的符号(n > 1), 第一个字节的前n位都设位1, 第n+1位设为0, 后面字节的前两位一律设为10, 剩下的二进位,全部位这个符号的Unicode</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-09T17:10:12+08:00" pubdate data-updated="true">Aug 9<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ji-chu-zhi-shi/'>基础知识</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/" title="Previous Post: First 5 minutes troubleshooting server translate ">&laquo; First 5 minutes troubleshooting server translate </a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>
@@ -154,6 +225,8 @@
 
   
 </aside>
+
+
 
 
     </div>
