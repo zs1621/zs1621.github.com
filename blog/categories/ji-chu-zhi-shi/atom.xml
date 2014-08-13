@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 基础知识 | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/ji-chu-zhi-shi/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-08-13T11:34:31+08:00</updated>
+  <updated>2014-08-13T11:37:49+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -62,6 +62,8 @@
 <li>对于n字节的符号(n > 1), 第一个字节的前n位都设位1, 第n+1位设为0, 后面字节的前两位一律设为10, 剩下的二进位,全部位这个符号的Unicode</li>
 </ul>
 
+
+<p>TBC</p>
 ]]></content>
   </entry>
   
