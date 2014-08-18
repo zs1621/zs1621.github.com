@@ -191,6 +191,71 @@
 </span><span class='line'>$ ethtool</span></code></pre></td></tr></table></div></figure>
 
 
+<p>TODO: explain commands</p>
+
+<p><strong>IO 性能</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iostat -kx 2
+</span><span class='line'>$ vmstat 2 10
+</span><span class='line'>$ mpstat 2 10
+</span><span class='line'>$ dstat --top-io --top-bio</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這幾個是非常有用的命令去分析後臺性能;</p>
+
+<ul>
+<li>check 硬盤使用:</li>
+<li>交換區目前有沒有使用</li>
+<li>什麼程序再使用CPU: 系統? 用戶? stolen ?</li>
+<li><code>dstat</code> 一直是我的最愛. IO消耗? mysql 阻塞資源? php進程在使用的你io&hellip;</li>
+</ul>
+
+
+<p><strong>掛載點和文件系統</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mount
+</span><span class='line'>$ cat /etc/fstab
+</span><span class='line'>$ vgs
+</span><span class='line'>$ pvs
+</span><span class='line'>$ lvs
+</span><span class='line'>$ df -h
+</span><span class='line'>$ lsof +D / /* </span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>多少文件系統被掛載</li>
+<li>過期的文件系統</li>
+<li>硬盤空間是否有剩餘</li>
+<li>大文件還沒有清除</li>
+<li>如果硬盤有問題還有空間去加個分區?</li>
+</ul>
+
+
+<p> <strong>內核,中斷, 網絡使用情況</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sysctl -a | grep ...
+</span><span class='line'>$ cat /proc/interrupts
+</span><span class='line'>$ cat /proc/net/ip_conntrack
+</span><span class='line'>$ netstat
+</span><span class='line'>$ ss -s</span></code></pre></td></tr></table></div></figure>
+
+
 <p>TBC</p>
 </div>
 
