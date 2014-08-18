@@ -244,6 +244,34 @@ Unicode在python(2.x)中的应用(让人头疼有么有) 好的下面开始 what
 
 <p>確定正在運行的服務以及他們是否應該運行。尋找多個監聽端口。通過<code>ps aux</code>的輸出匹配進程ID；這個是很有用的特別當你同時結束2~3個Java 或者 Erlang進程</p>
 
+<p><strong>CPU 和 RAM</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ free -m
+</span><span class='line'>$ uptime
+</span><span class='line'>$ top
+</span><span class='line'>$ htop</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這些命令回答以下問題:
+ &ndash;  還有空閒的內存? 還是正在交換區 ?
+ &ndash;  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
+ &ndash;  哪個項目負載最多? 平均負載多少?
+ &ndash;  詳細了解命令<code>man</code>,你懂的</p>
+
+<p><strong>Hardware</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ lspci
+</span><span class='line'>$ dmidecode
+</span><span class='line'>$ ethtool</span></code></pre></td></tr></table></div></figure>
+
+
 <p>TBC</p>
 </div>
   
