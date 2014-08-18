@@ -82,6 +82,85 @@ $ netstat -nxlp  # x: unix socket
 確定正在運行的服務以及他們是否應該運行。尋找多個監聽端口。通過`ps aux`的輸出匹配進程ID；這個是很有用的特別當你同時結束2~3個Java 或者 Erlang進程
 
 
+**CPU 和 RAM**
+
+
+```
+$ free -m
+$ uptime
+$ top
+$ htop
+```
+
+這些命令回答以下問題:
+ -  還有空閒的內存? 還是正在交換區 ?
+ -  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
+ -  哪個項目負載最多? 平均負載多少?
+ -  詳細了解命令`man`,你懂的
+
+
+**Hardware**
+
+
+```
+$ lspci
+$ dmidecode
+$ ethtool
+```
+
+
+TODO: explain commands
+
+
+**IO 性能**
+
+
+```
+$ iostat -kx 2
+$ vmstat 2 10
+$ mpstat 2 10
+$ dstat --top-io --top-bio
+```
+
+這幾個是非常有用的命令去分析後臺性能;
+
+ - check 硬盤使用: 
+ - 交換區目前有沒有使用
+ - 什麼程序再使用CPU: 系統? 用戶? stolen ?
+ - `dstat` 一直是我的最愛. IO消耗? mysql 阻塞資源? php進程在使用的你io...
+
+
+**掛載點和文件系統**
+
+
+```
+$ mount
+$ cat /etc/fstab
+$ vgs
+$ pvs
+$ lvs
+$ df -h
+$ lsof +D / /* 
+```
+
+
+ - 多少文件系統被掛載
+ - 過期的文件系統
+ - 硬盤空間是否有剩餘
+ - 大文件還沒有清除
+ - 如果硬盤有問題還有空間去加個分區?
+
+
+ **內核,中斷, 網絡使用情況**
+
+
+```
+$ sysctl -a | grep ...
+$ cat /proc/interrupts
+$ cat /proc/net/ip_conntrack
+$ netstat
+$ ss -s
+```
 TBC
 
 
