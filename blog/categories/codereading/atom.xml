@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-08-18T21:44:21+08:00</updated>
+  <updated>2014-09-02T21:13:40+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -389,6 +389,10 @@ return function (req, res) {
 
 <p>上面的代码基本上就解释了整个请求到回复的流程</p>
 
+<p>附张图, 一图胜千言</p>
+
+<p><img src="https://raw.githubusercontent.com/koajs/koa/master/docs/middleware.gif" alt="gif" /></p>
+
 <p>下面分解开来</p>
 
 <ul>
@@ -397,6 +401,25 @@ return function (req, res) {
 <li><code>fn.call(ctx, ctx.onerror)</code></li>
 </ul>
 
+
+<h3>app.createContext(req, res)</h3>
+
+<ul>
+<li>参数 req,res</li>
+<li>返回内容:context, context具体内容如下</li>
+<li>context: <code>Object.create(this.context)</code></li>
+<li>context.app: <code>request.app=response.app=</code></li>
+<li>context.req: <code>request.req = response.app = req</code></li>
+<li>context.res: <code>request.res = response.res = res</code></li>
+<li>context.ctx: <code>response.ctx = context</code></li>
+<li>context.onerror: <code>context.onerror.bind(context)</code> <a href="https://github.com/koajs/koa/blob/master/lib/context.js#l98">this.context</a></li>
+<li>context.originalUrl: <code>request.originalUrl = req.url</code></li>
+<li>context.cookie: <code>new Cookies(req, res, this.keys)</code> &ndash;> <a href="https://github.com/expressjs/cookies">cookie</a> TODO</li>
+<li>context.accept: <code>request.accept = accepts(app)</code> &ndash;> <a href="https://github.com/jshttp/accepts">accepts</a></li>
+</ul>
+
+
+<h3>finished(ctx, ctx.onerror)</h3>
 
 <p>TBC</p>
 ]]></content>
