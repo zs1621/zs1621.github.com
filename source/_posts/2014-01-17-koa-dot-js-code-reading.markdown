@@ -105,12 +105,36 @@ app.callback = function () {
 上面的代码基本上就解释了整个请求到回复的流程
 
 
+附张图, 一图胜千言
+
+![gif](https://raw.githubusercontent.com/koajs/koa/master/docs/middleware.gif)
+
+
 
 下面分解开来
 
  - `createContext(req, res)`
  - `finished(ctx, ctx.onerror)`
  - `fn.call(ctx, ctx.onerror)`
+
+
+
+###app.createContext(req, res)
+ - 参数 req,res
+ - 返回内容:context, context具体内容如下
+  - context: `Object.create(this.context)`
+  - context.app: `request.app=response.app=`
+  - context.req: `request.req = response.app = req`
+  - context.res: `request.res = response.res = res`
+  - context.ctx: `response.ctx = context`
+  - context.onerror: `context.onerror.bind(context)` [this.context](https://github.com/koajs/koa/blob/master/lib/context.js#l98)
+  - context.originalUrl: `request.originalUrl = req.url`
+  - context.cookie: `new Cookies(req, res, this.keys)` -> [cookie](https://github.com/expressjs/cookies) TODO
+  - context.accept: `request.accept = accepts(app)` -> [accepts](https://github.com/jshttp/accepts)
+
+
+
+###finished(ctx, ctx.onerror)
 
 
 TBC
