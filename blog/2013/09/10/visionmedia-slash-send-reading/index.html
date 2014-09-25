@@ -1,0 +1,524 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>visionmedia/send Reading - 三余无梦</title>
+  <meta name="author" content="admin">
+
+  
+  <meta name="description" content="send入口 1
+exports = module.exports = send; send 函数返回 SendStream 构造函数 1
+2
+3
+function send(req, path, options) { return new SendStream(req, path, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">三余无梦</a></h1>
+  
+    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:zs1621.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/about">关于</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Visionmedia/send Reading</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:41:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong><code>send</code>入口</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>exports = module.exports = send;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong><code>send</code> 函数返回 <code>SendStream</code> 构造函数</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function send(req, path, options) {
+</span><span class='line'>  return new SendStream(req, path, options);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>来看<code>SendStream</code></strong></p>
+
+<ul>
+<li>参数
+
+<ul>
+<li>req 即 <code>request</code></li>
+<li>path : <code>string</code> 路径</li>
+<li>options:</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>function SendStream(req, path, options) {
+</span><span class='line'>  ....
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>继承 <code>Stream.prototype</code></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SendStream.prototype.__proto__ = Stream.prototype;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>下面都是 <code>SendStream</code> 原型链的方法</p>
+
+<ul>
+<li>hidden: 赋值 this._hidden, return this</li>
+<li>index: 赋值默认的 index <code>path</code>, this._index, return this</li>
+<li>root: 赋值根路径,  this._root</li>
+<li>maxage: 赋值最大缓存时间 , this._maxage</li>
+<li>error: 根据<code>status</code>&ndash;>触发<code>error</code></li>
+<li>redirect: 如果有监听事件<code>directory</code>的监听者 那么触发<code>directory</code></li>
+<li>isMalicious: 检测<code>pathname</code>是否有潜在的问题,判断方法如果 没有<code>_root</code>且 <code>path</code>包含<code>..</code> 那么 就是有异常的路径;</li>
+<li>hasTrailingSlash: 判断路径最后一位是不是<code>/</code></li>
+<li>hasLeadingDot: 就是文件是否有后缀 形如<code>aa.html</code></li>
+<li>isCachable: 是否缓存， 判断方法 <code>(res.statusCode &gt;= 200 &amp;&amp; res.statusCode &lt; 300) || 304 == res.statusCode</code></li>
+<li>isFresh: 判断缓存是否是新的 判断方法 引用模块 <code>fresh</code></li>
+<li>removeContentHeaderFields 去除包含 <code>content</code>的头 <code>key</code></li>
+<li>onStatError:</li>
+</ul>
+</li>
+<li><p>主体方法 <code>pipe</code> , 参数 <code>res</code></p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this
+</span><span class='line'>, args = arguments
+</span><span class='line'>, path = this.path
+</span><span class='line'>, root = this._root
+</span><span class='line'>
+</span><span class='line'>this.res = res;
+</span><span class='line'>//判断uri的有效性
+</span><span class='line'>path = utils.decode(path);
+</span><span class='line'>if (-1 == path) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//如果`path`里包含`\0` ，表明`path`为空
+</span><span class='line'>if (~path.indexOf('\0')) return this.error(400);
+</span><span class='line'>
+</span><span class='line'>//连接 this._root 和 path
+</span><span class='line'>if (root) path = normalize(join(this._root, path));
+</span><span class='line'>
+</span><span class='line'>//如果异常路径禁止访问
+</span><span class='line'>if (this.isMalicious()) return this.error(403);
+</span><span class='line'>
+</span><span class='line'>//此时`path`已经是 `this._root`和 `path`的结合, 所以此种情况不会出现,如果有root
+</span><span class='line'>if (root && 0 != path.indexOf(root)) return this.error(403)
+</span><span class='line'>
+</span><span class='line'>//如果_hidden为`false`,那么不支持隐藏文件，此时文件如果以`.`开头那么就不支持 
+</span><span class='line'>if (!this._hidden && this.hasLeadingDot()) return this.error(404);
+</span><span class='line'>
+</span><span class='line'>//index 文件支持
+</span><span class='line'>if (this._index && this.hasTrailingSlash()) path += this._index
+</span><span class='line'>
+</span><span class='line'>//最后看path 的信息
+</span><span class='line'>fs.stat(path, function(err, stat){
+</span><span class='line'>  if (err) return self.onStatError(err); //上面已介绍
+</span><span class='line'>  if (stat.isDirectory) return self.redirect(self.path); //见上
+</span><span class='line'>  self.emit('file', path, stat); //见下
+</span><span class='line'>  self.send(path, stat);//见下
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <strong><code>send</code></strong>
+
+<ul>
+<li>path: 路径</li>
+<li>stat: 文件状态</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var options = this.options;
+</span><span class='line'>var len = stat.size;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>var ranges = req.headers.range; //截取部分文件之用
+</span><span class='line'>var offset = options.start || 0;
+</span><span class='line'>
+</span><span class='line'>//赋值header
+</span><span class='line'>this.setHeader(stat);
+</span><span class='line'>
+</span><span class='line'>//赋值 content-type
+</span><span class='line'>this.type(path);
+</span><span class='line'>
+</span><span class='line'>//条件 GET 支持, isFresh() 见 [fresh](https://github.com/visionmedia/node-fresh/blob/master/index.js)
+</span><span class='line'>if (this.isConditionGET()
+</span><span class='line'>&& this.isCachable()
+</span><span class='line'>&& this.isFresh()) {
+</span><span class='line'>  return this.notModified();
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>//
+</span><span class='line'>len = Math.max(0, len - offset);
+</span><span class='line'>if (options.end != undefined) {
+</span><span class='line'>  var bytes = options.end - offset + 1;
+</span><span class='line'>  if (len &gt; bytes) len = bytes;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// Range 支持
+</span><span class='line'>if (ranges) {
+</span><span class='line'>  ... 
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// content-length
+</span><span class='line'>res.setHeader('Content-Length', len);
+</span><span class='line'>
+</span><span class='line'>// HEAD support
+</span><span class='line'>if ('HEAD' == req.method) return res.end();
+</span><span class='line'>
+</span><span class='line'>this.stream(path, options); //见下</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>方法 <code>stream</code>
+
+<ul>
+<li>参数
+
+<ul>
+<li>path : 路径</li>
+<li>options</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var self = this;
+</span><span class='line'>var res = this.res;
+</span><span class='line'>var req = this.req;
+</span><span class='line'>
+</span><span class='line'>//pipe 把流数据加入 `res`管道
+</span><span class='line'>var stream = fs.createReadStream(path, options);
+</span><span class='line'>this.emit('stream', stream);
+</span><span class='line'>stream.pipe(res);
+</span><span class='line'>
+</span><span class='line'>//socket 关闭， 
+</span><span class='line'>
+</span><span class='line'>req.on('close', stream.destroy.bind(stream));
+</span><span class='line'>
+</span><span class='line'>//error处理
+</span><span class='line'>steam.on('error', function(err){
+</span><span class='line'>  //不回复
+</span><span class='line'>  if (res._header) {
+</span><span class='line'>      console.error(err.stack);
+</span><span class='line'>      req.destroy();
+</span><span class='line'>      return;
+</span><span class='line'>  }
+</span><span class='line'>  erro.status = 500;
+</span><span class='line'>  self.emit('error', err);
+</span><span class='line'>});
+</span><span class='line'>
+</span><span class='line'>//end
+</span><span class='line'>stream.on('end', function(){
+</span><span class='line'>  self.emit('end');   
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T00:41:00+08:00" pubdate data-updated="true">Sep 10<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/09/04/tornado-code-reading/" title="Previous Post: Tornado code Reading">&laquo; Tornado code Reading</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/09/16/tornado-code-reading-tcpserver/" title="Next Post: Tornado Code Reading-TCPServer">Tornado Code Reading-TCPServer &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">'Unicode'介绍系列1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - admin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

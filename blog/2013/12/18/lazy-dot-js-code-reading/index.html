@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lazy.js code Reading - 三余无梦</title>
+  <meta name="author" content="admin">
+
+  
+  <meta name="description" content="Lazy.js 在看源码前， 可以先看下Lazy.js的基本思想 Lazy.js 的设计模式) Lazy 1
+2
+3
+4
+5
+Lazy([1, 2, 4]) // in [1, 2, 4] -&gt; out instanceof Lazy.ArrayLikeSequence Lazy({ a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zs1621.github.io/blog/2013/12/18/lazy-dot-js-code-reading">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">三余无梦</a></h1>
+  
+    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:zs1621.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/about">关于</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lazy.js Code Reading</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-18T08:58:00+08:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
+
+<p>在看源码前， 可以先看下Lazy.js的基本思想 <a href="https://github.com/zs1621/lazy.js/wiki/%E4%BB%8B%E7%BB%8D-LAZYJS(%E7%BF%BB%E8%AF%91">Lazy.js 的设计模式</a>)</p>
+
+<h3>Lazy</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> <span class="c1">// in [1, 2, 4] -&gt; out instanceof Lazy.ArrayLikeSequence </span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">a</span><span class="o">:</span> <span class="s1">&#39;b&#39;</span><span class="p">})</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">()</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>输入参数 Array | object | string |  | null</li>
+<li>输出 { source: [1, 2, 4] } | { source: {&lsquo;a&rsquo;: b} } | { source: &ldquo;hello world&rdquo;} | { source: undefined }  | { source: null }</li>
+<li>可以看到输入的参数被打包成相应的对象, 而这些对象都继承自 <code>sequence</code></li>
+</ul>
+
+
+<h3>Sequence</h3>
+
+<p><code>sequence</code> 对象提供对 0或者更多连续元素的集合 的统一的 API 封装.为什么所有的操作需要一个 sequence. 看下面的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">seq</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span> <span class="c1">// 1st sequence</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="c1">// 2nd MappedSequence</span>
+</span><span class='line'>       <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">pred</span><span class="p">)</span> <span class="c1">// 3rd FilteredSequence</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">reverse</span><span class="p">()</span> <span class="c1">// 4th ReversedSequence</span>
+</span><span class='line'><span class="nx">seq</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这个例子中 前四步除了创建对应的sequece没有做任何的遍历source或者别的操作。 只有在第5步调用 each 时，将一次性按照鍊條(chain)的順序处理source 得到最后的结果。所以lazy做的就是延迟遍历处理数据.</p>
+
+<blockquote><p>in fact, when i think about  the performance of <code>underscore</code> and <code>lazy.js</code>; i cann&rsquo;t understand why lazy is faster.  lazy.js: 1 2s 3 underscore: 1 2 3 1 2 3 1 2 3 . so what&rsquo;s the difference. lazy.js just hold off some process; i cann&rsquo;t get it&hellip;. so continue to read code. >_&lt;</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Sequence</span><span class="p">()</span> <span class="p">{}</span> <span class="err">#</span> <span class="err">创建</span><span class="nx">Sequence</span><span class="err">构造函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TBC</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-18T08:58:00+08:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/07/generic-pool-reading/" title="Previous Post: generic-pool Reading">&laquo; generic-pool Reading</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/27/underscore-dot-js-code-reading/" title="Next Post: underscore.js Code Reading">underscore.js Code Reading &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">'Unicode'介绍系列1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - admin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

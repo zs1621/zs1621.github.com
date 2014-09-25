@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: codeReading | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2014-09-25T20:18:13+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[expressjs/finished Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/"/>
+    <updated>2014-07-14T11:57:26+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading</id>
+    <content type="html"><![CDATA[<h2>* <a href="https://github.com/expressjs/finished">finished</a></h2>
+
+<ul>
+<li>功能: 在请求关闭，完成， 或者出错时执行回调</li>
+<li>用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁</li>
+</ul>
+
+
+<h2><strong>从一个koa例子开始</strong></h2>
+
+<p>```
+var onFinished = require(&lsquo;finished&rsquo;);
+function* () {</p>
+
+<pre><code>var stream = this.body = fs.createReadStream('thingie.json');   
+onFinished(this, function(err) {
+    stream.destroy();    
+})
+</code></pre>
+
+<p>}
+```</p>
+
+<p>再看finished的代码</p>
+
+<p>```
+module.exports = function finished (thingie, callback) {</p>
+
+<pre><code>/*
+ * 主要需要監測socket和res的事件 
+ */
+var socket = thingie.socket || thingie;    
+var res = thingie.res || thingie; 
+
+/*
+ * res完成或者socket不可寫的時候， 直接執行callback, 返回thingie
+ */
+if ( res.finished || !socket.writable) {
+    defer(callback);    
+    return thingie;
+};  
+
+/*
+ * 第一次運行時listener 和 res.__onFinished 是不存在的
+ */
+var listener = res.__onFinished;
+
+if (!listener || !listener.queue) {
+    listener = res.__onFinished = function onFinished(err)  {
+        if (res.__onFinished === listener) res.__onFinished = null; // 這句表明每次給listener 賦完值， res.__onFinished = null;
+        var queue = listener.queue || [];
+        while (queue.length) queue.shift()(err)
+    }   
+    listerner.queue = [];
+
+    first([
+        [socket, 'error', 'close'], 
+        [res, 'finish'],
+    ], listener); // 看[first](https://github.com/jonathanong/ee-first)模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
+}
+
+listener.queue.push(callback);
+
+return thingie;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2><em>想要具体看finish的应用场景，其实在<a href="https://github.com/expressjs/finished/blob/master/test/test.js">单元测试</a>里有很多具体的例子</em></h2>
+
+<ul>
+<li>下面具体理解下其中的一个单元测试</li>
+</ul>
+
+
+<p>```
+ describe(&lsquo;when the request finished&rsquo;, function () {</p>
+
+<pre><code>it('should execute the callback when called after finish', function(done){
+    var server = http.createServer(function(req, res){
+        onFinished(res, function(){
+            //第4步
+            onFinished(res, done); // 第5步   
+        }) // 第2步   
+        setTimeout(res.end.bind(res), 0); // 第3步
+    })  // 第 0 步  
+    server.listen(function(){
+        var port = this.address().port;    
+        http.get('http://127.0.0.1:' + port, function(){
+            res.resume();
+            res.on('close', server.close.bind(server));
+        }) //第1步
+    })
+})    
+</code></pre>
+
+<p> })
+```</p>
+
+<ul>
+<li><strong>测试步骤</strong></li>
+<li>先创建服务器 第0步</li>
+<li>监听端口,做出请求 第一步</li>
+<li>服务器收到请求， 执行回调函数 <code>onFinished(res, function(){})</code> 第2步</li>
+<li>第3步的话  结束请求 res.end.bind(res)</li>
+<li>第4步  监听到结束, 执行回调 <code>onFinished(res, done)</code></li>
+<li><p>第5步  完成done</p></li>
+<li><p><strong>测试结论</strong>:当服务器完成请求后，有onFinished()的话， 直接执行回调, 然后结束</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[koa-compose Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/"/>
+    <updated>2014-05-28T10:37:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading</id>
+    <content type="html"><![CDATA[<h2><strong><a href="https://github.com/koajs/compose/blob/master/index.js">compose</a></strong></h2>
+
+<p>```
+function compose(middleware) {
+   return function *(next) {</p>
+
+<pre><code>    var i = middleware.length;   
+    var prev = next || noop ();
+    var curr;
+
+    while (i--) {
+        curr = middleware[1];    
+        prev = curr.call(this, prev); // 
+    }
+
+    yield *prev;
+</code></pre>
+
+<p>   }
+}
+```</p>
+
+<p>看下例的运行效果</p>
+
+<p>```
+var co = require(&lsquo;co&rsquo;);</p>
+
+<p>var stack = [];
+var arr = [];
+stack.push(function *(next) {</p>
+
+<pre><code>arr.push(1);    
+yield next;
+arr.push(3);
+</code></pre>
+
+<p>});
+stack.push(function *(next){</p>
+
+<pre><code>arr.push(2);    
+yield next;
+arr.push(4)
+</code></pre>
+
+<p>});</p>
+
+<p>co(compose(stack)) (function (err) {</p>
+
+<pre><code>if (err) throw err;   
+console.log(arr); // 输出 [1, 2, 3, 4], 从输出可以看到其执行顺序
+</code></pre>
+
+<p>});
+```</p>
+
+<p>从上例的程序可以看到<a href="https://github.com/koajs/koa/blob/master/lib/application.js#L113">koa</a>。koa在加载中间件时是通过co 和 compose来按次序拨开一层一层的middleware。</p>
+
+<p>```
+co (function *() {</p>
+
+<pre><code>var arr = []
+var funa = function *(next) {
+    arr.push(1);    
+    yield *next;
+    arr.push(3);
+};
+var funb = function *(next) {
+    arr.push(2);
+    yield *next;
+    arr.push(4)
+};
+funa ();
+funb ();
+return arr;
+</code></pre>
+
+<p>})(function (err, items) {
+ if (err) {</p>
+
+<pre><code>console.log(err);     
+</code></pre>
+
+<p> }
+ console.log(items);  <br/>
+});
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[node-thunkify Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading/"/>
+    <updated>2014-05-21T12:02:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/05/21/node-thunkify-code-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/visionmedia/node-thunkify">thunkify</a></h2>
+
+<h2>code</h2>
+
+<p>```
+function thunkify(fn) {</p>
+
+<pre><code>assert('function' == typeof fn, 'function required');    
+
+return function () {
+    var args = slice.call(arguments);    
+    var ctx = this;
+    return function (done) {   // done 是回调函数
+        var called;
+        args.push(function() {
+            if (called) return;
+            called = true;    
+            done.apply(null, arguments); 
+        }); // 将回调处理加入参数列表
+
+        try {
+            fn.apply(ctx, args);   // 函数处理 
+        } catch (err) {
+            done(err);   // 异常获取并用回调处理 
+        }
+    }
+}
+</code></pre>
+
+<p>};
+```</p>
+
+<h2>例子</h2>
+
+<p>```
+var thunkify = require(&lsquo;thunkify&rsquo;);
+var fs = require(&lsquo;fs&rsquo;);</p>
+
+<p>var read = thunkify(fs.readFile);</p>
+
+<p>read(&lsquo;package.json&rsquo;, &lsquo;utf8&rsquo;)(function(err, str){
+});
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Koa.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading/"/>
+    <updated>2014-01-17T15:23:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/01/17/koa-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<p>TBC 继续挖坑待填&hellip;</p>
+
+<h2><a href="https://github.com/koajs/koa">Koa</a></h2>
+
+<p>源码简况</p>
+
+<ul>
+<li>version： 0.8.2</li>
+<li>用到的库
+
+<ul>
+<li>escape-html: =1.0.1</li>
+<li>statuses: =1.0.1</li>
+<li>accepts: 1.0.0</li>
+<li>type-is: 1.1.0</li>
+<li>set-type: 1.0.0</li>
+<li>mime-types: 1.0.0</li>
+<li><a href="https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/">finished: 1.2.0</a></li>
+<li>co: 3.0.2</li>
+<li>debug</li>
+<li>fresh: 0.2.1</li>
+<li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
+<li>koa-is-json: 1.0.0</li>
+<li>cookies: 0.4.0</li>
+<li>delegates: 0.0.3</li>
+<li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
+<li>dethroy: 1.0.0</li>
+<li>vary: 0.1.0</li>
+<li>error-inject: 1.0.0</li>
+<li>parseurl: 1.2.0</li>
+<li><a href="https://github.com/visionmedia/node-only">only</a>: 0.0.2  -已读 -9/5</li>
+</ul>
+</li>
+<li>运行条件: node 版本大于0.11.9</li>
+</ul>
+
+
+<h2><strong>从入口说起</strong></h2>
+
+<p>```
+var koa = require(&lsquo;koa&rsquo;);
+var app = koa();</p>
+
+<p>app.use(function *(){</p>
+
+<pre><code>this.body = 'Hello World';    
+</code></pre>
+
+<p>});</p>
+
+<p>app.listen(3000);
+```</p>
+
+<p>上面是一个最简单的服务,输出<code>Hello World</code>; 我们用到两个koa的api</p>
+
+<ul>
+<li>app.use()</li>
+<li>app.listen();</li>
+</ul>
+
+
+<p>下面就先从app.listen() 开始</p>
+
+<p>看 <a href="https://github.com/koajs/koa/blob/master/lib/application.js">application.js</a></p>
+
+<p>```
+app.listen = function () {</p>
+
+<pre><code>var server = http.createServer(this.callback()) ;  
+return server.listen.apply(server, arguments);
+</code></pre>
+
+<p>}
+```</p>
+
+<blockquote><p>http.createServer([requestListener])
+ returns a new web server object</p>
+
+<p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
+
+<p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
+
+<p>来到<code>app.callback</code></p>
+
+<p>```
+app.callback = function () {</p>
+
+<pre><code>var mw = [respond].concat(this.middleware);   // 实际上 respond 就是最后一个需要执行的中间件， 负责返回数据的 
+var gen = compose(mw); 
+var fn = co(gen);  // co 和 compose 就是将一个个middle，按序执行的操作, 此时middle还没有运行
+var self = this;
+
+if (!this.listeners('error').length) this.on('error', this.onerror);
+
+return function (req, res) {
+    res.statusCode = 404;    
+    var ctx = self.createContext(req, res);
+    finished(ctx, ctx.onerror);
+    fn.call(ctx, ctx.onerror); // 这步运行了说明服务器接收到了请求， 然后一步步的运行middle 和 请求业务处理
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上面的代码基本上就解释了整个请求到回复的流程</p>
+
+<p>附张图, 一图胜千言</p>
+
+<p><img src="https://raw.githubusercontent.com/koajs/koa/master/docs/middleware.gif" alt="gif" /></p>
+
+<p>下面分解开来</p>
+
+<ul>
+<li><code>createContext(req, res)</code></li>
+<li><code>finished(ctx, ctx.onerror)</code></li>
+<li><code>fn.call(ctx, ctx.onerror)</code></li>
+</ul>
+
+
+<h3>app.createContext(req, res)</h3>
+
+<ul>
+<li>参数 req,res</li>
+<li>返回内容:context, context具体内容如下</li>
+<li>context: <code>Object.create(this.context)</code></li>
+<li>context.app: <code>request.app=response.app=</code></li>
+<li>context.req: <code>request.req = response.app = req</code></li>
+<li>context.res: <code>request.res = response.res = res</code></li>
+<li>context.ctx: <code>response.ctx = context</code></li>
+<li>context.onerror: <code>context.onerror.bind(context)</code> <a href="https://github.com/koajs/koa/blob/master/lib/context.js#l98">this.context</a></li>
+<li>context.originalUrl: <code>request.originalUrl = req.url</code></li>
+<li>context.cookie: <code>new Cookies(req, res, this.keys)</code> &ndash;> <a href="https://github.com/expressjs/cookies">cookie</a> TODO</li>
+<li>context.accept: <code>request.accept = accepts(app)</code> &ndash;> <a href="https://github.com/jshttp/accepts">accepts</a></li>
+</ul>
+
+
+<h3>finished(ctx, ctx.onerror)</h3>
+
+<p>TBC</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[underscore.js Code Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading/"/>
+    <updated>2013-12-27T21:14:00+08:00</updated>
+    <id>http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading</id>
+    <content type="html"><![CDATA[<h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
+
+<p>挖坑待续</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Tornado Code Reading - tornado.concurrent - 三余无梦</title>
+  <meta name="author" content="admin">
+
+  
+  <meta name="description" content="Future背景 Future 代表一个函数的调用结果. 函数返回一个值或者抛出一个异常， 所以future 包含一个值或者一个异常(可以通过future.result()获得这个结果，异常和返回值). Fuures存在与对应的函数结束前. 在 一个 多线程场景下,简单的调用 future. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zs1621.github.io/blog/2013/11/08/tornado-code-reading-tornado-dot-concurrent">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">三余无梦</a></h1>
+  
+    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:zs1621.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/about">关于</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Tornado Code Reading - tornado.concurrent</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-08T13:38:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Future背景</h2>
+
+<p>Future 代表一个函数的调用结果. 函数返回一个值或者抛出一个异常， 所以future 包含一个值或者一个异常(可以通过future.result()获得这个结果，异常和返回值). Fuures存在与对应的函数结束前. 在 一个  多线程场景下,简单的调用 future.result()等待另外一个线程或者进程完成。在 异步场景下，你可以附带一个callback给future为了当调用结束可以得到通知。（with future.add_done_callback or io_loop.add_future）</p>
+
+<h2>了解 Future</h2>
+
+<p><code>Futures</code> 已经在Python3.2应用了 <a href="http://python.readthedocs.org/en/latest/library/concurrent.futures.html#concurrent.futures">concurrent.futures</a> , 如果在python3.2之前版本用 可以 (pip install futures). 那在 tornado 中如果可以将用就用python包，否则将会使用一个兼容的类 <code>tornado.concurrent.Future</code></p>
+
+<h2>class tornado.concurrent.Future</h2>
+
+<p><strong>这个类封装了异步操作的结果</strong>。在同步程序中， Futures被用来等待一个线程或者进程池的结果。在Tornado一般用在 IOLoop.add_future 或者 在一个 gen.coroutine</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"""
+</span><span class='line'>如果有 concurrent.futures 可用，那就用它; 否则用 _DummyFuture 
+</span><span class='line'>"""
+</span><span class='line'>if futures is None:
+</span><span class='line'>    Future = _DummyFuture
+</span><span class='line'>else:
+</span><span class='line'>    Future = futures.Future</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>_DummyFuture</h2>
+
+<ul>
+<li>result</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"""
+</span><span class='line'>先检查有没有完成 ，没有完成 ,直接抛出异常!如果有异常就raise 异常，否则返回 result
+</span><span class='line'>"""
+</span><span class='line'>def result(self, timeout=None):
+</span><span class='line'>  self._check_done()
+</span><span class='line'>  if self._exception:
+</span><span class='line'>      raise self._exception
+</span><span class='line'>  return self._result</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>exception</li>
+</ul>
+
+
+<p>这个函数先与result唯一的不同是 无异常的时候 return None ;</p>
+
+<ul>
+<li>add_done_callback(fn)</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">给Future加入一个回调。当它完成将会 以Future为参数调用回调函数. </span>
+</span><span class='line'><span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+</span><span class='line'>      <span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>      <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TracebackFuture</h2>
+
+<p>存储 异常的追踪</p>
+
+<h2>DummyExecutor</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">DummyExecutor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>      <span class="n">future</span> <span class="o">=</span> <span class="n">TracebackFuture</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+</span><span class='line'>      <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span class='line'>          <span class="n">future</span><span class="o">.</span><span class="n">set_exc_info</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">future</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+</span><span class='line'>      <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>run_on_executor</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">run_on_executor</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    异步的跑同步方法</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">callback</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;callback&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="c">#self.executor  理解为线程池</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">add_future</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> \
+</span><span class='line'>                <span class="k">lambda</span> <span class="n">future</span><span class="p">:</span> <span class="n">callback</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()))</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">future</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">wrapper</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有关于<code>run_on_executor</code>的应用例子 <a href="https://gist.github.com/zs1621/7921770">https://gist.github.com/zs1621/7921770</a></p>
+
+<h2>return_future</h2>
+
+<ul>
+<li>what use: 让函数通过回调返回一个<code>Future</code></li>
+<li>how use: @return_future</li>
+</ul>
+
+
+<blockquote><p>看 tornado 源码的 test文件 concurrent_test.py;</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">ReturnFutureTest</span><span class="p">(</span><span class="n">AsyncTestCase</span><span class="p">):</span>
+</span><span class='line'>    <span class="nd">@return_future</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">sync_future</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span> <span class="c"># 同步future</span>
+</span><span class='line'>        <span class="k">print</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="s">&#39;+++++++++++++++&#39;</span><span class="p">)</span> <span class="c"># d -&gt; 对应log 的d</span>
+</span><span class='line'>        <span class="n">callback</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@return_future</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">async_future</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span> <span class="c">#异步future</span>
+</span><span class='line'>        <span class="k">print</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="s">&#39;+++++++++++++++&#39;</span><span class="p">)</span> <span class="c"># d -&gt; 对应 log 的 d</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">test_sync_future</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c">#测试同步 </span>
+</span><span class='line'>        <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_future</span><span class="p">()</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="mi">42</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">test_async_future</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c">#测试异步</span>
+</span><span class='line'>        <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_future</span><span class="p">()</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">done</span><span class="p">())</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">add_future</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span> <span class="c">#add_future</span>
+</span><span class='line'>        <span class="n">future2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">assertIs</span><span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="n">future2</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="mi">42</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>联合 concurrent.py &ndash;> return_future</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">return_future</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">replacer</span> <span class="o">=</span> <span class="n">ArgReplacer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;callback&#39;</span><span class="p">)</span> <span class="c"># 1 </span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@fuctools.wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwrags</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">print</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwrags</span><span class="p">,</span> <span class="s">&quot;argsssssssss&quot;</span><span class="p">)</span> <span class="c">#a 对应下面的 log -&gt; a</span>
+</span><span class='line'>        <span class="n">future</span> <span class="o">=</span> <span class="n">TracebackFuture</span><span class="p">()</span> <span class="c"># 2</span>
+</span><span class='line'>        <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">replacer</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+</span><span class='line'>            <span class="k">lambda</span> <span class="n">value</span><span class="o">=</span><span class="n">_NO_RESULT</span><span class="p">:</span> <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span> <span class="c"># 1  替代 f 函数的 `callback`,  </span>
+</span><span class='line'>        <span class="k">print</span> <span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s">&#39;callback&#39;</span><span class="p">)</span> <span class="c">#b 对应下面的 log -&gt; b</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+</span><span class='line'>            <span class="n">future</span><span class="o">.</span><span class="n">set_exc_info</span><span class="p">((</span><span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">))</span>
+</span><span class='line'>            <span class="k">return</span> <span class="bp">True</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">exc_info</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>        <span class="k">with</span> <span class="n">ExceptionStackContext</span><span class="p">(</span><span class="n">handle_error</span><span class="p">):</span> <span class="c"># 4</span>
+</span><span class='line'>            <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">print</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s">&#39;result-------------------&#39;</span><span class="p">)</span> <span class="c">#c 对应下面的 log -&gt; c</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>                        <span class="k">raise</span> <span class="n">ReturnValueIgoredError</span><span class="p">(</span>
+</span><span class='line'>                            <span class="s">&quot;@return_future should not be used with functions&quot;</span>
+</span><span class='line'>                            <span class="s">&quot;that return values&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">exc_info</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">raise</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">exc_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">raise_exc_info</span><span class="p">(</span><span class="n">exc_info</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">def</span> <span class="nf">run_callback</span><span class="p">(</span><span class="n">future</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">print</span> <span class="p">(</span><span class="n">future</span><span class="p">,</span> <span class="s">&quot;+__+_+_+_+_&quot;</span><span class="p">)</span> <span class="c">#e -&gt; 对应下面 ＬＯＧ -&gt; e</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="n">_NO_RESULT</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">callback</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">callback</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+</span><span class='line'>            <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">wrap</span><span class="p">(</span><span class="n">run_callback</span><span class="p">))</span> <span class="c"># 6</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">future</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">wrapper</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>分几种情况 1. 同步无回调 2.同步有回调 3.异步无回调 4.异步有回调</h3>
+
+<ul>
+<li><strong>同步无回调LOG</strong>  <code>f(args, kwargs): future = sync_process()</code>
+
+<ul>
+<li><em>a</em> &mdash;  (&lt;test_return_future.ReturnFutureTest testMethod=test_no_callback>,) {} argsssssssss</li>
+<li><em>b</em> &mdash; None (&lt;test_return_future.ReturnFutureTest testMethod=test_no_callback>,) {&lsquo;callback&rsquo;: <function <lambda> at 0xb6ba8f0c>} callback</li>
+<li><em>c</em> &mdash; None result&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</li>
+<li><em>d</em> &mdash; (function <lambda> at 0xb6ba8f0c>) +++++++++++++</li>
+</ul>
+</li>
+</ul>
+
+
+<blockquote><p>从 a-b 可以理解 replacer.replace 的作用: 提取callback 的值， 并将callback 放入kwargs; 由c 可以知道 f() 函数是不会return 的; f()的结果只能由 future.result() 得到, 只要知道reuturn_future 是返回Future 本身是不会return 的， 如果return 就会报错; 由d 可知匿名函数<code>fuction &lt;lambda&gt; at 0xb6ba8f0c</code>赋值给了callback,而这个匿名函数的作用就是<code>set_result</code>。</p></blockquote>
+
+<ul>
+<li><strong>同步有回调LOG</strong> <code>f(args, kwargs, callback): future = sync_process() callback(future)</code>
+
+<ul>
+<li><em>a</em> &mdash; (&lt;test_return_future.ReturnFutureTest testMethod=test_callback_kw>,) {&lsquo;callback&rsquo;:<bound method ReturnFutureTest.stop of <test_return_future.ReturnFutureTest testMethod=test_callback_kw>>} argsssssssss</li>
+<li><em>b</em> &mdash; <bound method ReturnFutureTest.stop of <test_return_future.ReturnFutureTest testMethod=test_callback_kw>> (&lt;test_return_future.ReturnFutureTest testMethod=test_callback_kw>,) {&lsquo;callback&rsquo;: <function <lambda> at 0xb6bd8f44>} callback</li>
+<li><em>c</em> &mdash;  None result&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</li>
+<li><em>d</em> &mdash; 额额 function <lambda> at 0xb6bd8f44 +++++++++++++</li>
+<li><em>e</em> &mdash; 额额 Future at 0xb6b9cc8cL state=finished returned int +<em><em>+</em>+</em>+<em>+</em></li>
+</ul>
+</li>
+</ul>
+
+
+<blockquote><p>与无回调相比; 明显多出 e log; run_callback 就是将 future.result()作为callback的参数运行;</p></blockquote>
+
+<ul>
+<li><strong>异步无回调LOG</strong> <code>f(args, kwargs): future = async_process()</code></li>
+<li><em>a</em> &mdash; (&lt;test_return_future.ReturnFutureTest testMethod=test_async_future>,) {} argsssssssss</li>
+<li><em>b</em> &mdash; None (&lt;test_return_future.ReturnFutureTest testMethod=test_async_future>,) {&lsquo;callback&rsquo;: <function <lambda> at 0x8518f44>} callback</li>
+<li><em>c</em> &mdash; None result&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</li>
+<li><em>d</em> &mdash; (function <lambda> at 0x8518f44) ++++++++++++++</li>
+</ul>
+
+
+<blockquote><p>与同步无回调相比; 看<code>test_async_future(self)</code>, 将 f() 获得的 future &ndash;> self.io_loop.add_future(future, self.stop) &ndash;> self.stop(future) &ndash;> 最后通过 self.wait()获得的结果 就是 例子中42 . 现实中一般将 return_future 与 gen.engine 联合使用  , 通过在 gen.engine &ndash;> yield f() 获得结果</p></blockquote>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-08T13:38:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/09/19/tornado-code-reading-ioloop/" title="Previous Post: Tornado Code Reading - IOLoop">&laquo; Tornado Code Reading - IOLoop</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/07/generic-pool-reading/" title="Next Post: generic-pool Reading">generic-pool Reading &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">'Unicode'介绍系列1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - admin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>expressjs/finished Code Reading - 三余无梦</title>
+  <meta name="author" content="admin">
+
+  
+  <meta name="description" content="* finished 功能: 在请求关闭，完成， 或者出错时执行回调
+用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁 从一个koa例子开始 1
+2
+3
+4
+5
+6
+7
+var onFinished = require('finished'); &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">三余无梦</a></h1>
+  
+    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:zs1621.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/about">关于</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Expressjs/finished Code Reading</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-14T11:57:26+08:00" pubdate data-updated="true">Jul 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>* <a href="https://github.com/expressjs/finished">finished</a></h2>
+
+<ul>
+<li>功能: 在请求关闭，完成， 或者出错时执行回调</li>
+<li>用例: 清除传输流。例如为了防止文件描述符泄漏，在socket出错时， 你会想要将文件流摧毁</li>
+</ul>
+
+
+<h2><strong>从一个koa例子开始</strong></h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var onFinished = require('finished');
+</span><span class='line'>function* () {
+</span><span class='line'>    var stream = this.body = fs.createReadStream('thingie.json');   
+</span><span class='line'>    onFinished(this, function(err) {
+</span><span class='line'>        stream.destroy();    
+</span><span class='line'>    })
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再看finished的代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function finished (thingie, callback) {
+</span><span class='line'>    /*
+</span><span class='line'>     * 主要需要監測socket和res的事件 
+</span><span class='line'>     */
+</span><span class='line'>    var socket = thingie.socket || thingie;    
+</span><span class='line'>    var res = thingie.res || thingie; 
+</span><span class='line'>
+</span><span class='line'>    /*
+</span><span class='line'>     * res完成或者socket不可寫的時候， 直接執行callback, 返回thingie
+</span><span class='line'>     */
+</span><span class='line'>    if ( res.finished || !socket.writable) {
+</span><span class='line'>        defer(callback);    
+</span><span class='line'>        return thingie;
+</span><span class='line'>    };  
+</span><span class='line'>
+</span><span class='line'>    /*
+</span><span class='line'>     * 第一次運行時listener 和 res.__onFinished 是不存在的
+</span><span class='line'>     */
+</span><span class='line'>    var listener = res.__onFinished;
+</span><span class='line'>
+</span><span class='line'>    if (!listener || !listener.queue) {
+</span><span class='line'>        listener = res.__onFinished = function onFinished(err)  {
+</span><span class='line'>            if (res.__onFinished === listener) res.__onFinished = null; // 這句表明每次給listener 賦完值， res.__onFinished = null;
+</span><span class='line'>            var queue = listener.queue || [];
+</span><span class='line'>            while (queue.length) queue.shift()(err)
+</span><span class='line'>        }   
+</span><span class='line'>        listerner.queue = [];
+</span><span class='line'>
+</span><span class='line'>        first([
+</span><span class='line'>            [socket, 'error', 'close'], 
+</span><span class='line'>            [res, 'finish'],
+</span><span class='line'>        ], listener); // 看[first](https://github.com/jonathanong/ee-first)模块解析: 主要功能在监听到指定的事件的第一件时，触发响应回调， 并清除移除所有的监听。
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    listener.queue.push(callback);
+</span><span class='line'>
+</span><span class='line'>    return thingie;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><em>想要具体看finish的应用场景，其实在<a href="https://github.com/expressjs/finished/blob/master/test/test.js">单元测试</a>里有很多具体的例子</em></h2>
+
+<ul>
+<li>下面具体理解下其中的一个单元测试</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> describe('when the request finished', function () {
+</span><span class='line'>    it('should execute the callback when called after finish', function(done){
+</span><span class='line'>        var server = http.createServer(function(req, res){
+</span><span class='line'>            onFinished(res, function(){
+</span><span class='line'>                //第4步
+</span><span class='line'>                onFinished(res, done); // 第5步   
+</span><span class='line'>            }) // 第2步   
+</span><span class='line'>            setTimeout(res.end.bind(res), 0); // 第3步
+</span><span class='line'>        })  // 第 0 步  
+</span><span class='line'>        server.listen(function(){
+</span><span class='line'>            var port = this.address().port;    
+</span><span class='line'>            http.get('http://127.0.0.1:' + port, function(){
+</span><span class='line'>                res.resume();
+</span><span class='line'>                res.on('close', server.close.bind(server));
+</span><span class='line'>            }) //第1步
+</span><span class='line'>        })
+</span><span class='line'>    })    
+</span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><strong>测试步骤</strong></li>
+<li>先创建服务器 第0步</li>
+<li>监听端口,做出请求 第一步</li>
+<li>服务器收到请求， 执行回调函数 <code>onFinished(res, function(){})</code> 第2步</li>
+<li>第3步的话  结束请求 res.end.bind(res)</li>
+<li>第4步  监听到结束, 执行回调 <code>onFinished(res, done)</code></li>
+<li><p>第5步  完成done</p></li>
+<li><p><strong>测试结论</strong>:当服务器完成请求后，有onFinished()的话， 直接执行回调, 然后结束</p></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-14T11:57:26+08:00" pubdate data-updated="true">Jul 14<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/04/wwdc14/" title="Previous Post: WWDC14">&laquo; WWDC14</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/" title="Next Post: First 5 minutes troubleshooting server translate ">First 5 minutes troubleshooting server translate  &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">'Unicode'介绍系列1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - admin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

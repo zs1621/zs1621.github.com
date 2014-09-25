@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>First 5 minutes troubleshooting server translate  - 三余无梦</title>
+  <meta name="author" content="admin">
+
+  
+  <meta name="description" content="原文 服務器遇到問題,從何下手? 不要急着衝向你的服務器， 在這之前， 你對它和具體的問題了解多少？ 必須知道的 問題的確切症狀? 丟包? 錯誤?
+問題什麼時候被發現?
+可以重現麼?
+有什麼規律(例如每小時發生一次)?
+在服務器的最後一次改變(代碼， 服務配置, 內存)?
+問題會影響客戶的哪個部分 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zs1621.github.io/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">三余无梦</a></h1>
+  
+    <h2>冬者岁之余，夜者日之余，阴雨者时之余也</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:zs1621.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/about">关于</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">First 5 Minutes Troubleshooting Server Translate</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-19T17:09:13+08:00" pubdate data-updated="true">Jul 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p><a href="http://devo.ps/blog/troubleshooting-5minutes-on-a-yet-unknown-box/">原文</a></p></blockquote>
+
+<h2><strong>服務器遇到問題,從何下手?</strong></h2>
+
+<p>不要急着衝向你的服務器， 在這之前， 你對它和具體的問題了解多少？</p>
+
+<p>必須知道的</p>
+
+<ul>
+<li>問題的確切症狀? 丟包? 錯誤?</li>
+<li>問題什麼時候被發現?</li>
+<li>可以重現麼?</li>
+<li>有什麼規律(例如每小時發生一次)?</li>
+<li>在服務器的最後一次改變(代碼， 服務配置, 內存)?</li>
+<li>問題會影響客戶的哪個部分(登錄， 註銷， )?</li>
+<li><strong>有監控平臺麼?</strong> Munin, Zabbix, Nagios, NewRelic..</li>
+<li><strong>日志(集中化)?</strong> Loggly, Airbrake, Graylog</li>
+</ul>
+
+
+<p>上面的最後兩項是最方便直觀的信息來源， 但也別期望太多;爲了搞定問題，繼續往下看</p>
+
+<p><strong>誰登陸了?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ w
+</span><span class='line'>$ last</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不是很重要， 但是你在找問題時不希望還有其他人在擺弄的服務器。廚房裏一個廚師足矣</p>
+
+<p><strong>之前做了哪些操作?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ history</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看歷史記錄總是好的;配合之前誰在操作的命令.</p>
+
+<p>快速回憶一下， 你也許小要升級環境變量 <code>HISTTIMEFORMAT</code> 去跟蹤那些命令運行的時刻.沒什麼比調查一個過期命令列表更讓人沮喪的了。</p>
+
+<p><strong>正在運行哪些程序i?</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pstree -a
+</span><span class='line'>$ ps aux</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果覺得<code>ps aux</code>太羅嗦， <code>pstree -a</code>會給你一個漂亮的展示關於什麼正在運行以及誰調用了它</p>
+
+<p><strong>監聽服務</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ netstat -ntlp  # t: tcp
+</span><span class='line'>$ netstat -nulp  # u: udp
+</span><span class='line'>$ netstat -nxlp  # x: unix socket</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我更傾向分開運行這些命令， 主要是因爲不喜歡同時看所有的服務。雖然<code>netstat -nalp</code>以可以做到。甚至我會省略<code>數字化</code>選項(IPs是易讀點的)</p>
+
+<p>確定正在運行的服務以及他們是否應該運行。尋找多個監聽端口。通過<code>ps aux</code>的輸出匹配進程ID；這個是很有用的特別當你同時結束2~3個Java 或者 Erlang進程</p>
+
+<p><strong>CPU 和 RAM</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ free -m
+</span><span class='line'>$ uptime
+</span><span class='line'>$ top
+</span><span class='line'>$ htop</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這些命令回答以下問題:
+ &ndash;  還有空閒的內存? 還是正在交換區 ?
+ &ndash;  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
+ &ndash;  哪個項目負載最多? 平均負載多少?
+ &ndash;  詳細了解命令<code>man</code>,你懂的</p>
+
+<p><strong>Hardware</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ lspci
+</span><span class='line'>$ dmidecode
+</span><span class='line'>$ ethtool</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TODO: explain commands</p>
+
+<p><strong>IO 性能</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iostat -kx 2
+</span><span class='line'>$ vmstat 2 10
+</span><span class='line'>$ mpstat 2 10
+</span><span class='line'>$ dstat --top-io --top-bio</span></code></pre></td></tr></table></div></figure>
+
+
+<p>這幾個是非常有用的命令去分析後臺性能;</p>
+
+<ul>
+<li>check 硬盤使用:</li>
+<li>交換區目前有沒有使用</li>
+<li>什麼程序再使用CPU: 系統? 用戶? stolen ?</li>
+<li><code>dstat</code> 一直是我的最愛. IO消耗? mysql 阻塞資源? php進程在使用的你io&hellip;</li>
+</ul>
+
+
+<p><strong>掛載點和文件系統</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mount
+</span><span class='line'>$ cat /etc/fstab
+</span><span class='line'>$ vgs
+</span><span class='line'>$ pvs
+</span><span class='line'>$ lvs
+</span><span class='line'>$ df -h
+</span><span class='line'>$ lsof +D / /* </span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>多少文件系統被掛載</li>
+<li>過期的文件系統</li>
+<li>硬盤空間是否有剩餘</li>
+<li>大文件還沒有清除</li>
+<li>如果硬盤有問題還有空間去加個分區?</li>
+</ul>
+
+
+<p> <strong>內核,中斷, 網絡使用情況</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sysctl -a | grep ...
+</span><span class='line'>$ cat /proc/interrupts
+</span><span class='line'>$ cat /proc/net/ip_conntrack
+</span><span class='line'>$ netstat
+</span><span class='line'>$ ss -s</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TBC</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">admin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-19T17:09:13+08:00" pubdate data-updated="true">Jul 19<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/translation/'>translation</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/14/expressjs-slash-finished-code-reading/" title="Previous Post: expressjs/finished Code Reading">&laquo; expressjs/finished Code Reading</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/" title="Next Post: 'unicode'介绍系列1">'unicode'介绍系列1 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">'Unicode'介绍系列1</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/28/koa-compose-code-reading/">Koa-compose Code Reading</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - admin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
