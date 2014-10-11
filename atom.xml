@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-09-25T20:18:13+08:00</updated>
+  <updated>2014-10-11T16:54:54+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,55 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cookie intro and cookie share]]></title>
+    <link href="http://zs1621.github.io/blog/2014/10/11/cookie-intro-and-cookie-share/"/>
+    <updated>2014-10-11T10:24:06+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/10/11/cookie-intro-and-cookie-share</id>
+    <content type="html"><![CDATA[<h2>cookie intro</h2>
+
+<ul>
+<li><h3>how cookie come</h3>
+
+<ul>
+<li>when you first visit xxx.com, the website produce a cookie and sent you on <code>http response header</code>  you may the field <code>Set-Cookie</code>.</li>
+</ul>
+</li>
+<li><h3>why cookie</h3>
+
+<ul>
+<li>make website recongize client</li>
+<li>website according the cookie know you and give you different website or advertisement. or remeber your login status &hellip;</li>
+</ul>
+</li>
+<li><h3>cookie attribuate</h3></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Set-Cookie:BAIDUID=17EFBEC8FFD5F79747775326540CB66C:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li> HttpOnly
+
+<ul>
+<li>这个标志就是表明</li>
+</ul>
+</li>
+<li> secure</li>
+<li> domain</li>
+<li> path</li>
+<li> expires</li>
+<li> max-age</li>
+<li> name=value</li>
+</ul>
+
+
+<p>TBC</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA['unicode'介绍系列1]]></title>
