@@ -4,7 +4,7 @@
   <title><![CDATA[Category: basic | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/basic/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-10-11T16:54:54+08:00</updated>
+  <updated>2014-10-11T20:14:46+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -24,7 +24,7 @@
 <li><h3>how cookie come</h3>
 
 <ul>
-<li>when you first visit xxx.com, the website produce a cookie and sent you on <code>http response header</code>  you may the field <code>Set-Cookie</code>.</li>
+<li>when you first visit xxx.com, the website produce a cookie and sent you on <code>http response header</code>  you may find the field <code>Set-Cookie</code>.</li>
 </ul>
 </li>
 <li><h3>why cookie</h3>
@@ -46,19 +46,49 @@ Set-Cookie:BAIDUID=17EFBEC8FFD5F79747775326540CB66C:FG=1; expires=Thu, 31-Dec-37
 <li> HttpOnly
 
 <ul>
-<li>这个标志就是表明</li>
+<li>this atribute directs browsers can not expose the cookie through channels other http(s), so if httponly ,<code>alert(document.cookie)</code> should output null.</li>
 </ul>
 </li>
-<li> secure</li>
-<li> domain</li>
-<li> path</li>
-<li> expires</li>
-<li> max-age</li>
-<li> name=value</li>
+<li> secure
+
+<ul>
+<li>It&rsquo;s also a flag, it meant browsers transfer cookie through secure methods even if it&rsquo;s not https request. more detail at <a href="http://stackoverflow.com/questions/2321224/cookie-across-http-and-https-in-php">here</a></li>
+</ul>
+</li>
+<li> domain
+
+<ul>
+<li>domain value for cookie share, if a.xxx.com and b.xxx.com need share the cookie, domain=&lsquo;.xxx.com&rsquo; is ok. more detail <a href="http://stackoverflow.com/questions/3089199/can-subdomain-example-com-set-a-cookie-that-can-be-read-by-example-com?lq=1">1</a></li>
+</ul>
+</li>
+<li> path
+
+<ul>
+<li>path easy to understand, cookie is effective in which path</li>
+</ul>
+</li>
+<li> expires
+
+<ul>
+<li>the time the cookie will be deleted</li>
+</ul>
+</li>
+<li> max-age
+
+<ul>
+<li>the seconds cookie get delete,   the differences between <code>max-age</code> and <code>expires</code>, can ref <a href="http://mrcoles.com/blog/cookies-max-age-vs-expires/">difference</a></li>
+</ul>
+</li>
+<li> name=value
+
+<ul>
+<li>easy to understand, you want to save what value in cookie, the example <code>BAIDUID=****</code></li>
+</ul>
+</li>
 </ul>
 
 
-<p>TBC</p>
+<p><em>ps the cookie is produced by server</em></p>
 ]]></content>
   </entry>
   
