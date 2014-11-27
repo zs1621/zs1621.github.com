@@ -4,7 +4,7 @@
   <title><![CDATA[Category: codeReading | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/codereading/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-10-11T20:14:46+08:00</updated>
+  <updated>2014-11-27T10:56:40+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[co Coding Reading]]></title>
+    <link href="http://zs1621.github.io/blog/2014/11/27/co-coding-reading/"/>
+    <updated>2014-11-27T10:15:56+08:00</updated>
+    <id>http://zs1621.github.io/blog/2014/11/27/co-coding-reading</id>
+    <content type="html"><![CDATA[<h2><a href="https://github.com/tj/co">co</a></h2>
+
+<blockquote><p>最近co从版本3.1.0 &ndash;> 4.0.0 主要改动在与 thunk &ndash;> promise, 详情见<a href="https://github.com/tj/co/issues/143">stop advocating thunks</a>,version 4.0.0 目前仍然支持thunk</p></blockquote>
+
+<h2>主题</h2>
+
+<ul>
+<li>理解co原理</li>
+<li>co对我来说理解比较困难，这个教程看起来不错, 但是需要知道这篇教程是针对3.1.0,但是原理是以一样的
+参考 <a href="http://www.html-js.com/article/Nodejs-commonly-used-modules-detailed-address-correction-in-Pyramid-Harmony-Generator-yield-ES6-CO-framework-of-learning">理解co</a></li>
+<li><p><a href="http://boke.io/gao-ding-koa-zhi-coyuan-ma/">co原理理解2</a></p></li>
+<li><p>了解thunk,promise</p></li>
+<li>所有的这些都源于<a href="http://callbackhell.com/">callbackhell</a></li>
+</ul>
+
+
+<h3>promise</h3>
+
+<pre><code>先放几个链接
+</code></pre>
+
+<ul>
+<li><a href="htpps://promisesaplus.com/">promise/A+</a></li>
+<li><a href="http://mweb.baidu.com/p/promise-introduction.html">百度无线</a></li>
+<li><p><a href="https://github.com/alsotang/node-lessons/tree/master/lesson17">github</a></p>
+
+<p>TBC</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[expressjs/finished Code Reading]]></title>
@@ -300,7 +337,7 @@ var fs = require(&lsquo;fs&rsquo;);</p>
 <li>set-type: 1.0.0</li>
 <li>mime-types: 1.0.0</li>
 <li><a href="https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/">finished: 1.2.0</a></li>
-<li>co: 3.0.2</li>
+<li><a href="https://zs1621.github.io/blog/2014/11/27/co-coding-reading/">co: 3.0.2</a></li>
 <li>debug</li>
 <li>fresh: 0.2.1</li>
 <li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
@@ -422,17 +459,6 @@ return function (req, res) {
 <h3>finished(ctx, ctx.onerror)</h3>
 
 <p>TBC</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[underscore.js Code Reading]]></title>
-    <link href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading/"/>
-    <updated>2013-12-27T21:14:00+08:00</updated>
-    <id>http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading</id>
-    <content type="html"><![CDATA[<h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
-
-<p>挖坑待续</p>
 ]]></content>
   </entry>
   

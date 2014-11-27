@@ -9,7 +9,12 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="node-pool why pool 与数据建立连接关闭连接， 每次建立一个连接对象会有消耗!(在并发很高的情况消耗会更明显) what node-pool can do ? 动态调整连接数的连接池, 数据库频繁读写时, 就建多个连接, 当然连接数有最大值Max, 如果读写实际需要的连接数 > &hellip;">
+  <meta name="description" content="Lazy.js 在看源码前， 可以先看下Lazy.js的基本思想 Lazy.js 的设计模式) Lazy 1
+2
+3
+4
+5
+Lazy([1, 2, 4]) // in [1, 2, 4] -&gt; out instanceof Lazy.ArrayLikeSequence Lazy({ a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +71,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/18/lazy-dot-js-code-reading/">Lazy.js Code Reading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-18T08:58:00+08:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="https://github.com/dtao/lazy.js">Lazy.js</a></h3>
+
+<p>在看源码前， 可以先看下Lazy.js的基本思想 <a href="https://github.com/zs1621/lazy.js/wiki/%E4%BB%8B%E7%BB%8D-LAZYJS(%E7%BF%BB%E8%AF%91">Lazy.js 的设计模式</a>)</p>
+
+<h3>Lazy</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Lazy</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> <span class="c1">// in [1, 2, 4] -&gt; out instanceof Lazy.ArrayLikeSequence </span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">({</span> <span class="nx">a</span><span class="o">:</span> <span class="s1">&#39;b&#39;</span><span class="p">})</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">()</span>
+</span><span class='line'><span class="nx">Lazy</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>输入参数 Array | object | string |  | null</li>
+<li>输出 { source: [1, 2, 4] } | { source: {&lsquo;a&rsquo;: b} } | { source: &ldquo;hello world&rdquo;} | { source: undefined }  | { source: null }</li>
+<li>可以看到输入的参数被打包成相应的对象, 而这些对象都继承自 <code>sequence</code></li>
+</ul>
+
+
+<h3>Sequence</h3>
+
+<p><code>sequence</code> 对象提供对 0或者更多连续元素的集合 的统一的 API 封装.为什么所有的操作需要一个 sequence. 看下面的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">seq</span> <span class="o">=</span> <span class="nx">Lazy</span><span class="p">(</span><span class="nx">source</span><span class="p">)</span> <span class="c1">// 1st sequence</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="c1">// 2nd MappedSequence</span>
+</span><span class='line'>       <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">pred</span><span class="p">)</span> <span class="c1">// 3rd FilteredSequence</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">reverse</span><span class="p">()</span> <span class="c1">// 4th ReversedSequence</span>
+</span><span class='line'><span class="nx">seq</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这个例子中 前四步除了创建对应的sequece没有做任何的遍历source或者别的操作。 只有在第5步调用 each 时，将一次性按照鍊條(chain)的順序处理source 得到最后的结果。所以lazy做的就是延迟遍历处理数据.</p>
+
+<blockquote><p>in fact, when i think about  the performance of <code>underscore</code> and <code>lazy.js</code>; i cann&rsquo;t understand why lazy is faster.  lazy.js: 1 2s 3 underscore: 1 2 3 1 2 3 1 2 3 . so what&rsquo;s the difference. lazy.js just hold off some process; i cann&rsquo;t get it&hellip;. so continue to read code. >_&lt;</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Sequence</span><span class="p">()</span> <span class="p">{}</span> <span class="err">#</span> <span class="err">创建</span><span class="nx">Sequence</span><span class="err">构造函数</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TBC</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1985,6 +2078,10 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/27/co-coding-reading/">Co Coding Reading</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/10/11/cookie-intro-and-cookie-share/">Cookie Intro and Cookie Share</a>
       </li>
     
@@ -1998,10 +2095,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
     
       <li class="post">
         <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/04/wwdc14/">WWDC14</a>
       </li>
     
   </ul>
