@@ -14,13 +14,16 @@ categories: codeReading
  > 最近co从版本3.1.0 -> 4.0.0 主要改动在与 thunk -> promise, 详情见[stop advocating thunks](https://github.com/tj/co/issues/143),version 4.0.0 目前仍然支持thunk
 
 ## 主题
- - 理解co原理
+
+- 理解co原理
+ 
+ 
   - co对我来说理解比较困难，这个教程看起来不错, 但是需要知道这篇教程是针对3.1.0,但是原理是以一样的
  参考 [理解co](http://www.html-js.com/article/Nodejs-commonly-used-modules-detailed-address-correction-in-Pyramid-Harmony-Generator-yield-ES6-CO-framework-of-learning)
   - [co原理理解2](http://boke.io/gao-ding-koa-zhi-coyuan-ma/)
 
 
- - 了解thunk,promise
+- 了解thunk,promise
   - 所有的这些都源于[callbackhell](http://callbackhell.com/)
 
 
