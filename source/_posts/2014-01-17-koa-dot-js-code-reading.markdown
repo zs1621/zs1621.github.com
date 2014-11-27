@@ -21,7 +21,7 @@ TBC 继续挖坑待填...
    - set-type: 1.0.0
    - mime-types: 1.0.0
    - [finished: 1.2.0](https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/)
-   - co: 3.0.2
+   - [co: 3.0.2](https://zs1621.github.io/blog/2014/11/27/co-coding-reading/)
    - debug
    - fresh: 0.2.1
    - [koa-compose: 2.2.0](https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/)
