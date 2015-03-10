@@ -74,6 +74,8 @@ $ ps aux
 $ netstat -ntlp  # t: tcp
 $ netstat -nulp  # u: udp
 $ netstat -nxlp  # x: unix socket
+$ netstat -ant|grep EST|wc -l #这条命令是很有用的能看到多少连接
+$ netstat -ant|wc -l  #看到有多少tcp,udp链接
 ```
 
 我更傾向分開運行這些命令， 主要是因爲不喜歡同時看所有的服務。雖然`netstat -nalp`以可以做到。甚至我會省略`數字化`選項(IPs是易讀點的)
@@ -97,6 +99,7 @@ $ htop
  -  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
  -  哪個項目負載最多? 平均負載多少?
  -  詳細了解命令`man`,你懂的
+ -  这里还有一点如果cpu不高，但是服务里面响应时间很大，那么就是程序里的代码卡住，怎么找出哪里卡住，可以通过`strace -p yourpid`先查看你的程序pid然后用此命令
 
 
 **Hardware**
