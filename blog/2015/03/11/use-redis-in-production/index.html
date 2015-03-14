@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>underscore.js Code Reading - 三余无梦</title>
+  <title>use redis in production - redis config set - 三余无梦</title>
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="underscore 挖坑待续
-">
+  <meta name="description" content="redis config set since redis 2.0.0, u can use this change setting in redis running
+config set可以修改哪些配置: config get * 注意事项 config set 只能在redis运行时改变配置， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading">
+  <link rel="canonical" href="http://zs1621.github.io/blog/2015/03/11/use-redis-in-production">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
@@ -70,7 +70,7 @@
   
   <header>
     
-      <h1 class="entry-title">underscore.js Code Reading</h1>
+      <h1 class="entry-title">Use Redis in Production - Redis Config Set</h1>
     
     
       <p class="meta">
@@ -86,16 +86,63 @@
   
 
 
-<time datetime="2013-12-27T21:14:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-03-11T13:58:23+08:00" pubdate data-updated="true">Mar 11<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
+<div class="entry-content"><h2>redis config set</h2>
 
-<p>挖坑待续</p>
+<ul>
+<li>since redis 2.0.0, u can use this change setting in redis running</li>
+<li>config set可以修改哪些配置: <code>config get *</code></li>
+</ul>
+
+
+<h3>注意事项</h3>
+
+<ul>
+<li>config set 只能在redis运行时改变配置，但不能改变配置文件里的配置，所以当你在redis运行时，使用了config set，必须在对应的配置文件里做修改，否则下次启动时配置又会改变</li>
+</ul>
+
+
+<h3>实战</h3>
+
+<ul>
+<li>最近的项目里需要对redis数据库做迁移,从系统盘->数据盘,场景是只使用了RDB持久化</li>
+<li>使用config set dir 需注意</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rdb将内存中的数据库以RDB格式保存到磁盘中，如果RDB文件已存在，那么新的RDB文件写好将会替换为已有的RDB文件。
+</span><span class='line'>在保存RDB文件期间，主进程会被调用rdbsave函数 
+</span><span class='line'>bgsave过程fork出一个子进程，子进程负责调用rdbSave,并在保存完成之后向主进程发送信号，通知保存已完成
+</span><span class='line'>save过程直接调用rdbSave,阻塞Redis主进程，知道保存完为止。在主进程阻塞期间，服务器不能处理客户端的任何请求。
+</span><span class='line'>这里有两个坑
+</span><span class='line'>1. fork是有延迟的 [](http://blog.nosqlfan.com/html/3903.html)
+</span><span class='line'>2. RDB在写入过程中，会连内存一起Fork出一个新进程，遍历新进程内存中的数据写RDB. 注意fork的时候一定要注意当前机子的内存，保险的话是2倍现有redis所占内存.</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>dump.rdb 从 /var/lib/redis/ ， 转存到/mnt/lib/redis/</li>
+<li>redis-cli</li>
+<li>config set dir /mnt/lib/redis #这里要注意redis进程是属于哪个用户的, 要把/mnt/lib/redis设为此用户可写可读的</li>
+<li>bgsave  #当看到/mnt/lib/redis 里有dump.rdb(默认)文件时就表明操作成功</li>
+<li>此时再修改 redis.conf 将 dir &ndash;> /mnt/lib/redis</li>
+<li>如果下次重启的话， redis将会从 /mnt/lib/redis/dump.rdb 读入数据到内存中  #注意如果要重启，最好先把业务逻辑相关的redis处理关掉，防止数据丢失，并且通过shutdown 关闭，不要kill -9。</li>
+</ul>
+
+
+<h3>config set 还可以修改很多参数这里不一一解释等以后用到再做解释TBC</h3>
 </div>
 
 
@@ -118,12 +165,12 @@
   
 
 
-<time datetime="2013-12-27T21:14:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-03-11T13:58:23+08:00" pubdate data-updated="true">Mar 11<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+    <a class='category' href='/blog/categories/nosql/'>NoSQL</a>
   
 </span>
 
@@ -139,10 +186,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/12/18/lazy-dot-js-code-reading/" title="Previous Post: Lazy.js code Reading">&laquo; Lazy.js code Reading</a>
+        <a class="basic-alignment left" href="/blog/2014/11/27/co-coding-reading/" title="Previous Post: co Coding Reading">&laquo; co Coding Reading</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/01/17/koa-dot-js-code-reading/" title="Next Post: Koa.js Code Reading">Koa.js Code Reading &raquo;</a>
       
     </p>
   </footer>

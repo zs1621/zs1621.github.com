@@ -4,7 +4,7 @@
   <title><![CDATA[Category: translation | 三余无梦]]></title>
   <link href="http://zs1621.github.io/blog/categories/translation/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2014-11-27T10:59:15+08:00</updated>
+  <updated>2015-03-14T12:10:00+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -74,6 +74,8 @@ $ ps aux
 $ netstat -ntlp  # t: tcp
 $ netstat -nulp  # u: udp
 $ netstat -nxlp  # x: unix socket
+$ netstat -ant|grep EST|wc -l #这条命令是很有用的能看到多少连接
+$ netstat -ant|wc -l  #看到有多少tcp,udp链接
 </code></p>
 
 <p>我更傾向分開運行這些命令， 主要是因爲不喜歡同時看所有的服務。雖然<code>netstat -nalp</code>以可以做到。甚至我會省略<code>數字化</code>選項(IPs是易讀點的)</p>
@@ -93,7 +95,8 @@ $ htop
  &ndash;  還有空閒的內存? 還是正在交換區 ?
  &ndash;  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
  &ndash;  哪個項目負載最多? 平均負載多少?
- &ndash;  詳細了解命令<code>man</code>,你懂的</p>
+ &ndash;  詳細了解命令<code>man</code>,你懂的
+ &ndash;  这里还有一点如果cpu不高，但是服务里面响应时间很大，那么就是程序里的代码卡住，怎么找出哪里卡住，可以通过<code>strace -p yourpid</code>先查看你的程序pid然后用此命令</p>
 
 <p><strong>Hardware</strong></p>
 

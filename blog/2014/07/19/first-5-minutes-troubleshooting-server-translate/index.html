@@ -154,9 +154,13 @@
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$ netstat -ntlp  # t: tcp
 </span><span class='line'>$ netstat -nulp  # u: udp
-</span><span class='line'>$ netstat -nxlp  # x: unix socket</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>$ netstat -nxlp  # x: unix socket
+</span><span class='line'>$ netstat -ant|grep EST|wc -l #这条命令是很有用的能看到多少连接
+</span><span class='line'>$ netstat -ant|wc -l  #看到有多少tcp,udp链接</span></code></pre></td></tr></table></div></figure>
 
 
 <p>我更傾向分開運行這些命令， 主要是因爲不喜歡同時看所有的服務。雖然<code>netstat -nalp</code>以可以做到。甚至我會省略<code>數字化</code>選項(IPs是易讀點的)</p>
@@ -179,7 +183,8 @@
  &ndash;  還有空閒的內存? 還是正在交換區 ?
  &ndash;  還有CPU剩餘麼? 服務器有多少CPU核心可用? 這些核心中是否有超載的?
  &ndash;  哪個項目負載最多? 平均負載多少?
- &ndash;  詳細了解命令<code>man</code>,你懂的</p>
+ &ndash;  詳細了解命令<code>man</code>,你懂的
+ &ndash;  这里还有一点如果cpu不高，但是服务里面响应时间很大，那么就是程序里的代码卡住，怎么找出哪里卡住，可以通过<code>strace -p yourpid</code>先查看你的程序pid然后用此命令</p>
 
 <p><strong>Hardware</strong></p>
 
@@ -318,6 +323,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/11/use-redis-in-production/">Use Redis in Production - Redis Config Set</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/27/co-coding-reading/">Co Coding Reading</a>
       </li>
     
@@ -331,10 +340,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/14/expressjs-slash-finished-code-reading/">Expressjs/finished Code Reading</a>
       </li>
     
   </ul>
@@ -353,7 +358,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - admin -
+  Copyright &copy; 2015 - admin -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
