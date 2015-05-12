@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2015-05-12T11:49:32+08:00</updated>
+  <updated>2015-05-12T12:05:47+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -89,10 +89,18 @@
  open() "/***/nginx/proxy_temp/0/12/00001213420" failed (13: Permission denied) while reading upstream,
 </code></p>
 
+<p>问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了</p>
+
 <ul>
-<li>问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了</li>
+<li>proxy server 为django,  访问服务器出现django出现如下错误:</li>
 </ul>
 
+
+<p> <code>
+ Invalid HTTP_HOST header(you may need to set ALLOWED_HOSTS): 127.0.0.1:3456
+</code></p>
+
+<p> 这个问题就是django在请求来的时候会检查request header 里的 host.如果host不是预设的xxxx.com那么就会报500错误，一般是因为nginx没有加<code>proxy_set_header Host $host;</code>, 加上这个说明就好了 ip <code>proxy_set_header X-Real-IP $remote_addr</code> 也是同样的道理</p>
 ]]></content>
   </entry>
   
