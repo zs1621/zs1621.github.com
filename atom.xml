@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2015-03-14T12:10:00+08:00</updated>
+  <updated>2015-05-12T11:49:32+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,89 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx use]]></title>
+    <link href="http://zs1621.github.io/blog/2015/05/12/nginx-use/"/>
+    <updated>2015-05-12T09:58:46+08:00</updated>
+    <id>http://zs1621.github.io/blog/2015/05/12/nginx-use</id>
+    <content type="html"><![CDATA[<h2>Nginx config description (注意事项)</h2>
+
+<ul>
+<li>proxy_buffer_size</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffer_size *size*;
+</span><span class='line'>Default: proxy_buffer_size 4k|8k;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>把代理服务器传来的第一部分(通常是response header)放在proxy_buffer里</p>
+
+<ul>
+<li>proxy_buffers</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffers *number size*;
+</span><span class='line'>Default: proxy_buffers *8 4k|8k*;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置buffers的个数和大小(单一链接).默认size等于一个内存页,取决于平台</p>
+
+<ul>
+<li>proxy_buffering</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffering *on | off*;
+</span><span class='line'>Default: proxy_buffering on;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>开启/关闭 proxy_buffering, buffering on ， nginx接受到代理服务器的返回就会将其存入buffers.如果回复内容超过设置的大小，会将回复内容存入临时文件(temporary file)硬盘里</p>
+
+<ul>
+<li>proxy_temp_path</li>
+</ul>
+
+
+<p> <code>
+ Syntax: proxy_temp_path *path*;
+ Default: proxy_temp_path proxy_temp;
+ Context: http,server,location
+</code></p>
+
+<p> 定义一个文件夹存储proxy server传来的数据</p>
+
+<h2>nginx use 问题</h2>
+
+<ul>
+<li>proxy server 为django, django返回的文件5m左右,但是最后下载下来的只有69k,最后跟了下nginx error log, 看到如下错误</li>
+</ul>
+
+
+<p> <code>
+ open() "/***/nginx/proxy_temp/0/12/00001213420" failed (13: Permission denied) while reading upstream,
+</code></p>
+
+<ul>
+<li>问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[use redis in production - redis config set]]></title>

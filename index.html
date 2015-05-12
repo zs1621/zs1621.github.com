@@ -9,8 +9,12 @@
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="redis config set since redis 2.0.0, u can use this change setting in redis running
-config set可以修改哪些配置: config get * 注意事项 config set 只能在redis运行时改变配置， &hellip;">
+  <meta name="description" content="Nginx config description (注意事项) proxy_buffer_size 1
+2
+3
+Syntax: proxy_buffer_size *size*;
+Default: proxy_buffer_size 4k|8k;
+Context: http,server, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +71,116 @@ config set可以修改哪些配置: config get * 注意事项 config set 只能�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/12/nginx-use/">Nginx Use</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-12T09:58:46+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Nginx config description (注意事项)</h2>
+
+<ul>
+<li>proxy_buffer_size</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffer_size *size*;
+</span><span class='line'>Default: proxy_buffer_size 4k|8k;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>把代理服务器传来的第一部分(通常是response header)放在proxy_buffer里</p>
+
+<ul>
+<li>proxy_buffers</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffers *number size*;
+</span><span class='line'>Default: proxy_buffers *8 4k|8k*;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置buffers的个数和大小(单一链接).默认size等于一个内存页,取决于平台</p>
+
+<ul>
+<li>proxy_buffering</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffering *on | off*;
+</span><span class='line'>Default: proxy_buffering on;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>开启/关闭 proxy_buffering, buffering on ， nginx接受到代理服务器的返回就会将其存入buffers.如果回复内容超过设置的大小，会将回复内容存入临时文件(temporary file)硬盘里</p>
+
+<ul>
+<li>proxy_temp_path</li>
+</ul>
+
+
+<p> <code>
+ Syntax: proxy_temp_path *path*;
+ Default: proxy_temp_path proxy_temp;
+ Context: http,server,location
+</code></p>
+
+<p> 定义一个文件夹存储proxy server传来的数据</p>
+
+<h2>nginx use 问题</h2>
+
+<ul>
+<li>proxy server 为django, django返回的文件5m左右,但是最后下载下来的只有69k,最后跟了下nginx error log, 看到如下错误</li>
+</ul>
+
+
+<p> <code>
+ open() "/***/nginx/proxy_temp/0/12/00001213420" failed (13: Permission denied) while reading upstream,
+</code></p>
+
+<ul>
+<li>问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1169,196 +1283,6 @@ config set可以修改哪些配置: config get * 注意事项 config set 只能�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/17/koa-dot-js-code-reading/">Koa.js Code Reading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-17T15:23:00+08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>TBC 继续挖坑待填&hellip;</p>
-
-<h2><a href="https://github.com/koajs/koa">Koa</a></h2>
-
-<p>源码简况</p>
-
-<ul>
-<li>version： 0.8.2</li>
-<li>用到的库
-
-<ul>
-<li>escape-html: =1.0.1</li>
-<li>statuses: =1.0.1</li>
-<li>accepts: 1.0.0</li>
-<li>type-is: 1.1.0</li>
-<li>set-type: 1.0.0</li>
-<li>mime-types: 1.0.0</li>
-<li><a href="https://zs1621.github.io/blog/2014/07/14/expressjs-slash-finished-code-reading/">finished: 1.2.0</a></li>
-<li><a href="https://zs1621.github.io/blog/2014/11/27/co-coding-reading/">co: 3.0.2</a></li>
-<li>debug</li>
-<li>fresh: 0.2.1</li>
-<li><a href="https://zs1621.github.io/blog/2014/05/28/koa-compose-code-reading/">koa-compose: 2.2.0</a></li>
-<li>koa-is-json: 1.0.0</li>
-<li>cookies: 0.4.0</li>
-<li>delegates: 0.0.3</li>
-<li><a href="https://github.com/visionmedia/node-delegates/blob/master/index.js">delegates</a>: 0.0.3 -已读 -13/5</li>
-<li>dethroy: 1.0.0</li>
-<li>vary: 0.1.0</li>
-<li>error-inject: 1.0.0</li>
-<li>parseurl: 1.2.0</li>
-<li><a href="https://github.com/visionmedia/node-only">only</a>: 0.0.2  -已读 -9/5</li>
-</ul>
-</li>
-<li>运行条件: node 版本大于0.11.9</li>
-</ul>
-
-
-<h2><strong>从入口说起</strong></h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>var koa = require('koa');
-</span><span class='line'>var app = koa();
-</span><span class='line'>
-</span><span class='line'>app.use(function *(){
-</span><span class='line'>    this.body = 'Hello World';    
-</span><span class='line'>});
-</span><span class='line'>
-</span><span class='line'>app.listen(3000);</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面是一个最简单的服务,输出<code>Hello World</code>; 我们用到两个koa的api</p>
-
-<ul>
-<li>app.use()</li>
-<li>app.listen();</li>
-</ul>
-
-
-<p>下面就先从app.listen() 开始</p>
-
-<p>看 <a href="https://github.com/koajs/koa/blob/master/lib/application.js">application.js</a></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>app.listen = function () {
-</span><span class='line'>    var server = http.createServer(this.callback()) ;  
-</span><span class='line'>    return server.listen.apply(server, arguments);
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<blockquote><p>http.createServer([requestListener])
- returns a new web server object</p>
-
-<p><code>requestListener</code> is a function which is automatically added to the <code>'request'</code> 事件</p></blockquote>
-
-<p>由代码可以知道 this.callback() 就是一个 <code>requestListener</code>;</p>
-
-<p>来到<code>app.callback</code></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>app.callback = function () {
-</span><span class='line'>    var mw = [respond].concat(this.middleware);   // 实际上 respond 就是最后一个需要执行的中间件， 负责返回数据的 
-</span><span class='line'>    var gen = compose(mw); 
-</span><span class='line'>    var fn = co(gen);  // co 和 compose 就是将一个个middle，按序执行的操作, 此时middle还没有运行
-</span><span class='line'>    var self = this;
-</span><span class='line'>    
-</span><span class='line'>    if (!this.listeners('error').length) this.on('error', this.onerror);
-</span><span class='line'>    
-</span><span class='line'>    return function (req, res) {
-</span><span class='line'>        res.statusCode = 404;    
-</span><span class='line'>        var ctx = self.createContext(req, res);
-</span><span class='line'>        finished(ctx, ctx.onerror);
-</span><span class='line'>        fn.call(ctx, ctx.onerror); // 这步运行了说明服务器接收到了请求， 然后一步步的运行middle 和 请求业务处理
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码基本上就解释了整个请求到回复的流程</p>
-
-<p>附张图, 一图胜千言</p>
-
-<p><img src="https://raw.githubusercontent.com/koajs/koa/master/docs/middleware.gif" alt="gif" /></p>
-
-<p>下面分解开来</p>
-
-<ul>
-<li><code>createContext(req, res)</code></li>
-<li><code>finished(ctx, ctx.onerror)</code></li>
-<li><code>fn.call(ctx, ctx.onerror)</code></li>
-</ul>
-
-
-<h3>app.createContext(req, res)</h3>
-
-<ul>
-<li>参数 req,res</li>
-<li>返回内容:context, context具体内容如下</li>
-<li>context: <code>Object.create(this.context)</code></li>
-<li>context.app: <code>request.app=response.app=</code></li>
-<li>context.req: <code>request.req = response.app = req</code></li>
-<li>context.res: <code>request.res = response.res = res</code></li>
-<li>context.ctx: <code>response.ctx = context</code></li>
-<li>context.onerror: <code>context.onerror.bind(context)</code> <a href="https://github.com/koajs/koa/blob/master/lib/context.js#l98">this.context</a></li>
-<li>context.originalUrl: <code>request.originalUrl = req.url</code></li>
-<li>context.cookie: <code>new Cookies(req, res, this.keys)</code> &ndash;> <a href="https://github.com/expressjs/cookies">cookie</a> TODO</li>
-<li>context.accept: <code>request.accept = accepts(app)</code> &ndash;> <a href="https://github.com/jshttp/accepts">accepts</a></li>
-</ul>
-
-
-<h3>finished(ctx, ctx.onerror)</h3>
-
-<p>TBC</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1374,6 +1298,10 @@ config set可以修改哪些配置: config get * 注意事项 config set 只能�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/12/nginx-use/">Nginx Use</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/11/use-redis-in-production/">Use Redis in Production - Redis Config Set</a>
       </li>
     
@@ -1387,10 +1315,6 @@ config set可以修改哪些配置: config get * 注意事项 config set 只能�
     
       <li class="post">
         <a href="/blog/2014/08/09/unicodejie-shao-xi-lie-1/">&#8216;Unicode&#8217;介绍系列1</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/19/first-5-minutes-troubleshooting-server-translate/">First 5 Minutes Troubleshooting Server Translate</a>
       </li>
     
   </ul>

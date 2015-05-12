@@ -5,12 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>underscore.js Code Reading - 三余无梦</title>
+  <title>Nginx use - 三余无梦</title>
   <meta name="author" content="admin">
 
   
-  <meta name="description" content="underscore 挖坑待续
-">
+  <meta name="description" content="Nginx config description (注意事项) proxy_buffer_size 1
+2
+3
+Syntax: proxy_buffer_size *size*;
+Default: proxy_buffer_size 4k|8k;
+Context: http,server, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zs1621.github.io/blog/2013/12/27/underscore-dot-js-code-reading">
+  <link rel="canonical" href="http://zs1621.github.io/blog/2015/05/12/nginx-use">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="三余无梦" type="application/atom+xml">
@@ -70,7 +74,7 @@
   
   <header>
     
-      <h1 class="entry-title">underscore.js Code Reading</h1>
+      <h1 class="entry-title">Nginx Use</h1>
     
     
       <p class="meta">
@@ -86,16 +90,88 @@
   
 
 
-<time datetime="2013-12-27T21:14:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-05-12T09:58:46+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h3><a href="https://github.com/jashkenas/underscore/blob/master/underscore.js">underscore</a></h3>
+<div class="entry-content"><h2>Nginx config description (注意事项)</h2>
 
-<p>挖坑待续</p>
+<ul>
+<li>proxy_buffer_size</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffer_size *size*;
+</span><span class='line'>Default: proxy_buffer_size 4k|8k;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>把代理服务器传来的第一部分(通常是response header)放在proxy_buffer里</p>
+
+<ul>
+<li>proxy_buffers</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffers *number size*;
+</span><span class='line'>Default: proxy_buffers *8 4k|8k*;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置buffers的个数和大小(单一链接).默认size等于一个内存页,取决于平台</p>
+
+<ul>
+<li>proxy_buffering</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Syntax: proxy_buffering *on | off*;
+</span><span class='line'>Default: proxy_buffering on;
+</span><span class='line'>Context: http,server,location</span></code></pre></td></tr></table></div></figure>
+
+
+<p>开启/关闭 proxy_buffering, buffering on ， nginx接受到代理服务器的返回就会将其存入buffers.如果回复内容超过设置的大小，会将回复内容存入临时文件(temporary file)硬盘里</p>
+
+<ul>
+<li>proxy_temp_path</li>
+</ul>
+
+
+<p> <code>
+ Syntax: proxy_temp_path *path*;
+ Default: proxy_temp_path proxy_temp;
+ Context: http,server,location
+</code></p>
+
+<p> 定义一个文件夹存储proxy server传来的数据</p>
+
+<h2>nginx use 问题</h2>
+
+<ul>
+<li>proxy server 为django, django返回的文件5m左右,但是最后下载下来的只有69k,最后跟了下nginx error log, 看到如下错误</li>
+</ul>
+
+
+<p> <code>
+ open() "/***/nginx/proxy_temp/0/12/00001213420" failed (13: Permission denied) while reading upstream,
+</code></p>
+
+<ul>
+<li>问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了</li>
+</ul>
+
 </div>
 
 
@@ -118,12 +194,12 @@
   
 
 
-<time datetime="2013-12-27T21:14:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-05-12T09:58:46+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/codereading/'>codeReading</a>
+    <a class='category' href='/blog/categories/web/'>web</a>
   
 </span>
 
@@ -139,10 +215,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/12/18/lazy-dot-js-code-reading/" title="Previous Post: Lazy.js code Reading">&laquo; Lazy.js code Reading</a>
+        <a class="basic-alignment left" href="/blog/2015/03/11/use-redis-in-production/" title="Previous Post: use redis in production - redis config set">&laquo; use redis in production - redis config set</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/01/17/koa-dot-js-code-reading/" title="Next Post: Koa.js Code Reading">Koa.js Code Reading &raquo;</a>
       
     </p>
   </footer>
