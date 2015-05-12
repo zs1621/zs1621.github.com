@@ -1,0 +1,85 @@
+---
+layout: post
+title: "Nginx use"
+date: 2015-05-12 09:58:46 +0800
+comments: true
+categories: web
+---
+
+
+## Nginx config description (注意事项)
+
+
+ - proxy_buffer_size  
+
+
+```
+Syntax: proxy_buffer_size *size*;
+Default: proxy_buffer_size 4k|8k;
+Context: http,server,location
+```
+
+把代理服务器传来的第一部分(通常是response header)放在proxy_buffer里
+
+ - proxy_buffers
+
+```
+Syntax: proxy_buffers *number size*;
+Default: proxy_buffers *8 4k|8k*;
+Context: http,server,location
+```
+
+
+设置buffers的个数和大小(单一链接).默认size等于一个内存页,取决于平台
+
+
+ - proxy_buffering 
+
+
+```
+Syntax: proxy_buffering *on | off*;
+Default: proxy_buffering on;
+Context: http,server,location
+```
+
+
+开启/关闭 proxy_buffering, buffering on ， nginx接受到代理服务器的返回就会将其存入buffers.如果回复内容超过设置的大小，会将回复内容存入临时文件(temporary file)硬盘里
+
+
+ - proxy_temp_path
+
+
+ ```
+ Syntax: proxy_temp_path *path*;
+ Default: proxy_temp_path proxy_temp;
+ Context: http,server,location
+ ```
+
+
+ 定义一个文件夹存储proxy server传来的数据
+
+
+
+## nginx use 问题
+
+ - proxy server 为django, django返回的文件5m左右,但是最后下载下来的只有69k,最后跟了下nginx error log, 看到如下错误
+
+
+ ```
+ open() "/***/nginx/proxy_temp/0/12/00001213420" failed (13: Permission denied) while reading upstream,
+ ```
+
+
+问题就很明显了，这就是proxy_buffering里的返回内容大了,会先将其存入硬盘,但运行nginx的用户对临时文件无权限，所以将临时文件夹的用户权限改下问题就解决了
+
+
+ - proxy server 为django,  访问服务器出现django出现如下错误:
+ 
+
+ ```
+ Invalid HTTP_HOST header(you may need to set ALLOWED_HOSTS): 127.0.0.1:3456
+ ```
+
+
+ 这个问题就是django在请求来的时候会检查request header 里的 host.如果host不是预设的xxxx.com那么就会报500错误，一般是因为nginx没有加`proxy_set_header Host $host;`, 加上这个说明就好了 ip `proxy_set_header X-Real-IP $remote_addr` 也是同样的道理
+
