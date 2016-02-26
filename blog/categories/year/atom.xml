@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: year | 三余无梦]]></title>
+  <link href="http://zs1621.github.io/blog/categories/year/atom.xml" rel="self"/>
+  <link href="http://zs1621.github.io/"/>
+  <updated>2016-02-26T22:01:20+08:00</updated>
+  <id>http://zs1621.github.io/</id>
+  <author>
+    <name><![CDATA[admin]]></name>
+    <email><![CDATA[zs1213yh@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2016年展望]]></title>
+    <link href="http://zs1621.github.io/blog/2016/02/24/2016nian-zhan-wang/"/>
+    <updated>2016-02-24T22:03:06+08:00</updated>
+    <id>http://zs1621.github.io/blog/2016/02/24/2016nian-zhan-wang</id>
+    <content type="html"><![CDATA[<h2>简单回顾下2015</h2>
+
+<h3>技术(YES) vs 技术(NOT yet done)</h3>
+
+<ul>
+<li>项目接口优化 95% api handle time &lt; 100ms</li>
+<li>接触postgresql</li>
+<li>python 处理部分运维工作 vs 没有实现自动化,不少工作仍需手动干预</li>
+</ul>
+
+
+<h3>生活(YES) vs 生活(NO yet done)</h3>
+
+<ul>
+<li>3 个马拉松 and 一个越野跑  (run) vs 成绩不理想(run)</li>
+<li>组了一辆大轮车开始训练 vs</li>
+<li>和同事组了一个乐队:) vs 并没有练习配合</li>
+<li>开始联系非洲鼓 vs 节奏没感觉</li>
+<li>已订婚</li>
+</ul>
+
+
+<p>2015年最大的问题是: 工作时间占用了自我学习时间</p>
+
+<h2>2016年展望</h2>
+
+<h3>生活</h3>
+
+<ul>
+<li>科学练习跑步(FIRST训练-每周3次训练)</li>
+<li>开始学习游泳(4月中旬开始办游泳卡)</li>
+<li>骑行(每周保证2次训练)</li>
+<li>非洲鼓(找教程练习节奏)</li>
+<li>结婚前把车练上路</li>
+<li>为结婚存钱:(</li>
+</ul>
+
+
+<h3>技术</h3>
+
+<ul>
+<li>深入Python(阅读2-3个python库),写干净清晰的代码</li>
+<li>深入使用Postgresql, 年底写篇使用经验</li>
+<li>深入理解tcp/ip,socket等网络知识</li>
+<li>github 开源项目做贡献</li>
+<li>工作上 成立数据部门/架构扩展</li>
+<li>运维工作 &ndash;> 自动化</li>
+<li>接触一些基本算法层面的东西</li>
+<li>写高质量的技术博文(可考虑英文)</li>
+</ul>
+
+
+<blockquote><p>更好的管理时间,更好的自己!</p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>
