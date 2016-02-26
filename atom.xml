@@ -4,7 +4,7 @@
   <title><![CDATA[三余无梦]]></title>
   <link href="http://zs1621.github.io/atom.xml" rel="self"/>
   <link href="http://zs1621.github.io/"/>
-  <updated>2015-05-12T12:05:47+08:00</updated>
+  <updated>2016-02-26T22:01:20+08:00</updated>
   <id>http://zs1621.github.io/</id>
   <author>
     <name><![CDATA[admin]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2016年展望]]></title>
+    <link href="http://zs1621.github.io/blog/2016/02/24/2016nian-zhan-wang/"/>
+    <updated>2016-02-24T22:03:06+08:00</updated>
+    <id>http://zs1621.github.io/blog/2016/02/24/2016nian-zhan-wang</id>
+    <content type="html"><![CDATA[<h2>简单回顾下2015</h2>
+
+<h3>技术(YES) vs 技术(NOT yet done)</h3>
+
+<ul>
+<li>项目接口优化 95% api handle time &lt; 100ms</li>
+<li>接触postgresql</li>
+<li>python 处理部分运维工作 vs 没有实现自动化,不少工作仍需手动干预</li>
+</ul>
+
+
+<h3>生活(YES) vs 生活(NO yet done)</h3>
+
+<ul>
+<li>3 个马拉松 and 一个越野跑  (run) vs 成绩不理想(run)</li>
+<li>组了一辆大轮车开始训练 vs</li>
+<li>和同事组了一个乐队:) vs 并没有练习配合</li>
+<li>开始联系非洲鼓 vs 节奏没感觉</li>
+<li>已订婚</li>
+</ul>
+
+
+<p>2015年最大的问题是: 工作时间占用了自我学习时间</p>
+
+<h2>2016年展望</h2>
+
+<h3>生活</h3>
+
+<ul>
+<li>科学练习跑步(FIRST训练-每周3次训练)</li>
+<li>开始学习游泳(4月中旬开始办游泳卡)</li>
+<li>骑行(每周保证2次训练)</li>
+<li>非洲鼓(找教程练习节奏)</li>
+<li>结婚前把车练上路</li>
+<li>为结婚存钱:(</li>
+</ul>
+
+
+<h3>技术</h3>
+
+<ul>
+<li>深入Python(阅读2-3个python库),写干净清晰的代码</li>
+<li>深入使用Postgresql, 年底写篇使用经验</li>
+<li>深入理解tcp/ip,socket等网络知识</li>
+<li>github 开源项目做贡献</li>
+<li>工作上 成立数据部门/架构扩展</li>
+<li>运维工作 &ndash;> 自动化</li>
+<li>接触一些基本算法层面的东西</li>
+<li>写高质量的技术博文(可考虑英文)</li>
+</ul>
+
+
+<blockquote><p>更好的管理时间,更好的自己!</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Nginx use]]></title>
@@ -2695,219 +2756,6 @@ add_accept_handler 第二个参数 self._handle_connection是个回调函数, �
 <p>下面应该说下 <code>TCPServer</code> 主体内容在 <code>TCPServer</code>,</p>
 
 <p><a href="https://github.com/facebook/tornado/blob/master/tornado/tcpserver.py">TCPServer</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[connect code reading]]></title>
-    <link href="http://zs1621.github.io/blog/2013/09/02/connect-code-reading/"/>
-    <updated>2013-09-02T22:12:00+08:00</updated>
-    <id>http://zs1621.github.io/blog/2013/09/02/connect-code-reading</id>
-    <content type="html"><![CDATA[<p><a href="https://github.com/zs1621/connect/blob/master/lib/patch.js">lib &ndash;> patch.js</a></p>
-
-<p><strong>headerSent</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>res.__defineGetter__('headerSent', function(){
-</span><span class='line'>    return this._header;
-</span><span class='line'>  });</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的this._header是header内容发出后才有的， 内容为header的所有内容， 所以headerSent 只有在res.end()后才有值</p>
-
-<p><a href="https://github.com/zs1621/connect/blob/master/lib/middleware/compress.js">lib->middle->compress.js</a></p>
-
-<p><strong>options</strong></p>
-
-<p>compress中间件用了nodejs 内部模块 <code>zlib</code></p>
-
-<p>这里的options 参考 <a href="http://nodejs.org/api/zlib.html#zlib_options">options</a></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>res.on('header', function(){
-</span><span class='line'>
-</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>监听到 <code>header</code> 开始</p>
-
-<ul>
-<li>如果没有compress 直接return;</li>
-<li><code>var encoding = res.getHeader('Content-Encoding') || 'identity'</code></li>
-<li>如果 <code>encoding</code> 不等于 <code>identity</code> 说明已经编码了 直接 return</li>
-<li>如果需要压缩的文件 符合过滤条件 也即在给的文件列表中 就继续下一步, 否则 return</li>
-<li>如果请求头文件 没有 accept-encoding 值 ， return (why)</li>
-<li>如果请求方法 为 <code>HEAD</code> , <code>return</code></li>
-<li>默认压缩方法为 <code>gzip</code></li>
-<li>确定压缩方法 即给 <code>method</code> 赋值</li>
-<li>此时<code>method</code> 还是空的话  return</li>
-<li>压缩流文件 <code>stream = exports.methods[method](options)</code> 即 <code>zlib.createGzip</code> 或 <code>zlib.createDeflate</code> 得到 流 <code>stream</code></li>
-<li>开始赋值 <code>Content-Encoding</code> , 并去除 <code>Content-Length</code> 明显压缩后 文件大小会变
-此时 <code>stream</code> 监听 到 发出去的数据 就 开始 res.write<code>stream.write(new Buffer(chunk, encoding))</code> 这里的 stream 监听 是 <code>node version 0.10</code>后的<code>stream api</code> 具体 参考 <a href="https://github.com/joyent/node/blob/master/doc/api/stream.markdown">stream</a></li>
-<li>直到 流文件 <code>"流出"</code></li>
-</ul>
-
-
-<p><a href="https://github.com/senchalabs/connect/blob/master/lib/middleware/basicAuth.js">lib &ndash;> middle &ndash;> basicAuth.js</a></p>
-
-<p><strong>3种应用形式</strong></p>
-
-<ul>
-<li>简单输入 username , password</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  connect(connect.basicAuth('username', 'password'));</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>回调</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
-</span><span class='line'>   .use(connect.basicAuth(function(user, pass){
-</span><span class='line'>      return 'tj' == user & 'wahoo' == pass;
-</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>异步回调</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>   connect()
-</span><span class='line'>   .use(connect.basicAuth(function(user, pass, fn){
-</span><span class='line'>      User.authenticate({user: user, pass: pass}, fn); 
-</span><span class='line'>   }))</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Authrization</strong></p>
-
-<p>页面需要授权的时候，浏览器会弹出一个登入窗口, 输入正确的帐号， 浏览器会发送一个ＨＴＴＰ请求， 但此时会包含这样的一个 Header:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Authorization: Basic bXl1c2VyOm15cGFzcw==</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的 <code>bXl1c2VyOm15cGFzcw==</code> 是 <code>base64 encoded</code>。例如, <code>base64_decode('bXl1c2VyOm15cGFzcw==')</code> &ndash;> <code>myuser:mypass</code></p>
-
-<p>理解头文件的 Authrization, 下面来看代码</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  if ('string' == typeof callback)  //对应第一个应用例子, 见上 
-</span><span class='line'>  callback = function(user, pass) {
-</span><span class='line'>      return user == username && pass == password; 
-</span><span class='line'>  } //这时给callback赋值 function</span></code></pre></td></tr></table></div></figure>
-
-
-<p>下面解析出头文件的即 <code>req.headers.authorization</code> 解码出用户输入的用户名和密码得到 <code>user</code> 和 <code>pass</code></p>
-
-<p>最后调用<code>callback</code>做验证 分一下两种情况</p>
-
-<ul>
-<li>异步callback</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>if (callback.length &gt;= 3) {
-</span><span class='line'>  var pause = utils.pause(req); 
-</span><span class='line'>  callback(user, pass, function(err, user){
-</span><span class='line'>      if (err || !user) return unauthorized(res, realm);  
-</span><span class='line'>      req.user = req.remoteUser = user;
-</span><span class='line'>      next();
-</span><span class='line'>      pause.resume(); // nodejs version &lt; 0.10, 在中间间使用异步调用时使用， 为了在异步操作完成后， 重新触发消息， 以免事件丢失
-</span><span class='line'>  });
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>同步callback</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> if (callback(user, pass){
-</span><span class='line'>  req.user = req.remoteUser = user; 
-</span><span class='line'>  next();
-</span><span class='line'> }else {
-</span><span class='line'>  unauthorized(res, realm); 
-</span><span class='line'> })</span></code></pre></td></tr></table></div></figure>
-
-
-<p><a href="https://github.com/zs1621/connect/blob/master/lib/middle/static.js">lib &ndash;>middle &ndash;>static.js</a></p>
-
-<p><strong>应用</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>connect()
-</span><span class='line'>  .use(connect.static(__dirname+ '/public', {maxAge: 1000}))</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>参数</strong></p>
-
-<p><code>root</code>:</p>
-
-<p><code>options</code>:</p>
-
-<pre><code>- 'maxAge' 浏览器缓存时间  默认为0
-- 'hidden' 允许隐藏文件的转换 默认false
-- 'redirect' 如果路径是一个文件夹， 指向 ‘/’ 默认 true
-- 'index' 默认的文件名‘index.html’
-</code></pre>
-
-<p>代码主体就是</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>send(req, path)
-</span><span class='line'>  .maxage(options.maxAge || 0)
-</span><span class='line'>  .root(root)
-</span><span class='line'>  .index(options.index || 'index.html')
-</span><span class='line'>  .hidden(options.hidden)
-</span><span class='line'>  .on('error', error)
-</span><span class='line'>  .on('directory', directory)
-</span><span class='line'>  .pipe(res)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于 <code>send</code> 模块分析见 <a href="zs1621.github.io/blog/2013/09/10/visionmedia-slash-send-reading">send</a></p>
 ]]></content>
   </entry>
   
